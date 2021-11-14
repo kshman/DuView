@@ -38,10 +38,12 @@
 			this.ViewRightLeftMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FavorityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FavorityAddMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.ImagePictureBox = new System.Windows.Forms.PictureBox();
 			this.FileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileOpenMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.ImagePictureBox = new System.Windows.Forms.PictureBox();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.BadakTopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ImagePictureBox)).BeginInit();
@@ -56,7 +58,7 @@
 			// 
 			// BadakMinMaxClosePanel
 			// 
-			this.BadakMinMaxClosePanel.Location = new System.Drawing.Point(676, 1);
+			this.BadakMinMaxClosePanel.Location = new System.Drawing.Point(677, 2);
 			// 
 			// MenuStrip
 			// 
@@ -66,9 +68,9 @@
             this.ViewMenuItem,
             this.FavorityMenuItem,
             this.FileMenuItem});
-			this.MenuStrip.Location = new System.Drawing.Point(406, 2);
+			this.MenuStrip.Location = new System.Drawing.Point(526, 2);
 			this.MenuStrip.Name = "MenuStrip";
-			this.MenuStrip.Size = new System.Drawing.Size(271, 24);
+			this.MenuStrip.Size = new System.Drawing.Size(151, 24);
 			this.MenuStrip.TabIndex = 2;
 			this.MenuStrip.Text = "darkMenuStrip1";
 			// 
@@ -90,21 +92,21 @@
 			// 
 			this.ViewZoomMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewZoomMenuItem.Name = "ViewZoomMenuItem";
-			this.ViewZoomMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.ViewZoomMenuItem.Size = new System.Drawing.Size(161, 22);
 			this.ViewZoomMenuItem.Text = "&Zoom";
 			this.ViewZoomMenuItem.Click += new System.EventHandler(this.ViewZoomMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(158, 6);
 			// 
 			// ViewOriginalMenuItem
 			// 
 			this.ViewOriginalMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewOriginalMenuItem.Name = "ViewOriginalMenuItem";
-			this.ViewOriginalMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.ViewOriginalMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.ViewOriginalMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
+			this.ViewOriginalMenuItem.Size = new System.Drawing.Size(161, 22);
 			this.ViewOriginalMenuItem.Text = "&Original";
 			this.ViewOriginalMenuItem.Click += new System.EventHandler(this.ViewOriginalMenuItem_Click);
 			// 
@@ -112,8 +114,8 @@
 			// 
 			this.ViewFitMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewFitMenuItem.Name = "ViewFitMenuItem";
-			this.ViewFitMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
-			this.ViewFitMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.ViewFitMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
+			this.ViewFitMenuItem.Size = new System.Drawing.Size(161, 22);
 			this.ViewFitMenuItem.Text = "&Fit";
 			this.ViewFitMenuItem.Click += new System.EventHandler(this.ViewFitMenuItem_Click);
 			// 
@@ -121,8 +123,8 @@
 			// 
 			this.ViewLeftRightMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewLeftRightMenuItem.Name = "ViewLeftRightMenuItem";
-			this.ViewLeftRightMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
-			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.ViewLeftRightMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F11;
+			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(161, 22);
 			this.ViewLeftRightMenuItem.Text = "Left → Right";
 			this.ViewLeftRightMenuItem.Click += new System.EventHandler(this.ViewLeftRightMenuItem_Click);
 			// 
@@ -130,8 +132,8 @@
 			// 
 			this.ViewRightLeftMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewRightLeftMenuItem.Name = "ViewRightLeftMenuItem";
-			this.ViewRightLeftMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.ViewRightLeftMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
+			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(161, 22);
 			this.ViewRightLeftMenuItem.Text = "Right → Left";
 			this.ViewRightLeftMenuItem.Click += new System.EventHandler(this.ViewRightLeftMenuItem_Click);
 			// 
@@ -149,27 +151,17 @@
 			this.FavorityAddMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FavorityAddMenuItem.Name = "FavorityAddMenuItem";
 			this.FavorityAddMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-			this.FavorityAddMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FavorityAddMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.FavorityAddMenuItem.Text = "&Add";
 			this.FavorityAddMenuItem.Click += new System.EventHandler(this.FavorityAddMenuItem_Click);
-			// 
-			// ImagePictureBox
-			// 
-			this.ImagePictureBox.Location = new System.Drawing.Point(6, 70);
-			this.ImagePictureBox.Margin = new System.Windows.Forms.Padding(0);
-			this.ImagePictureBox.Name = "ImagePictureBox";
-			this.ImagePictureBox.Size = new System.Drawing.Size(788, 374);
-			this.ImagePictureBox.TabIndex = 2;
-			this.ImagePictureBox.TabStop = false;
-			this.ImagePictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseDown);
-			this.ImagePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseMove);
-			this.ImagePictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseUp);
 			// 
 			// FileMenuItem
 			// 
 			this.FileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileOpenMenuItem,
-            this.FileCloseMenuItem});
+            this.FileCloseMenuItem,
+            this.toolStripSeparator2,
+            this.FileExitMenuItem});
 			this.FileMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileMenuItem.Name = "FileMenuItem";
 			this.FileMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -192,6 +184,31 @@
 			this.FileCloseMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.FileCloseMenuItem.Text = "&Close";
 			this.FileCloseMenuItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
+			// 
+			// ImagePictureBox
+			// 
+			this.ImagePictureBox.Location = new System.Drawing.Point(6, 70);
+			this.ImagePictureBox.Margin = new System.Windows.Forms.Padding(0);
+			this.ImagePictureBox.Name = "ImagePictureBox";
+			this.ImagePictureBox.Size = new System.Drawing.Size(788, 374);
+			this.ImagePictureBox.TabIndex = 2;
+			this.ImagePictureBox.TabStop = false;
+			this.ImagePictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseDown);
+			this.ImagePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseMove);
+			this.ImagePictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseUp);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+			// 
+			// FileExitMenuItem
+			// 
+			this.FileExitMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileExitMenuItem.Name = "FileExitMenuItem";
+			this.FileExitMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileExitMenuItem.Text = "E&xit";
+			this.FileExitMenuItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
 			// MainForm
 			// 
@@ -236,6 +253,8 @@
 		private System.Windows.Forms.ToolStripMenuItem FileMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem FileOpenMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem FileCloseMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripMenuItem FileExitMenuItem;
 	}
 }
 

@@ -1,4 +1,5 @@
-﻿using DuLib.Platform;
+﻿using DuLib;
+using DuLib.Platform;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -16,6 +17,9 @@ namespace DuView
 
 		public static Rectangle Window { get; set; } = new Rectangle();
 		public static string LastFolder { get; set; } = string.Empty;
+
+		public static string LastFileName { get; set; } = string.Empty;
+		public static int LastFilePage { get; set; } = 0;
 
 		public static void WhenLoad(Form form)
 		{
@@ -45,6 +49,10 @@ namespace DuView
 					v = rk.GetDecodingString("LastFolder");
 					if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
 						LastFolder = v;
+
+					v = rk.GetDecodingString("LastFile");
+					if (!string.IsNullOrEmpty(v))
+						(LastFileName, LastFilePage) = ConvertFileString(v);
 				}
 			}
 		}
@@ -57,7 +65,31 @@ namespace DuView
 			{
 				rk.SetString("Window", $"{Window.X},{Window.Y},{Window.Width},{Window.Height}");
 				rk.SetEncodingString("LastFolder", LastFolder);
+				rk.SetEncodingString("LastFile", ConvertRegString(LastFileName, LastFilePage));
 			}
+		}
+
+		public static int GetRecentlyPage(string onlyfilename)
+		{
+			// 해야함
+			return 0;
+		}
+
+		private static (string filename, int line) ConvertFileString(string s)
+		{
+			var n = s.IndexOf('|');
+			if (n < 0)
+				return (string.Empty, 0);
+
+			var line = Converter.ToInt(s.Substring(0, n));
+			var filename = s.Substring(n + 1);
+
+			return (filename, line);
+		}
+
+		private static string ConvertRegString(string filename, int line)
+		{
+			return string.IsNullOrEmpty(filename) ? string.Empty : $"{line}|{filename}";
 		}
 	}
 }

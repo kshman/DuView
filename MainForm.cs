@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -107,6 +108,11 @@ namespace DuView
 		{
 
 		}
+
+		private void FileExitMenuItem_Click(object sender, EventArgs e)
+		{
+			Close();
+		}
 		#endregion
 
 		#region 그림 영역 UI
@@ -136,8 +142,22 @@ namespace DuView
 				InitialDirectory = Settings.LastFolder,
 			};
 
-			if (dlg.ShowDialog() != DialogResult.OK)
-				return;
+			if (dlg.ShowDialog() == DialogResult.OK)
+			{
+				FileInfo fi = new FileInfo(dlg.FileName);
+				Settings.LastFolder = fi.DirectoryName;
+				OpenArchive(dlg.FileName);
+			}
+		}
+
+		private void OpenArchive(string filename)
+		{
+			var zip = BookZip.FromFile(filename);
+			if (zip != null)
+			{
+				var page = Settings.GetRecentlyPage(zip.OnlyFileName);
+				System.Diagnostics.Debug.WriteLine($"page: ${page}");
+			}
 		}
 		#endregion
 	}
