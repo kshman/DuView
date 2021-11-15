@@ -32,7 +32,6 @@
 			this.ViewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ViewZoomMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.ViewOriginalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ViewFitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ViewLeftRightMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ViewRightLeftMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,9 +40,11 @@
 			this.FileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileOpenMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.ImagePictureBox = new System.Windows.Forms.PictureBox();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.ImagePictureBox = new System.Windows.Forms.PictureBox();
+			this.FileOpenLastMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.PageInfoLabel = new System.Windows.Forms.Label();
 			this.BadakTopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ImagePictureBox)).BeginInit();
@@ -51,14 +52,16 @@
 			// 
 			// BadakTopPanel
 			// 
+			this.BadakTopPanel.Controls.Add(this.PageInfoLabel);
 			this.BadakTopPanel.Controls.Add(this.MenuStrip);
 			this.BadakTopPanel.Size = new System.Drawing.Size(800, 70);
 			this.BadakTopPanel.Controls.SetChildIndex(this.MenuStrip, 0);
 			this.BadakTopPanel.Controls.SetChildIndex(this.BadakMinMaxClosePanel, 0);
+			this.BadakTopPanel.Controls.SetChildIndex(this.PageInfoLabel, 0);
 			// 
 			// BadakMinMaxClosePanel
 			// 
-			this.BadakMinMaxClosePanel.Location = new System.Drawing.Point(677, 2);
+			this.BadakMinMaxClosePanel.Location = new System.Drawing.Point(676, 2);
 			// 
 			// MenuStrip
 			// 
@@ -79,7 +82,6 @@
 			this.ViewMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ViewZoomMenuItem,
             this.toolStripSeparator1,
-            this.ViewOriginalMenuItem,
             this.ViewFitMenuItem,
             this.ViewLeftRightMenuItem,
             this.ViewRightLeftMenuItem});
@@ -92,30 +94,21 @@
 			// 
 			this.ViewZoomMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewZoomMenuItem.Name = "ViewZoomMenuItem";
-			this.ViewZoomMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.ViewZoomMenuItem.Size = new System.Drawing.Size(168, 22);
 			this.ViewZoomMenuItem.Text = "&Zoom";
 			this.ViewZoomMenuItem.Click += new System.EventHandler(this.ViewZoomMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(158, 6);
-			// 
-			// ViewOriginalMenuItem
-			// 
-			this.ViewOriginalMenuItem.ForeColor = System.Drawing.Color.White;
-			this.ViewOriginalMenuItem.Name = "ViewOriginalMenuItem";
-			this.ViewOriginalMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-			this.ViewOriginalMenuItem.Size = new System.Drawing.Size(161, 22);
-			this.ViewOriginalMenuItem.Text = "&Original";
-			this.ViewOriginalMenuItem.Click += new System.EventHandler(this.ViewOriginalMenuItem_Click);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(165, 6);
 			// 
 			// ViewFitMenuItem
 			// 
 			this.ViewFitMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewFitMenuItem.Name = "ViewFitMenuItem";
 			this.ViewFitMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
-			this.ViewFitMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.ViewFitMenuItem.Size = new System.Drawing.Size(168, 22);
 			this.ViewFitMenuItem.Text = "&Fit";
 			this.ViewFitMenuItem.Click += new System.EventHandler(this.ViewFitMenuItem_Click);
 			// 
@@ -124,7 +117,7 @@
 			this.ViewLeftRightMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewLeftRightMenuItem.Name = "ViewLeftRightMenuItem";
 			this.ViewLeftRightMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F11;
-			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(168, 22);
 			this.ViewLeftRightMenuItem.Text = "Left → Right";
 			this.ViewLeftRightMenuItem.Click += new System.EventHandler(this.ViewLeftRightMenuItem_Click);
 			// 
@@ -133,7 +126,7 @@
 			this.ViewRightLeftMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewRightLeftMenuItem.Name = "ViewRightLeftMenuItem";
 			this.ViewRightLeftMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(168, 22);
 			this.ViewRightLeftMenuItem.Text = "Right → Left";
 			this.ViewRightLeftMenuItem.Click += new System.EventHandler(this.ViewRightLeftMenuItem_Click);
 			// 
@@ -159,6 +152,7 @@
 			// 
 			this.FileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileOpenMenuItem,
+            this.FileOpenLastMenuItem,
             this.FileCloseMenuItem,
             this.toolStripSeparator2,
             this.FileExitMenuItem});
@@ -172,7 +166,7 @@
 			this.FileOpenMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOpenMenuItem.Name = "FileOpenMenuItem";
 			this.FileOpenMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.FileOpenMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileOpenMenuItem.Size = new System.Drawing.Size(197, 22);
 			this.FileOpenMenuItem.Text = "&Open";
 			this.FileOpenMenuItem.Click += new System.EventHandler(this.FileOpenMenuItem_Click);
 			// 
@@ -181,12 +175,28 @@
 			this.FileCloseMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileCloseMenuItem.Name = "FileCloseMenuItem";
 			this.FileCloseMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-			this.FileCloseMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileCloseMenuItem.Size = new System.Drawing.Size(197, 22);
 			this.FileCloseMenuItem.Text = "&Close";
 			this.FileCloseMenuItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
 			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(194, 6);
+			// 
+			// FileExitMenuItem
+			// 
+			this.FileExitMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileExitMenuItem.Name = "FileExitMenuItem";
+			this.FileExitMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.FileExitMenuItem.Text = "E&xit";
+			this.FileExitMenuItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
+			// 
 			// ImagePictureBox
 			// 
+			this.ImagePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.ImagePictureBox.Location = new System.Drawing.Point(6, 70);
 			this.ImagePictureBox.Margin = new System.Windows.Forms.Padding(0);
 			this.ImagePictureBox.Name = "ImagePictureBox";
@@ -197,18 +207,27 @@
 			this.ImagePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseMove);
 			this.ImagePictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseUp);
 			// 
-			// toolStripSeparator2
+			// FileOpenLastMenuItem
 			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+			this.FileOpenLastMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileOpenLastMenuItem.Name = "FileOpenLastMenuItem";
+			this.FileOpenLastMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.FileOpenLastMenuItem.Text = "Open &last book";
+			this.FileOpenLastMenuItem.Click += new System.EventHandler(this.FileOpenLastMenuItem_Click);
 			// 
-			// FileExitMenuItem
+			// PageInfoLabel
 			// 
-			this.FileExitMenuItem.ForeColor = System.Drawing.Color.White;
-			this.FileExitMenuItem.Name = "FileExitMenuItem";
-			this.FileExitMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileExitMenuItem.Text = "E&xit";
-			this.FileExitMenuItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
+			this.PageInfoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.PageInfoLabel.AutoSize = true;
+			this.PageInfoLabel.ForeColor = System.Drawing.Color.White;
+			this.PageInfoLabel.Location = new System.Drawing.Point(763, 54);
+			this.PageInfoLabel.Name = "PageInfoLabel";
+			this.PageInfoLabel.Size = new System.Drawing.Size(33, 12);
+			this.PageInfoLabel.TabIndex = 6;
+			this.PageInfoLabel.Text = "page";
+			this.PageInfoLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.PageInfoLabel.Visible = false;
 			// 
 			// MainForm
 			// 
@@ -223,9 +242,12 @@
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.ClientSizeChanged += new System.EventHandler(this.MainForm_ClientSizeChanged);
+			this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
 			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
+			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.MainForm_Layout);
 			this.Controls.SetChildIndex(this.BadakTopPanel, 0);
 			this.Controls.SetChildIndex(this.ImagePictureBox, 0);
 			this.BadakTopPanel.ResumeLayout(false);
@@ -243,7 +265,6 @@
 		private System.Windows.Forms.ToolStripMenuItem ViewMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem ViewZoomMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripMenuItem ViewOriginalMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem ViewFitMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem ViewLeftRightMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem ViewRightLeftMenuItem;
@@ -255,6 +276,8 @@
 		private System.Windows.Forms.ToolStripMenuItem FileCloseMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem FileExitMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem FileOpenLastMenuItem;
+		private System.Windows.Forms.Label PageInfoLabel;
 	}
 }
 

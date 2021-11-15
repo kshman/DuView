@@ -21,6 +21,9 @@ namespace DuView
 		public static string LastFileName { get; set; } = string.Empty;
 		public static int LastFilePage { get; set; } = 0;
 
+		public static bool ViewZoom { get; set; } = true;
+		public static ViewerMode ViewMode { get; set; } = ViewerMode.FitWidth;
+
 		public static void WhenLoad(Form form)
 		{
 			Window = new Rectangle(form.Location, form.Size);
@@ -31,6 +34,7 @@ namespace DuView
 				if (rk.IsOpen)
 				{
 					string v;
+					int n;
 
 					v = rk.GetString("Window");
 					if (!string.IsNullOrEmpty(v))
@@ -53,6 +57,11 @@ namespace DuView
 					v = rk.GetDecodingString("LastFile");
 					if (!string.IsNullOrEmpty(v))
 						(LastFileName, LastFilePage) = ConvertFileString(v);
+
+					ViewZoom = rk.GetInt("ViewZoom", ViewZoom ? 1 : 0) != 0;
+
+					n = rk.GetInt("ViewMode", (int)ViewMode);
+					ViewMode = (ViewerMode)n;
 				}
 			}
 		}
@@ -66,6 +75,8 @@ namespace DuView
 				rk.SetString("Window", $"{Window.X},{Window.Y},{Window.Width},{Window.Height}");
 				rk.SetEncodingString("LastFolder", LastFolder);
 				rk.SetEncodingString("LastFile", ConvertRegString(LastFileName, LastFilePage));
+				rk.SetInt("ViewZoom", ViewZoom ? 1 : 0);
+				rk.SetInt("ViewMode", (int)ViewMode);
 			}
 		}
 
@@ -90,6 +101,15 @@ namespace DuView
 		private static string ConvertRegString(string filename, int line)
 		{
 			return string.IsNullOrEmpty(filename) ? string.Empty : $"{line}|{filename}";
+		}
+
+		// 보기 모드
+		public enum ViewerMode : int
+		{
+			FitWidth,
+			FitHeight,
+			LeftToRight,
+			RightToLeft
 		}
 	}
 }

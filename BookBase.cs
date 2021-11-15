@@ -14,8 +14,12 @@ namespace DuView
 		public string OnlyFileName { get; set; }
 		public int CurrentPage { get; set; }
 		public int TotalPage => _entries.Count;
+		public Image ImagePage1 => _ip1;
+		public Image ImagePage2 => _ip2;
 
 		protected List<object> _entries = new List<object>();
+		protected Image _ip1 = null;
+		protected Image _ip2 = null;
 
 		protected BookBase()
 		{
@@ -40,8 +44,14 @@ namespace DuView
 			OnlyFileName = di.Name;
 		}
 
-		public virtual void Dispose()
+		public void Dispose()
 		{
+			Close();
+		}
+
+		public virtual void Close()
+		{
+
 		}
 
 		public void ActivateSetting()
@@ -56,7 +66,7 @@ namespace DuView
 		{
 			image = null;
 
-			int npage = pageno + 1;
+			int npage = pageno;
 
 			for (var i = npage; i < TotalPage; i++)
 			{
@@ -86,7 +96,7 @@ namespace DuView
 
 		public bool ReadNextPage(out Image image)
 		{
-			int pageno = CurrentPage;
+			int pageno = CurrentPage + 1;
 
 			if (!ReadPage(out image, ref pageno))
 				return false;
@@ -95,6 +105,72 @@ namespace DuView
 				CurrentPage = pageno;
 				return true;
 			}
+		}
+		
+		public bool PrepareCurrent(Settings.ViewerMode mode)
+		{
+			int pageno;
+
+			if (mode == Settings.ViewerMode.FitWidth || mode == Settings.ViewerMode.FitHeight)
+			{
+				pageno = CurrentPage;
+				if (!ReadPage(out _ip1, ref pageno))
+					return false;
+
+				CurrentPage = pageno;
+			}
+			else if (mode == Settings.ViewerMode.LeftToRight || mode == Settings.ViewerMode.RightToLeft)
+			{
+				pageno = CurrentPage;
+				if (!ReadPage(out _ip1, ref pageno))
+					return false;
+
+				pageno++;
+				if (!ReadPage(out _ip2, ref pageno))
+					_ip2 = null;
+
+				CurrentPage = pageno;
+			}
+			else
+			{
+				// 뭠미
+				return false;
+			}
+
+			return true;
+		}
+
+		public bool PrepareNext(Settings.ViewerMode mode)
+		{
+			int pageno;
+
+			if (mode == Settings.ViewerMode.FitWidth || mode == Settings.ViewerMode.FitHeight)
+			{
+				pageno = CurrentPage + 1;
+				if (!ReadPage(out _ip1, ref pageno))
+					return false;
+
+				CurrentPage = pageno;
+			}
+			else if (mode == Settings.ViewerMode.LeftToRight || mode == Settings.ViewerMode.RightToLeft)
+			{
+				pageno = CurrentPage + 1;
+				if (!ReadPage(out _ip1, ref pageno))
+					return false;
+
+				pageno++;
+				if (!ReadPage(out _ip2, ref pageno))
+					_ip2 = null;
+
+				CurrentPage = pageno;
+			}
+			else
+			{
+				// 뭠미
+				return false;
+			}
+
+			return true;
 		}
 
 		public static bool IsValidImageFile(string extension)

@@ -27,7 +27,7 @@ namespace DuView
 			return b;
 		}
 
-		public override void Dispose()
+		public override void Close()
 		{
 			if (_zip != null)
 				_zip.Dispose();
@@ -47,7 +47,15 @@ namespace DuView
 			if (_zip != null)
 				return false;
 
-			_zip = ZipFile.OpenRead(filename);
+			try
+			{
+				_zip = ZipFile.OpenRead(filename);
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine(e.Message);
+				_zip = null;
+			}
 
 			if (_zip == null)
 				return false;
