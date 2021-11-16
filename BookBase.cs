@@ -106,28 +106,37 @@ namespace DuView
 				return true;
 			}
 		}
-		
-		public bool PrepareCurrent(Settings.ViewerMode mode)
+
+		public bool PrepareCurrent(Types.ViewMode mode)
 		{
 			int pageno;
 
-			if (mode == Settings.ViewerMode.FitWidth || mode == Settings.ViewerMode.FitHeight)
+			if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
 			{
 				pageno = CurrentPage;
 				if (!ReadPage(out _ip1, ref pageno))
 					return false;
 
+				_ip2 = null;
 				CurrentPage = pageno;
 			}
-			else if (mode == Settings.ViewerMode.LeftToRight || mode == Settings.ViewerMode.RightToLeft)
+			else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
 			{
 				pageno = CurrentPage;
 				if (!ReadPage(out _ip1, ref pageno))
 					return false;
 
-				pageno++;
-				if (!ReadPage(out _ip2, ref pageno))
+				if (_ip1.Width > _ip1.Height)
+				{
+					// 폭이 넑은거는 1장만 표시
 					_ip2 = null;
+				}
+				else
+				{
+					pageno++;
+					if (!ReadPage(out _ip2, ref pageno))
+						_ip2 = null;
+				}
 
 				CurrentPage = pageno;
 			}
@@ -140,11 +149,11 @@ namespace DuView
 			return true;
 		}
 
-		public bool PrepareNext(Settings.ViewerMode mode)
+		public bool PrepareNext(Types.ViewMode mode)
 		{
 			int pageno;
 
-			if (mode == Settings.ViewerMode.FitWidth || mode == Settings.ViewerMode.FitHeight)
+			if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
 			{
 				pageno = CurrentPage + 1;
 				if (!ReadPage(out _ip1, ref pageno))
@@ -152,7 +161,7 @@ namespace DuView
 
 				CurrentPage = pageno;
 			}
-			else if (mode == Settings.ViewerMode.LeftToRight || mode == Settings.ViewerMode.RightToLeft)
+			else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
 			{
 				pageno = CurrentPage + 1;
 				if (!ReadPage(out _ip1, ref pageno))

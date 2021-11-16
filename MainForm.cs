@@ -23,13 +23,16 @@ namespace DuView
 		#region 폼 자산
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			SizeMoveHitTest.BodyAsTitle = true;
+			//SizeMoveHitTest.BodyAsTitle = true;
 
 			Settings.WhenLoad(this);
 			Location = Settings.Window.Location;
 			Size = Settings.Window.Size;
 
 			SetupBySetting();
+
+			//
+			FocusTextBox.Focus();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -52,12 +55,22 @@ namespace DuView
 
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
+			Keys k = Keys.None;
+
 			switch (e.KeyCode)
 			{
 				case Keys.Escape:
 					Close();
 					break;
+
+				case Keys.Left:
+				case Keys.Right:
+					k = e.KeyCode;
+					break;
 			}
+
+			if (k != Keys.None)
+				System.Diagnostics.Debug.WriteLine($"입력키 -> {k}");
 		}
 
 		private void MainForm_DragEnter(object sender, DragEventArgs e)
@@ -81,7 +94,7 @@ namespace DuView
 
 		private void MainForm_Layout(object sender, LayoutEventArgs e)
 		{
-
+			FocusTextBox.Focus();
 		}
 
 		private void MainForm_SizeChanged(object sender, EventArgs e)
@@ -104,9 +117,9 @@ namespace DuView
 
 		private void ViewModeCheck()
 		{
-			ViewFitMenuItem.Checked = Settings.ViewMode == Settings.ViewerMode.FitWidth;
-			ViewLeftRightMenuItem.Checked = Settings.ViewMode == Settings.ViewerMode.LeftToRight;
-			ViewRightLeftMenuItem.Checked = Settings.ViewMode == Settings.ViewerMode.RightToLeft;
+			ViewFitMenuItem.Checked = Settings.ViewMode == Types.ViewMode.FitWidth;
+			ViewLeftRightMenuItem.Checked = Settings.ViewMode == Types.ViewMode.LeftToRight;
+			ViewRightLeftMenuItem.Checked = Settings.ViewMode == Types.ViewMode.RightToLeft;
 
 			if (Book != null)
 			{
@@ -119,23 +132,24 @@ namespace DuView
 		{
 			Settings.ViewZoom = !Settings.ViewZoom;
 			ViewZoomMenuItem.Checked = Settings.ViewZoom;
+			ViewBook();
 		}
 
 		private void ViewFitMenuItem_Click(object sender, EventArgs e)
 		{
-			Settings.ViewMode = Settings.ViewerMode.FitWidth;
+			Settings.ViewMode = Types.ViewMode.FitWidth;
 			ViewModeCheck();
 		}
 
 		private void ViewLeftRightMenuItem_Click(object sender, EventArgs e)
 		{
-			Settings.ViewMode = Settings.ViewerMode.LeftToRight;
+			Settings.ViewMode = Types.ViewMode.LeftToRight;
 			ViewModeCheck();
 		}
 
 		private void ViewRightLeftMenuItem_Click(object sender, EventArgs e)
 		{
-			Settings.ViewMode = Settings.ViewerMode.RightToLeft;
+			Settings.ViewMode = Types.ViewMode.RightToLeft;
 			ViewModeCheck();
 		}
 
@@ -163,33 +177,72 @@ namespace DuView
 
 		private void FileCloseMenuItem_Click(object sender, EventArgs e)
 		{
-
+			CloseBook();
 		}
 
 		private void FileExitMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
 		}
+
+		private void FileCopyImageMenuItem_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if (Book != null && Book.ImagePage1 != null)
+				{
+					Clipboard.SetImage(Book.ImagePage1);
+
+					Notifier.ShowBalloonTip(1000, "Copy image", "Copied image to clipboard!", ToolTipIcon.Info);
+				}
+			}
+			catch
+			{
+				Notifier.ShowBalloonTip(1000, "Copy image", "Failed to copy image to clipboard", ToolTipIcon.Error);
+			}
+		}
+
+		private void FileTestMenuItem_Click(object sender, EventArgs e)
+		{
+			ViewBook();
+		}
 		#endregion
 
 		#region 그림 영역 UI
 		private void ImagePictureBox_MouseDown(object sender, MouseEventArgs e)
 		{
-			BadakDragOnMouseDown(e);
+			if (SizeMoveHitTest.BodyAsTitle)
+				BadakDragOnMouseDown(e);
 		}
 
 		private void ImagePictureBox_MouseUp(object sender, MouseEventArgs e)
 		{
-			BadakDragOnMouseUp(e);
+			if (SizeMoveHitTest.BodyAsTitle)
+				BadakDragOnMouseUp(e);
 		}
 
 		private void ImagePictureBox_MouseMove(object sender, MouseEventArgs e)
 		{
-			BadakDragOnMouseMove(e);
+			if (SizeMoveHitTest.BodyAsTitle)
+				BadakDragOnMouseMove(e);
 		}
 		#endregion
 
 		#region 파일
+		private void CloseBook()
+		{
+			if (Book == null)
+				return;
+
+			Book.Close();
+			Book = null;
+
+			RefreshPageInfo();
+			ViewBook();
+
+			Text = "DuView";
+		}
+
 		private void OpenFileWithDialog()
 		{
 			var dlg = new OpenFileDialog()
@@ -246,36 +299,52 @@ namespace DuView
 
 		private void ViewBook()
 		{
-			if (Book == null)
+			if (WindowState == FormWindowState.Minimized)
 				return;
 
 			int w = ImagePictureBox.Width;
 			int h = ImagePictureBox.Height;
-			Bitmap bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-			if (Settings.ViewMode == Settings.ViewerMode.FitWidth)
-				DrawBitmapFit(bmp, w, h);
+			if (w == 0 || h == 0)
+			{
+				Notifier.ShowBalloonTip(1000, "View Book", "Image drawing error", ToolTipIcon.Error);
+				return;
+			}
+
+			if (Book == null)
+			{
+				Bitmap bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+				DrawLogo(bmp, w, h);
+				ImagePictureBox.Image = bmp;
+			}
 			else
-				DrawBitmapFill(bmp, w, h);
+			{
+				Bitmap bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-			ImagePictureBox.Image = bmp;
+				if (Settings.ViewMode == Types.ViewMode.FitWidth)
+				{
+					if (Book.ImagePage1 != null)
+						DrawBitmapFit(bmp, Book.ImagePage1);
+				}
+				else
+				{
+					DrawLogo(bmp, w, h);
+				}
+
+				ImagePictureBox.Image = bmp;
+			}
 		}
 
-		private void DrawBitmap(Graphics g, Rectangle destrt, Image img, Rectangle srcrt)
-		{
-			// System.Drawing.Imaging.ImageAttributes
-			g.DrawImage(img, destrt, srcrt.X, srcrt.Y, srcrt.Width, srcrt.Height, GraphicsUnit.Pixel);
-		}
-
-		private void DrawBitmapFill(Bitmap bmp, int w, int h)
+		private void DrawLogo(Bitmap bmp, int w, int h)
 		{
 			using (var g = Graphics.FromImage(bmp))
 			{
-				g.Clear(Color.FromArgb(30, 30, 30));
+				g.Clear(Color.FromArgb(10, 10, 10));
 
 				var img = Properties.Resources.housebari_head_128;
 				if (w > img.Width && h > img.Height)
-					g.DrawImage(img, w - img.Width, h - img.Height);
+					g.DrawImage(img, w - img.Width - 50, h - img.Height - 50);
 				else
 				{
 					Rectangle rt = new Rectangle(0, 0, w, h);
@@ -284,21 +353,14 @@ namespace DuView
 			}
 		}
 
-		private void DrawBitmapFit(Bitmap bmp, int w, int h)
+		private void DrawBitmapFit(Bitmap bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
 		{
-			Image img = Book.ImagePage1;
-			double aspect = img.Width / (double)img.Height;
-			int ah = (int)(w / aspect);
-
-			Rectangle dstrt = new Rectangle(0, 0, w, ah);
-
-			if (ah < h)
-				dstrt.Y = (h - ah) / 2;
+			(int nw, int nh) = Types.Calc.DestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
+			var rt = Types.Calc.DestRect(bmp.Width, bmp.Height, nw, nh, align);
 
 			using (var g = Graphics.FromImage(bmp))
 			{
-				Rectangle srcrt = new Rectangle(0, 0, img.Width, img.Height);
-				DrawBitmap(g, dstrt, img, srcrt);
+				g.DrawImage(img, rt, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
 			}
 		}
 		#endregion

@@ -22,7 +22,7 @@ namespace DuView
 		public static int LastFilePage { get; set; } = 0;
 
 		public static bool ViewZoom { get; set; } = true;
-		public static ViewerMode ViewMode { get; set; } = ViewerMode.FitWidth;
+		public static Types.ViewMode ViewMode { get; set; } = Types.ViewMode.FitWidth;
 
 		public static void WhenLoad(Form form)
 		{
@@ -61,7 +61,7 @@ namespace DuView
 					ViewZoom = rk.GetInt("ViewZoom", ViewZoom ? 1 : 0) != 0;
 
 					n = rk.GetInt("ViewMode", (int)ViewMode);
-					ViewMode = (ViewerMode)n;
+					ViewMode = (Types.ViewMode)n;
 				}
 			}
 		}
@@ -101,15 +101,6 @@ namespace DuView
 		private static string ConvertRegString(string filename, int line)
 		{
 			return string.IsNullOrEmpty(filename) ? string.Empty : $"{line}|{filename}";
-		}
-
-		// 보기 모드
-		public enum ViewerMode : int
-		{
-			FitWidth,
-			FitHeight,
-			LeftToRight,
-			RightToLeft
 		}
 	}
 }
