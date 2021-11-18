@@ -30,15 +30,24 @@ namespace DuView
 		// 크기를 문자열로 표시
 		public static string SizeToString(long size)
 		{
+			const long giga = 1024 * 1024 * 1024;
+			const long mega = 1024 * 1024;
+			const long kilo = 1024;
+
 			double v;
-			if (size > 1024 * 1024 * 512)   // 0.5 메가
+			if (size > giga)          // 0.5 기가
 			{
-				v = size / 1024.0 * 1024.0;
+				v = size / (double)giga;
+				return $"{v:0.0}GB";
+			}
+			else if (size > mega)     // 0.5 메가
+			{
+				v = size / (double)mega;
 				return $"{v:0.0}MB";
 			}
-			else if (size > 1024 * 512)     // 0.5 킬로
+			else if (size > kilo)     // 0.5 킬로
 			{
-				v = size / 1024.0;
+				v = size / (double)kilo;
 				return $"{v:0.0}KB";
 			}
 			else

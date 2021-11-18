@@ -65,6 +65,7 @@
 			this.PageInfoLabel = new System.Windows.Forms.Label();
 			this.Notifier = new System.Windows.Forms.NotifyIcon(this.components);
 			this.FocusTextBox = new System.Windows.Forms.TextBox();
+			this.FocusButton = new System.Windows.Forms.Button();
 			this.BadakTopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ImagePictureBox)).BeginInit();
@@ -263,6 +264,7 @@
 			this.ImagePictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseDown);
 			this.ImagePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseMove);
 			this.ImagePictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ImagePictureBox_MouseUp);
+			this.ImagePictureBox.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ImagePictureBox_PreviewKeyDown);
 			// 
 			// ContextPopup
 			// 
@@ -366,11 +368,10 @@
 			// PageInfoLabel
 			// 
 			this.PageInfoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.PageInfoLabel.AutoSize = true;
 			this.PageInfoLabel.ForeColor = System.Drawing.Color.White;
-			this.PageInfoLabel.Location = new System.Drawing.Point(763, 54);
+			this.PageInfoLabel.Location = new System.Drawing.Point(612, 55);
 			this.PageInfoLabel.Name = "PageInfoLabel";
-			this.PageInfoLabel.Size = new System.Drawing.Size(33, 12);
+			this.PageInfoLabel.Size = new System.Drawing.Size(185, 12);
 			this.PageInfoLabel.TabIndex = 6;
 			this.PageInfoLabel.Text = "page";
 			this.PageInfoLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -390,6 +391,15 @@
 			this.FocusTextBox.Size = new System.Drawing.Size(92, 21);
 			this.FocusTextBox.TabIndex = 0;
 			// 
+			// FocusButton
+			// 
+			this.FocusButton.Location = new System.Drawing.Point(17, 126);
+			this.FocusButton.Name = "FocusButton";
+			this.FocusButton.Size = new System.Drawing.Size(87, 31);
+			this.FocusButton.TabIndex = 3;
+			this.FocusButton.Text = "FocusButton";
+			this.FocusButton.UseVisualStyleBackColor = true;
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -398,6 +408,7 @@
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(this.ImagePictureBox);
 			this.Controls.Add(this.FocusTextBox);
+			this.Controls.Add(this.FocusButton);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.KeyPreview = true;
 			this.MainMenuStrip = this.MenuStrip;
@@ -413,6 +424,7 @@
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.MainForm_Layout);
+			this.Controls.SetChildIndex(this.FocusButton, 0);
 			this.Controls.SetChildIndex(this.FocusTextBox, 0);
 			this.Controls.SetChildIndex(this.BadakTopPanel, 0);
 			this.Controls.SetChildIndex(this.ImagePictureBox, 0);
@@ -464,6 +476,7 @@
 		private System.Windows.Forms.ToolStripMenuItem ExitPopupItem;
 		private System.Windows.Forms.ToolStripMenuItem FileTestMenuItem;
 		private System.Windows.Forms.TextBox FocusTextBox;
+		private System.Windows.Forms.Button FocusButton;
 	}
 }
 

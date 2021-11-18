@@ -201,5 +201,17 @@ namespace DuView
 			if (CurrentPage < 0)
 				CurrentPage = 0;
 		}
+
+		//
+		public void MovePage(Types.ViewMode mode, int page)
+		{
+			// 하... Math.Clamp 는 Net6 전용이네
+			if (page < 0)
+				CurrentPage = 0;
+			else if (page >= TotalPage)
+				CurrentPage = TotalPage - 1;
+			else
+				CurrentPage = page;
+		}
 	}
 }

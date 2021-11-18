@@ -18,6 +18,8 @@ namespace DuView
 		public MainForm()
 		{
 			InitializeComponent();
+
+			ImagePictureBox.MouseWheel += ImagePictureBox_MouseWheel;
 		}
 
 		#region 폼 자산
@@ -32,7 +34,7 @@ namespace DuView
 			SetupBySetting();
 
 			//
-			FocusTextBox.Focus();
+			ActivateFocus();
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -55,8 +57,6 @@ namespace DuView
 
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			Keys k = Keys.None;
-
 			switch (e.KeyCode)
 			{
 				case Keys.Escape:
@@ -64,13 +64,27 @@ namespace DuView
 					break;
 
 				case Keys.Left:
+					PageMovePrev();
+					break;
+
+				case Keys.NumPad0:
 				case Keys.Right:
-					k = e.KeyCode;
+				case Keys.Space:
+					PageMoveNext();
+					break;
+
+				case Keys.Home:
+					PageMovePage(0);
+					break;
+
+				case Keys.End:
+					PageMovePage(int.MaxValue);
+					break;
+
+				case Keys.F:
+					BadakMaximize();
 					break;
 			}
-
-			if (k != Keys.None)
-				System.Diagnostics.Debug.WriteLine($"입력키 -> {k}");
 		}
 
 		private void MainForm_DragEnter(object sender, DragEventArgs e)
@@ -94,7 +108,7 @@ namespace DuView
 
 		private void MainForm_Layout(object sender, LayoutEventArgs e)
 		{
-			FocusTextBox.Focus();
+			ActivateFocus();
 		}
 
 		private void MainForm_SizeChanged(object sender, EventArgs e)
@@ -106,9 +120,33 @@ namespace DuView
 		{
 			ViewBook();
 		}
+
+		private void ImagePictureBox_MouseWheel(object sender, MouseEventArgs e)
+		{
+			// 위 + / 아래 -
+			if (e.Delta > 0)
+				PageMovePrev();
+			else if (e.Delta < 0)
+				PageMoveNext();
+		}
+
+		private void ImagePictureBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+		}
 		#endregion
 
 		#region 메뉴 및 명령
+		private void ActivateFocus()
+		{
+			if (!FocusTextBox.Enabled)
+				ImagePictureBox.Focus();
+			else
+			{
+				FocusTextBox.Clear();
+				FocusTextBox.Focus();
+			}
+		}
+
 		private void SetupBySetting()
 		{
 			ViewZoomMenuItem.Checked = Settings.ViewZoom;
@@ -172,7 +210,7 @@ namespace DuView
 			}
 
 			if (File.Exists(Settings.LastFileName))
-				OpenArchive(Settings.LastFileName);
+				OpenArchive(Settings.LastFileName, Settings.LastFilePage);
 		}
 
 		private void FileCloseMenuItem_Click(object sender, EventArgs e)
@@ -234,6 +272,9 @@ namespace DuView
 			if (Book == null)
 				return;
 
+			Settings.LastFileName = Book.FileName;
+			Settings.LastFilePage = Book.CurrentPage;
+
 			Book.Close();
 			Book = null;
 
@@ -241,6 +282,8 @@ namespace DuView
 			ViewBook();
 
 			Text = "DuView";
+
+			ActivateFocus();
 		}
 
 		private void OpenFileWithDialog()
@@ -256,21 +299,38 @@ namespace DuView
 				OpenArchive(dlg.FileName);
 		}
 
-		private void OpenArchive(string filename)
+		private void OpenArchive(string filename, int page = -1)
 		{
 			FileInfo fi = new FileInfo(filename);
 			Settings.LastFolder = fi.DirectoryName;
 
-			var zip = BookZip.FromFile(filename);
-			if (zip != null)
+			BookBase bk;
+
+			switch (fi.Extension.ToLower())
 			{
-				var page = Settings.GetRecentlyPage(zip.OnlyFileName);
-				//System.Diagnostics.Debug.WriteLine($"page: ${page}");
+				case ".zip":
+					bk = BookZip.FromFile(filename);
+					break;
+
+				default:
+					bk = null;
+					break;
+			}
+
+			if (bk == null)
+			{
+				// 음... 뭘까
+				Notifier.ShowBalloonTip(1000, "Open Book", "Unknown file type", ToolTipIcon.Error);
+			}
+			else
+			{
+				if (page < 0)
+					page = Settings.GetRecentlyPage(bk.OnlyFileName);
 
 				if (Book != null)
 					Book.Close();
 
-				Book = zip;
+				Book = bk;
 				Book.CurrentPage = page;
 				Book.PrepareCurrent(Settings.ViewMode);
 
@@ -281,6 +341,40 @@ namespace DuView
 				ViewBook();
 
 				Text = Book.OnlyFileName;
+			}
+
+			ActivateFocus();
+		}
+		#endregion
+
+		#region 그리기
+		//
+		private void DrawLogo(Bitmap bmp, int w, int h)
+		{
+			using (var g = Graphics.FromImage(bmp))
+			{
+				g.Clear(Color.FromArgb(10, 10, 10));
+
+				var img = Properties.Resources.housebari_head_128;
+				if (w > img.Width && h > img.Height)
+					g.DrawImage(img, w - img.Width - 50, h - img.Height - 50);
+				else
+				{
+					Rectangle rt = new Rectangle(0, 0, w, h);
+					g.DrawImage(img, rt);
+				}
+			}
+		}
+
+		//
+		private void DrawBitmapFit(Bitmap bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
+		{
+			(int nw, int nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
+			var rt = ToolBox.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
+
+			using (var g = Graphics.FromImage(bmp))
+			{
+				g.DrawImage(img, rt, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
 			}
 		}
 		#endregion
@@ -337,37 +431,40 @@ namespace DuView
 			}
 		}
 
-		private void DrawLogo(Bitmap bmp, int w, int h)
+		private void PageMovePrev()
 		{
-			using (var g = Graphics.FromImage(bmp))
+			if (Book != null)
 			{
-				g.Clear(Color.FromArgb(10, 10, 10));
+				Book.MovePrev(Settings.ViewMode);
+				Book.PrepareCurrent(Settings.ViewMode);
 
-				var img = Properties.Resources.housebari_head_128;
-				if (w > img.Width && h > img.Height)
-					g.DrawImage(img, w - img.Width - 50, h - img.Height - 50);
-				else
-				{
-					Rectangle rt = new Rectangle(0, 0, w, h);
-					g.DrawImage(img, rt);
-				}
+				RefreshPageInfo();
+				ViewBook();
 			}
 		}
 
-		private void DrawBitmapFit(Bitmap bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
+		private void PageMoveNext()
 		{
-			(int nw, int nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
-			var rt = ToolBox.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
-
-			using (var g = Graphics.FromImage(bmp))
+			if (Book != null)
 			{
-				g.DrawImage(img, rt, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
+				Book.MoveNext(Settings.ViewMode);
+				Book.PrepareCurrent(Settings.ViewMode);
+
+				RefreshPageInfo();
+				ViewBook();
 			}
 		}
 
-		private void PageBook(int delta)
+		private void PageMovePage(int page)
 		{
+			if (Book != null)
+			{
+				Book.MovePage(Settings.ViewMode, page);
+				Book.PrepareCurrent(Settings.ViewMode);
 
+				RefreshPageInfo();
+				ViewBook();
+			}
 		}
 		#endregion
 	}
