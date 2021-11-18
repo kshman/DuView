@@ -46,6 +46,15 @@ namespace DuView
 			return e.Open();
 		}
 
+		protected override string GetEntryName(object entry)
+		{
+			var e = entry as ZipArchiveEntry;
+			if (e == null)
+				return null;
+
+			return e.FullName;
+		}
+
 		//
 		private bool InternalOpenZip(string filename)
 		{

@@ -83,6 +83,18 @@
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.QualityHqBilinearPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.QualityHqBicubicPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.ControlPopItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.CtrlPrevPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.CtrlNextPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.CtrlHomePopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.CtrlEndPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+			this.CtrlPrev10PopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.CtrlNext10PopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
+			this.CtrlPrevFilePopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.CtrlNextFilePopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.PageNameLabel = new System.Windows.Forms.Label();
 			this.BadakTopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ImagePictureBox)).BeginInit();
@@ -91,12 +103,14 @@
 			// 
 			// BadakTopPanel
 			// 
+			this.BadakTopPanel.Controls.Add(this.PageNameLabel);
 			this.BadakTopPanel.Controls.Add(this.PageInfoLabel);
 			this.BadakTopPanel.Controls.Add(this.MenuStrip);
 			this.BadakTopPanel.Size = new System.Drawing.Size(800, 70);
 			this.BadakTopPanel.Controls.SetChildIndex(this.MenuStrip, 0);
 			this.BadakTopPanel.Controls.SetChildIndex(this.BadakMinMaxClosePanel, 0);
 			this.BadakTopPanel.Controls.SetChildIndex(this.PageInfoLabel, 0);
+			this.BadakTopPanel.Controls.SetChildIndex(this.PageNameLabel, 0);
 			// 
 			// BadakMinMaxClosePanel
 			// 
@@ -292,6 +306,7 @@
             this.OpenPopupItem,
             this.ClosePopupItem,
             this.toolStripSeparator4,
+            this.ControlPopItem,
             this.PagesPopupItem,
             this.toolStripSeparator5,
             this.QualityPopupItem,
@@ -569,6 +584,109 @@
 			this.QualityHqBicubicPopupItem.Text = "HQ Bicubic";
 			this.QualityHqBicubicPopupItem.Click += new System.EventHandler(this.VwqHqBicubicMenuItem_Click);
 			// 
+			// ControlPopItem
+			// 
+			this.ControlPopItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CtrlPrevPopupItem,
+            this.CtrlNextPopupItem,
+            this.CtrlHomePopupItem,
+            this.CtrlEndPopupItem,
+            this.toolStripSeparator11,
+            this.CtrlPrev10PopupItem,
+            this.CtrlNext10PopupItem,
+            this.toolStripSeparator12,
+            this.CtrlPrevFilePopupItem,
+            this.CtrlNextFilePopupItem});
+			this.ControlPopItem.ForeColor = System.Drawing.Color.White;
+			this.ControlPopItem.Name = "ControlPopItem";
+			this.ControlPopItem.Size = new System.Drawing.Size(181, 22);
+			this.ControlPopItem.Text = "Control";
+			// 
+			// CtrlPrevPopupItem
+			// 
+			this.CtrlPrevPopupItem.ForeColor = System.Drawing.Color.White;
+			this.CtrlPrevPopupItem.Name = "CtrlPrevPopupItem";
+			this.CtrlPrevPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.CtrlPrevPopupItem.Text = "Previous page";
+			this.CtrlPrevPopupItem.Click += new System.EventHandler(this.CtrlPrevPopupItem_Click);
+			// 
+			// CtrlNextPopupItem
+			// 
+			this.CtrlNextPopupItem.ForeColor = System.Drawing.Color.White;
+			this.CtrlNextPopupItem.Name = "CtrlNextPopupItem";
+			this.CtrlNextPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.CtrlNextPopupItem.Text = "Next page";
+			this.CtrlNextPopupItem.Click += new System.EventHandler(this.CtrlNextPopupItem_Click);
+			// 
+			// CtrlHomePopupItem
+			// 
+			this.CtrlHomePopupItem.ForeColor = System.Drawing.Color.White;
+			this.CtrlHomePopupItem.Name = "CtrlHomePopupItem";
+			this.CtrlHomePopupItem.Size = new System.Drawing.Size(180, 22);
+			this.CtrlHomePopupItem.Text = "First page";
+			this.CtrlHomePopupItem.Click += new System.EventHandler(this.CtrlHomePopupItem_Click);
+			// 
+			// CtrlEndPopupItem
+			// 
+			this.CtrlEndPopupItem.ForeColor = System.Drawing.Color.White;
+			this.CtrlEndPopupItem.Name = "CtrlEndPopupItem";
+			this.CtrlEndPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.CtrlEndPopupItem.Text = "Last page";
+			this.CtrlEndPopupItem.Click += new System.EventHandler(this.CtrlEndPopupItem_Click);
+			// 
+			// toolStripSeparator11
+			// 
+			this.toolStripSeparator11.Name = "toolStripSeparator11";
+			this.toolStripSeparator11.Size = new System.Drawing.Size(177, 6);
+			// 
+			// CtrlPrev10PopupItem
+			// 
+			this.CtrlPrev10PopupItem.ForeColor = System.Drawing.Color.White;
+			this.CtrlPrev10PopupItem.Name = "CtrlPrev10PopupItem";
+			this.CtrlPrev10PopupItem.Size = new System.Drawing.Size(180, 22);
+			this.CtrlPrev10PopupItem.Text = "10page previous";
+			this.CtrlPrev10PopupItem.Click += new System.EventHandler(this.CtrlPrev10PopupItem_Click);
+			// 
+			// CtrlNext10PopupItem
+			// 
+			this.CtrlNext10PopupItem.ForeColor = System.Drawing.Color.White;
+			this.CtrlNext10PopupItem.Name = "CtrlNext10PopupItem";
+			this.CtrlNext10PopupItem.Size = new System.Drawing.Size(180, 22);
+			this.CtrlNext10PopupItem.Text = "10page next";
+			this.CtrlNext10PopupItem.Click += new System.EventHandler(this.CtrlNext10PopupItem_Click);
+			// 
+			// toolStripSeparator12
+			// 
+			this.toolStripSeparator12.Name = "toolStripSeparator12";
+			this.toolStripSeparator12.Size = new System.Drawing.Size(177, 6);
+			// 
+			// CtrlPrevFilePopupItem
+			// 
+			this.CtrlPrevFilePopupItem.ForeColor = System.Drawing.Color.White;
+			this.CtrlPrevFilePopupItem.Name = "CtrlPrevFilePopupItem";
+			this.CtrlPrevFilePopupItem.Size = new System.Drawing.Size(180, 22);
+			this.CtrlPrevFilePopupItem.Text = "Previous file";
+			this.CtrlPrevFilePopupItem.Click += new System.EventHandler(this.CtrlPrevFilePopupItem_Click);
+			// 
+			// CtrlNextFilePopupItem
+			// 
+			this.CtrlNextFilePopupItem.ForeColor = System.Drawing.Color.White;
+			this.CtrlNextFilePopupItem.Name = "CtrlNextFilePopupItem";
+			this.CtrlNextFilePopupItem.Size = new System.Drawing.Size(180, 22);
+			this.CtrlNextFilePopupItem.Text = "Next file";
+			this.CtrlNextFilePopupItem.Click += new System.EventHandler(this.CtrlNextFilePopupItem_Click);
+			// 
+			// PageNameLabel
+			// 
+			this.PageNameLabel.AutoSize = true;
+			this.PageNameLabel.ForeColor = System.Drawing.Color.White;
+			this.PageNameLabel.Location = new System.Drawing.Point(4, 55);
+			this.PageNameLabel.Name = "PageNameLabel";
+			this.PageNameLabel.Size = new System.Drawing.Size(33, 12);
+			this.PageNameLabel.TabIndex = 7;
+			this.PageNameLabel.Text = "page";
+			this.PageNameLabel.Visible = false;
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -663,6 +781,18 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
 		private System.Windows.Forms.ToolStripMenuItem QualityHqBilinearPopupItem;
 		private System.Windows.Forms.ToolStripMenuItem QualityHqBicubicPopupItem;
+		private System.Windows.Forms.ToolStripMenuItem ControlPopItem;
+		private System.Windows.Forms.ToolStripMenuItem CtrlPrevPopupItem;
+		private System.Windows.Forms.ToolStripMenuItem CtrlNextPopupItem;
+		private System.Windows.Forms.ToolStripMenuItem CtrlHomePopupItem;
+		private System.Windows.Forms.ToolStripMenuItem CtrlEndPopupItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
+		private System.Windows.Forms.ToolStripMenuItem CtrlPrev10PopupItem;
+		private System.Windows.Forms.ToolStripMenuItem CtrlNext10PopupItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
+		private System.Windows.Forms.ToolStripMenuItem CtrlPrevFilePopupItem;
+		private System.Windows.Forms.ToolStripMenuItem CtrlNextFilePopupItem;
+		private System.Windows.Forms.Label PageNameLabel;
 	}
 }
 

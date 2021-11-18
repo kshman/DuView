@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,12 +17,15 @@ namespace DuView
 		private BookBase Book { get; set; }
 
 		private Bitmap _bmp = null;
+		private string _init_filename;
 
-		public MainForm()
+		public MainForm(string filename)
 		{
 			InitializeComponent();
 
 			ImagePictureBox.MouseWheel += ImagePictureBox_MouseWheel;
+
+			_init_filename = filename;
 		}
 
 		#region 폼 자산
@@ -37,6 +41,13 @@ namespace DuView
 
 			//
 			ActivateFocus();
+
+			//
+			if (!string.IsNullOrEmpty(_init_filename))
+			{
+				if (File.Exists(_init_filename))
+					OpenArchive(_init_filename);
+			}
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -57,87 +68,121 @@ namespace DuView
 			Settings.WhenClose(this);
 		}
 
+		protected override void WndProc(ref Message m)
+		{
+			if (m.Msg == NativeMethods.WM_COPYDATA)
+			{
+				// https://iwoohaha.tistory.com/90
+				var s = Marshal.PtrToStructure<NativeMethods.CopyDataStruct>(m.LParam);
+				var dec = Marshal.PtrToStringUni(s.lpData);
+				var filename = DuLib.Converter.DecodingString(dec);
+
+				OpenArchive(filename);
+			}
+			else
+			{
+				// 후....
+				base.WndProc(ref m);
+			}
+		}
+
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			switch (e.KeyCode)
+			if (e.Shift)
 			{
-				// 끝냄
-				case Keys.Escape:
-					Close();
-					break;
-
-				// 페이지 조작
-				case Keys.Left:
-				case Keys.Up:
-					if (e.Control)
+				switch (e.KeyCode)
+				{
+					// 페이지 조작
+					case Keys.Left:
+					case Keys.Up:
 						PageMoveDelta(-1);
-					else
-						PageMovePrev();
-					break;
+						break;
 
-				case Keys.Right:
-				case Keys.Down:
-				case Keys.Space:
-				case Keys.NumPad0:
-					if (e.Control)
+					case Keys.Right:
+					case Keys.Down:
+					case Keys.Space:
+					case Keys.NumPad0:
 						PageMoveDelta(+1);
-					else
+						break;
+				}
+			}
+			else
+			{
+				switch (e.KeyCode)
+				{
+					// 끝냄
+					case Keys.Escape:
+						Close();
+						break;
+
+					// 페이지 조작
+					case Keys.Left:
+					case Keys.Up:
+						PageMovePrev();
+						break;
+
+					case Keys.Right:
+					case Keys.Down:
+					case Keys.Space:
+					case Keys.NumPad0:
 						PageMoveNext();
-					break;
+						break;
 
-				case Keys.Home:
-					PageMovePage(0);
-					break;
+					case Keys.Home:
+						PageMovePage(0);
+						break;
 
-				case Keys.End:
-					PageMovePage(int.MaxValue);
-					break;
+					case Keys.End:
+						PageMovePage(int.MaxValue);
+						break;
 
-				case Keys.PageUp:
-					PageMoveDelta(-10);
-					break;
+					case Keys.PageUp:
+						PageMoveDelta(-10);
+						break;
 
-				case Keys.PageDown:
-					PageMoveDelta(+10);
-					break;
+					case Keys.PageDown:
+					case Keys.Back:
+						PageMoveDelta(+10);
+						break;
 
-				// 화면 전환
-				case Keys.F:
-					BadakMaximize();
-					break;
+					// 화면 전환
+					case Keys.F:
+						BadakMaximize();
+						break;
 
-				// 보기 설정
-				case Keys.D0:
-					UpdateViewZoom(!Settings.ViewZoom);
-					break;
+					// 보기 설정
+					case Keys.D0:
+						UpdateViewZoom(!Settings.ViewZoom);
+						break;
 
-				case Keys.D1:
-					UpdateViewMode(Types.ViewMode.FitWidth);
-					break;
+					case Keys.D1:
+						UpdateViewMode(Types.ViewMode.FitWidth);
+						break;
 
-				case Keys.D3:
-					UpdateViewMode(Types.ViewMode.LeftToRight);
-					ViewLeftRightMenuItem_Click(null, null);
-					break;
+					case Keys.D3:
+						UpdateViewMode(Types.ViewMode.LeftToRight);
+						ViewLeftRightMenuItem_Click(null, null);
+						break;
 
-				case Keys.D4:
-					UpdateViewMode(Types.ViewMode.RightToLeft);
-					break;
+					case Keys.D4:
+						UpdateViewMode(Types.ViewMode.RightToLeft);
+						break;
 
-				case Keys.D5:
-					UpdateViewQuality(Types.ViewQuality.Default);
-					break;
+					case Keys.D5:
+						UpdateViewQuality(Types.ViewQuality.Default);
+						break;
 
-				// 파일이나 디렉토리
-				case Keys.BrowserBack:
-				case Keys.OemOpenBrackets:
-					OpenPrevBook();
-					break;
+					// 파일이나 디렉토리
+					case Keys.BrowserBack:
+					case Keys.OemOpenBrackets:
+						OpenPrevBook();
+						break;
 
-				case Keys.BrowserForward:
-				case Keys.OemCloseBrackets:
-					OpenNextBook();
-					break;
+					case Keys.BrowserForward:
+					case Keys.OemCloseBrackets:
+						OpenNextBook();
+						break;
+				}
 			}
 		}
 
@@ -171,6 +216,45 @@ namespace DuView
 		private void MainForm_ClientSizeChanged(object sender, EventArgs e)
 		{
 			ViewBook();
+		}
+		#endregion
+
+		#region 그림 영역 UI
+		private void ImagePictureBox_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (SizeMoveHitTest.BodyAsTitle)
+				BadakDragOnMouseDown(e);
+			else
+			{
+				// 최대화만 쓰자
+				if (e.Clicks == 2)
+					BadakMaximize();
+			}
+		}
+
+		private void ImagePictureBox_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (SizeMoveHitTest.BodyAsTitle)
+				BadakDragOnMouseUp(e);
+		}
+
+		private void ImagePictureBox_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (SizeMoveHitTest.BodyAsTitle)
+				BadakDragOnMouseMove(e);
+		}
+
+		private void ImagePictureBox_MouseWheel(object sender, MouseEventArgs e)
+		{
+			// 위 + / 아래 -
+			if (e.Delta > 0)
+				PageMovePrev();
+			else if (e.Delta < 0)
+				PageMoveNext();
+		}
+
+		private void ImagePictureBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
 		}
 		#endregion
 
@@ -343,38 +427,45 @@ namespace DuView
 			Book.PrepareCurrent(Settings.ViewMode);
 			ViewBook();
 		}
-		#endregion
 
-		#region 그림 영역 UI
-		private void ImagePictureBox_MouseDown(object sender, MouseEventArgs e)
+		private void CtrlPrevPopupItem_Click(object sender, EventArgs e)
 		{
-			if (SizeMoveHitTest.BodyAsTitle)
-				BadakDragOnMouseDown(e);
+			PageMovePrev();
 		}
 
-		private void ImagePictureBox_MouseUp(object sender, MouseEventArgs e)
+		private void CtrlNextPopupItem_Click(object sender, EventArgs e)
 		{
-			if (SizeMoveHitTest.BodyAsTitle)
-				BadakDragOnMouseUp(e);
+			PageMoveNext();
 		}
 
-		private void ImagePictureBox_MouseMove(object sender, MouseEventArgs e)
+		private void CtrlHomePopupItem_Click(object sender, EventArgs e)
 		{
-			if (SizeMoveHitTest.BodyAsTitle)
-				BadakDragOnMouseMove(e);
+			PageMovePage(0);
 		}
 
-		private void ImagePictureBox_MouseWheel(object sender, MouseEventArgs e)
+		private void CtrlEndPopupItem_Click(object sender, EventArgs e)
 		{
-			// 위 + / 아래 -
-			if (e.Delta > 0)
-				PageMovePrev();
-			else if (e.Delta < 0)
-				PageMoveNext();
+			PageMovePage(int.MaxValue);
 		}
 
-		private void ImagePictureBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		private void CtrlPrev10PopupItem_Click(object sender, EventArgs e)
 		{
+			PageMoveDelta(-10);
+		}
+
+		private void CtrlNext10PopupItem_Click(object sender, EventArgs e)
+		{
+			PageMoveDelta(+10);
+		}
+
+		private void CtrlPrevFilePopupItem_Click(object sender, EventArgs e)
+		{
+			OpenPrevBook();
+		}
+
+		private void CtrlNextFilePopupItem_Click(object sender, EventArgs e)
+		{
+			OpenNextBook();
 		}
 		#endregion
 
@@ -465,7 +556,7 @@ namespace DuView
 				return;
 
 			var filename = Book.FindNextFile(true);
-			if (filename==null)
+			if (filename == null)
 			{
 				Notifier.ShowBalloonTip(1000, "Open Book", "No previous book found", ToolTipIcon.Info);
 				return;
@@ -538,12 +629,22 @@ namespace DuView
 		private void RefreshPageInfo()
 		{
 			if (Book == null)
+			{
 				PageInfoLabel.Visible = false;
+				PageNameLabel.Visible = false;
+			}
 			else
 			{
-				var cachesize = ToolBox.SizeToString(Book.CacheSize);
-				PageInfoLabel.Text = $"{Book.CurrentPage + 1}/{Book.TotalPage} [{cachesize}]";
+				PageInfoLabel.Text = $"{Book.CurrentPage + 1}/{Book.TotalPage}";
 				PageInfoLabel.Visible = true;
+
+				var cachesize = ToolBox.SizeToString(Book.CacheSize);
+				var img = Book.PageLeft ?? Book.PageRight;
+				if (img == null)
+					PageNameLabel.Text = $"[{cachesize}]";
+				else
+					PageNameLabel.Text = $"[{cachesize}] {img.Tag as string}";
+				PageNameLabel.Visible = true;
 			}
 		}
 

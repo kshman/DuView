@@ -106,6 +106,7 @@ namespace DuView
 
 		//
 		protected abstract Stream OpenStream(object entry);
+		protected abstract string GetEntryName(object entry);
 
 		//
 		public Image ReadPage(int pageno)
@@ -123,6 +124,7 @@ namespace DuView
 					if (st != null)
 					{
 						img = Image.FromStream(st);
+						img.Tag = GetEntryName(en);
 						CacheImage(pageno, img);
 					}
 				}

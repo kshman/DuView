@@ -80,7 +80,8 @@ namespace DuView
 
 			using (RegKey rk = new RegKey(_keyname, true))
 			{
-				rk.SetString("Window", $"{Window.X},{Window.Y},{Window.Width},{Window.Height}");
+				if (form.WindowState == FormWindowState.Normal)
+					rk.SetString("Window", $"{Window.X},{Window.Y},{Window.Width},{Window.Height}");
 				rk.SetEncodingString("LastFolder", LastFolder);
 				rk.SetEncodingString("LastFile", ConvertRegString(LastFileName, LastFilePage));
 				rk.SetInt("ViewZoom", ViewZoom ? 1 : 0);
