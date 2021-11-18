@@ -92,7 +92,7 @@
             this.ViewMenuItem,
             this.FavorityMenuItem,
             this.FileMenuItem});
-			this.MenuStrip.Location = new System.Drawing.Point(526, 2);
+			this.MenuStrip.Location = new System.Drawing.Point(524, 2);
 			this.MenuStrip.Name = "MenuStrip";
 			this.MenuStrip.Size = new System.Drawing.Size(151, 24);
 			this.MenuStrip.TabIndex = 2;

@@ -24,6 +24,8 @@ namespace DuView
 		public static bool ViewZoom { get; set; } = true;
 		public static Types.ViewMode ViewMode { get; set; } = Types.ViewMode.FitWidth;
 
+		public static long MaxCacheSize { get; set; } = 320 * 1048576;
+
 		public static void WhenLoad(Form form)
 		{
 			Window = new Rectangle(form.Location, form.Size);
@@ -62,6 +64,8 @@ namespace DuView
 
 					n = rk.GetInt("ViewMode", (int)ViewMode);
 					ViewMode = (Types.ViewMode)n;
+
+					MaxCacheSize = rk.GetLong("MaxCacheSize", MaxCacheSize);
 				}
 			}
 		}
@@ -77,6 +81,7 @@ namespace DuView
 				rk.SetEncodingString("LastFile", ConvertRegString(LastFileName, LastFilePage));
 				rk.SetInt("ViewZoom", ViewZoom ? 1 : 0);
 				rk.SetInt("ViewMode", (int)ViewMode);
+				rk.SetLong("MaxCacheSize", MaxCacheSize);
 			}
 		}
 

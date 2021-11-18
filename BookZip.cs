@@ -65,7 +65,7 @@ namespace DuView
 			foreach (var e in _zip.Entries)
 			{
 				FileInfo fi = new FileInfo(e.FullName);
-				if (IsValidImageFile(fi.Extension.ToLower()))
+				if (ToolBox.IsValidImageFile(fi.Extension.ToLower()))
 					entries.Add(e);
 			}
 

@@ -12,19 +12,27 @@ namespace DuView
 	{
 		public string FileName { get; set; }
 		public string OnlyFileName { get; set; }
+
 		public int CurrentPage { get; set; }
 		public int TotalPage => _entries.Count;
-		public Image ImagePage1 => _ip1;
-		public Image ImagePage2 => _ip2;
 
+		public Image PageLeft { get; set; }
+		public Image PageRight { get; set; }
+
+		public long CacheSize => _csize;
+
+		//
 		protected List<object> _entries = new List<object>();
-		protected Image _ip1 = null;
-		protected Image _ip2 = null;
 
+		private Dictionary<int, Image> _cache = new Dictionary<int, Image>();
+		private long _csize = 0;
+
+		//
 		protected BookBase()
 		{
 		}
 
+		//
 		protected BookBase(string filename, string onlyfilename)
 		{
 			FileName = filename;
@@ -32,169 +40,166 @@ namespace DuView
 			CurrentPage = 0;
 		}
 
+		//
 		protected void SetFileInfo(FileInfo fi)
 		{
 			FileName = fi.FullName;
 			OnlyFileName = fi.Name;
 		}
 
+		//
 		protected void SetDirectoryInfo(DirectoryInfo di)
 		{
 			FileName = di.FullName;
 			OnlyFileName = di.Name;
 		}
 
+		//
 		public void Dispose()
 		{
 			Close();
 		}
 
+		//
 		public virtual void Close()
 		{
-
+			_cache.Clear();
 		}
 
+		//
 		public void ActivateSetting()
 		{
 			Settings.LastFileName = FileName;
 			Settings.LastFilePage = CurrentPage;
 		}
 
+		//
+		private void CacheImage(int page, Image img)
+		{
+			if (_cache.ContainsKey(page))
+				return;
+
+			var size = img.Width * img.Height * 4;
+
+			if ((_csize + size) > Settings.MaxCacheSize && _cache.Count > 0)
+			{
+				var first = _cache.ElementAt(0);
+				var fsize = first.Value.Width * first.Value.Height * 4;
+
+				_cache.Remove(first.Key);
+				_csize -= fsize;
+			}
+
+			_cache.Add(page, img);
+			_csize += size;
+		}
+
+		//
+		private bool TryCache(int page, out Image img)
+		{
+			return _cache.TryGetValue(page, out img);
+		}
+
+		//
 		protected abstract Stream OpenStream(object entry);
 
-		public bool ReadPage(out Image image, ref int pageno)
+		//
+		public Image ReadPage(int pageno)
 		{
-			image = null;
+			Image img = null;
 
-			int npage = pageno;
-
-			for (var i = npage; i < TotalPage; i++)
+			if (pageno >= 0 && pageno < TotalPage)
 			{
-				Stream stream = OpenStream(_entries[i]);
+				if (TryCache(pageno, out img))
+					return img;
 
-				if (stream != null)
+				var en = _entries[pageno];
+				using (var st = OpenStream(en))
 				{
-					image = Image.FromStream(stream);
-					stream.Close();
-
-					npage = i;
-					break;
+					if (st != null)
+					{
+						img = Image.FromStream(st);
+						CacheImage(pageno, img);
+					}
 				}
 			}
 
-			if (npage < TotalPage)
+			if (img == null)
 			{
-				pageno = npage;
-				return true;
+				// 기본 이미지
+				img = Properties.Resources.ouch_noimg;
 			}
-			else
-			{
-				// 후... 더 못읽나
-				return false;
-			}
+
+			return img;
 		}
 
-		public bool ReadNextPage(out Image image)
+		//
+		public void PrepareCurrent(Types.ViewMode mode)
 		{
-			int pageno = CurrentPage + 1;
-
-			if (!ReadPage(out image, ref pageno))
-				return false;
-			else
-			{
-				CurrentPage = pageno;
-				return true;
-			}
-		}
-
-		public bool PrepareCurrent(Types.ViewMode mode)
-		{
-			int pageno;
-
 			if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
 			{
-				pageno = CurrentPage;
-				if (!ReadPage(out _ip1, ref pageno))
-					return false;
-
-				_ip2 = null;
-				CurrentPage = pageno;
+				PageLeft = ReadPage(CurrentPage);
+				PageRight = null;
 			}
 			else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
 			{
-				pageno = CurrentPage;
-				if (!ReadPage(out _ip1, ref pageno))
-					return false;
+				Image left = ReadPage(CurrentPage);
+				Image right = null;
 
-				if (_ip1.Width > _ip1.Height)
+				if (left.Width > left.Height)
 				{
-					// 폭이 넑은거는 1장만 표시
-					_ip2 = null;
+					// 폭이 넓으면 1장만
 				}
 				else
 				{
-					pageno++;
-					if (!ReadPage(out _ip2, ref pageno))
-						_ip2 = null;
+					if (CurrentPage < TotalPage)
+						right = ReadPage(CurrentPage + 1);
 				}
 
-				CurrentPage = pageno;
+				if (mode == Types.ViewMode.LeftToRight)
+				{
+					PageLeft = right;
+					PageRight = left;
+				}
+				else
+				{
+					PageLeft = left;
+					PageRight = right;
+				}
 			}
 			else
 			{
-				// 뭠미
-				return false;
+				// 멍미
+				PageLeft = null;
+				PageRight = null;
 			}
-
-			return true;
 		}
 
-		public bool PrepareNext(Types.ViewMode mode)
+		// 
+		public void MoveNext(Types.ViewMode mode)
 		{
-			int pageno;
-
-			if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
+			if (mode == Types.ViewMode.FitWidth || mode != Types.ViewMode.FitHeight)
 			{
-				pageno = CurrentPage + 1;
-				if (!ReadPage(out _ip1, ref pageno))
-					return false;
-
-				CurrentPage = pageno;
+				if (CurrentPage + 1 < TotalPage)
+					CurrentPage++;
 			}
 			else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
 			{
-				pageno = CurrentPage + 1;
-				if (!ReadPage(out _ip1, ref pageno))
-					return false;
-
-				pageno++;
-				if (!ReadPage(out _ip2, ref pageno))
-					_ip2 = null;
-
-				CurrentPage = pageno;
+				if (CurrentPage + 2 < TotalPage)
+					CurrentPage += 2;
 			}
-			else
-			{
-				// 뭠미
-				return false;
-			}
-
-			return true;
 		}
 
-		public static bool IsValidImageFile(string extension)
+		// 
+		public void MovePrev(Types.ViewMode mode)
 		{
-			switch (extension)
-			{
-				case ".png":
-				case ".jpg":
-				case ".jpeg":
-				case ".bmp":
-				case ".tga":
-					return true;
-				default:
-					return false;
-			}
+			if (mode == Types.ViewMode.FitWidth || mode != Types.ViewMode.FitHeight)
+				CurrentPage--;
+			else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
+				CurrentPage -= 2;
+
+			if (CurrentPage < 0)
+				CurrentPage = 0;
 		}
 	}
 }

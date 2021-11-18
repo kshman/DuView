@@ -189,9 +189,9 @@ namespace DuView
 		{
 			try
 			{
-				if (Book != null && Book.ImagePage1 != null)
+				if (Book != null && Book.PageLeft != null)
 				{
-					Clipboard.SetImage(Book.ImagePage1);
+					Clipboard.SetImage(Book.PageLeft);
 
 					Notifier.ShowBalloonTip(1000, "Copy image", "Copied image to clipboard!", ToolTipIcon.Info);
 				}
@@ -292,7 +292,8 @@ namespace DuView
 				PageInfoLabel.Visible = false;
 			else
 			{
-				PageInfoLabel.Text = $"{Book.CurrentPage + 1}/{Book.TotalPage}";
+				var cachesize = ToolBox.SizeToString(Book.CacheSize);
+				PageInfoLabel.Text = $"{Book.CurrentPage + 1}/{Book.TotalPage} [{cachesize}]";
 				PageInfoLabel.Visible = true;
 			}
 		}
@@ -324,8 +325,8 @@ namespace DuView
 
 				if (Settings.ViewMode == Types.ViewMode.FitWidth)
 				{
-					if (Book.ImagePage1 != null)
-						DrawBitmapFit(bmp, Book.ImagePage1);
+					if (Book.PageLeft != null)
+						DrawBitmapFit(bmp, Book.PageLeft);
 				}
 				else
 				{
@@ -355,13 +356,18 @@ namespace DuView
 
 		private void DrawBitmapFit(Bitmap bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
 		{
-			(int nw, int nh) = Types.Calc.DestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
-			var rt = Types.Calc.DestRect(bmp.Width, bmp.Height, nw, nh, align);
+			(int nw, int nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
+			var rt = ToolBox.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
 
 			using (var g = Graphics.FromImage(bmp))
 			{
 				g.DrawImage(img, rt, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
 			}
+		}
+
+		private void PageBook(int delta)
+		{
+
 		}
 		#endregion
 	}
