@@ -55,7 +55,7 @@
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.PagesPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-			this.reservedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.QualityPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.reservedToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
@@ -66,6 +66,23 @@
 			this.Notifier = new System.Windows.Forms.NotifyIcon(this.components);
 			this.FocusTextBox = new System.Windows.Forms.TextBox();
 			this.FocusButton = new System.Windows.Forms.Button();
+			this.ViewQualityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.VwqLowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.VwqDefaultMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.VwqBilinearMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.VwqBicubicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.VwqHighMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+			this.VwqHqBilinearMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.VwqHqBicubicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.QualityLowPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.QualityDefaultPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.QualityBilinearPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.QualityBicubicPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.QualityHighPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+			this.QualityHqBilinearPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.QualityHqBicubicPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.BadakTopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ImagePictureBox)).BeginInit();
@@ -103,6 +120,7 @@
 			// 
 			this.ViewMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ViewZoomMenuItem,
+            this.ViewQualityMenuItem,
             this.toolStripSeparator1,
             this.ViewFitMenuItem,
             this.ViewLeftRightMenuItem,
@@ -116,21 +134,22 @@
 			// 
 			this.ViewZoomMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewZoomMenuItem.Name = "ViewZoomMenuItem";
-			this.ViewZoomMenuItem.Size = new System.Drawing.Size(168, 22);
+			this.ViewZoomMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D0)));
+			this.ViewZoomMenuItem.Size = new System.Drawing.Size(182, 22);
 			this.ViewZoomMenuItem.Text = "&Zoom";
 			this.ViewZoomMenuItem.Click += new System.EventHandler(this.ViewZoomMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(165, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(179, 6);
 			// 
 			// ViewFitMenuItem
 			// 
 			this.ViewFitMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewFitMenuItem.Name = "ViewFitMenuItem";
-			this.ViewFitMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
-			this.ViewFitMenuItem.Size = new System.Drawing.Size(168, 22);
+			this.ViewFitMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
+			this.ViewFitMenuItem.Size = new System.Drawing.Size(182, 22);
 			this.ViewFitMenuItem.Text = "&Fit";
 			this.ViewFitMenuItem.Click += new System.EventHandler(this.ViewFitMenuItem_Click);
 			// 
@@ -138,8 +157,8 @@
 			// 
 			this.ViewLeftRightMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewLeftRightMenuItem.Name = "ViewLeftRightMenuItem";
-			this.ViewLeftRightMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F11;
-			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(168, 22);
+			this.ViewLeftRightMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
+			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(182, 22);
 			this.ViewLeftRightMenuItem.Text = "Left → Right";
 			this.ViewLeftRightMenuItem.Click += new System.EventHandler(this.ViewLeftRightMenuItem_Click);
 			// 
@@ -147,8 +166,8 @@
 			// 
 			this.ViewRightLeftMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewRightLeftMenuItem.Name = "ViewRightLeftMenuItem";
-			this.ViewRightLeftMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(168, 22);
+			this.ViewRightLeftMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D4)));
+			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(182, 22);
 			this.ViewRightLeftMenuItem.Text = "Right → Left";
 			this.ViewRightLeftMenuItem.Click += new System.EventHandler(this.ViewRightLeftMenuItem_Click);
 			// 
@@ -191,7 +210,7 @@
 			this.FileOpenMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOpenMenuItem.Name = "FileOpenMenuItem";
 			this.FileOpenMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.FileOpenMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.FileOpenMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.FileOpenMenuItem.Text = "&Open";
 			this.FileOpenMenuItem.Click += new System.EventHandler(this.FileOpenMenuItem_Click);
 			// 
@@ -199,8 +218,9 @@
 			// 
 			this.FileOpenLastMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOpenLastMenuItem.Name = "FileOpenLastMenuItem";
-			this.FileOpenLastMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.FileOpenLastMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Z)));
+			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.FileOpenLastMenuItem.Text = "Open &last book";
 			this.FileOpenLastMenuItem.Click += new System.EventHandler(this.FileOpenLastMenuItem_Click);
 			// 
@@ -209,35 +229,35 @@
 			this.FileCloseMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileCloseMenuItem.Name = "FileCloseMenuItem";
 			this.FileCloseMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-			this.FileCloseMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.FileCloseMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.FileCloseMenuItem.Text = "Clos&e";
 			this.FileCloseMenuItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(194, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(227, 6);
 			// 
 			// FileCopyImageMenuItem
 			// 
 			this.FileCopyImageMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileCopyImageMenuItem.Name = "FileCopyImageMenuItem";
 			this.FileCopyImageMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.FileCopyImageMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.FileCopyImageMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.FileCopyImageMenuItem.Text = "&Copy image";
 			this.FileCopyImageMenuItem.Click += new System.EventHandler(this.FileCopyImageMenuItem_Click);
 			// 
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(194, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(227, 6);
 			// 
 			// FileTestMenuItem
 			// 
 			this.FileTestMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileTestMenuItem.Name = "FileTestMenuItem";
 			this.FileTestMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-			this.FileTestMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.FileTestMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.FileTestMenuItem.Text = "Test";
 			this.FileTestMenuItem.Click += new System.EventHandler(this.FileTestMenuItem_Click);
 			// 
@@ -245,7 +265,7 @@
 			// 
 			this.FileExitMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileExitMenuItem.Name = "FileExitMenuItem";
-			this.FileExitMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.FileExitMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.FileExitMenuItem.Text = "E&xit";
 			this.FileExitMenuItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
@@ -274,7 +294,7 @@
             this.toolStripSeparator4,
             this.PagesPopupItem,
             this.toolStripSeparator5,
-            this.reservedToolStripMenuItem,
+            this.QualityPopupItem,
             this.toolStripSeparator6,
             this.reservedToolStripMenuItem1,
             this.toolStripSeparator7,
@@ -282,7 +302,7 @@
             this.toolStripSeparator8,
             this.ExitPopupItem});
 			this.ContextPopup.Name = "ContextMenuStrip";
-			this.ContextPopup.Size = new System.Drawing.Size(182, 188);
+			this.ContextPopup.Size = new System.Drawing.Size(182, 210);
 			// 
 			// OpenPopupItem
 			// 
@@ -319,12 +339,21 @@
 			this.toolStripSeparator5.Name = "toolStripSeparator5";
 			this.toolStripSeparator5.Size = new System.Drawing.Size(178, 6);
 			// 
-			// reservedToolStripMenuItem
+			// QualityPopupItem
 			// 
-			this.reservedToolStripMenuItem.ForeColor = System.Drawing.Color.White;
-			this.reservedToolStripMenuItem.Name = "reservedToolStripMenuItem";
-			this.reservedToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-			this.reservedToolStripMenuItem.Text = "Reserved";
+			this.QualityPopupItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.QualityLowPopupItem,
+            this.QualityDefaultPopupItem,
+            this.QualityBilinearPopupItem,
+            this.QualityBicubicPopupItem,
+            this.QualityHighPopupItem,
+            this.toolStripSeparator10,
+            this.QualityHqBilinearPopupItem,
+            this.QualityHqBicubicPopupItem});
+			this.QualityPopupItem.ForeColor = System.Drawing.Color.White;
+			this.QualityPopupItem.Name = "QualityPopupItem";
+			this.QualityPopupItem.Size = new System.Drawing.Size(181, 22);
+			this.QualityPopupItem.Text = "Quality";
 			// 
 			// toolStripSeparator6
 			// 
@@ -400,6 +429,146 @@
 			this.FocusButton.Text = "FocusButton";
 			this.FocusButton.UseVisualStyleBackColor = true;
 			// 
+			// ViewQualityMenuItem
+			// 
+			this.ViewQualityMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.VwqLowMenuItem,
+            this.VwqDefaultMenuItem,
+            this.VwqBilinearMenuItem,
+            this.VwqBicubicMenuItem,
+            this.VwqHighMenuItem,
+            this.toolStripSeparator9,
+            this.VwqHqBilinearMenuItem,
+            this.VwqHqBicubicMenuItem});
+			this.ViewQualityMenuItem.ForeColor = System.Drawing.Color.White;
+			this.ViewQualityMenuItem.Name = "ViewQualityMenuItem";
+			this.ViewQualityMenuItem.Size = new System.Drawing.Size(182, 22);
+			this.ViewQualityMenuItem.Text = "Quality";
+			// 
+			// VwqLowMenuItem
+			// 
+			this.VwqLowMenuItem.ForeColor = System.Drawing.Color.White;
+			this.VwqLowMenuItem.Name = "VwqLowMenuItem";
+			this.VwqLowMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.VwqLowMenuItem.Text = "Low";
+			this.VwqLowMenuItem.Click += new System.EventHandler(this.VwqLowMenuItem_Click);
+			// 
+			// VwqDefaultMenuItem
+			// 
+			this.VwqDefaultMenuItem.ForeColor = System.Drawing.Color.White;
+			this.VwqDefaultMenuItem.Name = "VwqDefaultMenuItem";
+			this.VwqDefaultMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D5)));
+			this.VwqDefaultMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.VwqDefaultMenuItem.Text = "Default";
+			this.VwqDefaultMenuItem.Click += new System.EventHandler(this.VwqDefaultMenuItem_Click);
+			// 
+			// VwqBilinearMenuItem
+			// 
+			this.VwqBilinearMenuItem.ForeColor = System.Drawing.Color.White;
+			this.VwqBilinearMenuItem.Name = "VwqBilinearMenuItem";
+			this.VwqBilinearMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.VwqBilinearMenuItem.Text = "Bilinear";
+			this.VwqBilinearMenuItem.Click += new System.EventHandler(this.VwqBilinearMenuItem_Click);
+			// 
+			// VwqBicubicMenuItem
+			// 
+			this.VwqBicubicMenuItem.ForeColor = System.Drawing.Color.White;
+			this.VwqBicubicMenuItem.Name = "VwqBicubicMenuItem";
+			this.VwqBicubicMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.VwqBicubicMenuItem.Text = "Bicubic";
+			this.VwqBicubicMenuItem.Click += new System.EventHandler(this.VwqBicubicMenuItem_Click);
+			// 
+			// VwqHighMenuItem
+			// 
+			this.VwqHighMenuItem.ForeColor = System.Drawing.Color.White;
+			this.VwqHighMenuItem.Name = "VwqHighMenuItem";
+			this.VwqHighMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.VwqHighMenuItem.Text = "High";
+			this.VwqHighMenuItem.Click += new System.EventHandler(this.VwqHighMenuItem_Click);
+			// 
+			// toolStripSeparator9
+			// 
+			this.toolStripSeparator9.Name = "toolStripSeparator9";
+			this.toolStripSeparator9.Size = new System.Drawing.Size(177, 6);
+			// 
+			// VwqHqBilinearMenuItem
+			// 
+			this.VwqHqBilinearMenuItem.ForeColor = System.Drawing.Color.White;
+			this.VwqHqBilinearMenuItem.Name = "VwqHqBilinearMenuItem";
+			this.VwqHqBilinearMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.VwqHqBilinearMenuItem.Text = "HQ Bilinear";
+			this.VwqHqBilinearMenuItem.Click += new System.EventHandler(this.VwqHqBilinearMenuItem_Click);
+			// 
+			// VwqHqBicubicMenuItem
+			// 
+			this.VwqHqBicubicMenuItem.ForeColor = System.Drawing.Color.White;
+			this.VwqHqBicubicMenuItem.Name = "VwqHqBicubicMenuItem";
+			this.VwqHqBicubicMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.VwqHqBicubicMenuItem.Text = "HQ Bicubic";
+			this.VwqHqBicubicMenuItem.Click += new System.EventHandler(this.VwqHqBicubicMenuItem_Click);
+			// 
+			// QualityLowPopupItem
+			// 
+			this.QualityLowPopupItem.ForeColor = System.Drawing.Color.White;
+			this.QualityLowPopupItem.Name = "QualityLowPopupItem";
+			this.QualityLowPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.QualityLowPopupItem.Text = "Low";
+			this.QualityLowPopupItem.Click += new System.EventHandler(this.VwqLowMenuItem_Click);
+			// 
+			// QualityDefaultPopupItem
+			// 
+			this.QualityDefaultPopupItem.ForeColor = System.Drawing.Color.White;
+			this.QualityDefaultPopupItem.Name = "QualityDefaultPopupItem";
+			this.QualityDefaultPopupItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D5)));
+			this.QualityDefaultPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.QualityDefaultPopupItem.Text = "Default";
+			this.QualityDefaultPopupItem.Click += new System.EventHandler(this.VwqDefaultMenuItem_Click);
+			// 
+			// QualityBilinearPopupItem
+			// 
+			this.QualityBilinearPopupItem.ForeColor = System.Drawing.Color.White;
+			this.QualityBilinearPopupItem.Name = "QualityBilinearPopupItem";
+			this.QualityBilinearPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.QualityBilinearPopupItem.Text = "Bilinear";
+			this.QualityBilinearPopupItem.Click += new System.EventHandler(this.VwqBilinearMenuItem_Click);
+			// 
+			// QualityBicubicPopupItem
+			// 
+			this.QualityBicubicPopupItem.ForeColor = System.Drawing.Color.White;
+			this.QualityBicubicPopupItem.Name = "QualityBicubicPopupItem";
+			this.QualityBicubicPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.QualityBicubicPopupItem.Text = "Bicubic";
+			this.QualityBicubicPopupItem.Click += new System.EventHandler(this.VwqBicubicMenuItem_Click);
+			// 
+			// QualityHighPopupItem
+			// 
+			this.QualityHighPopupItem.ForeColor = System.Drawing.Color.White;
+			this.QualityHighPopupItem.Name = "QualityHighPopupItem";
+			this.QualityHighPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.QualityHighPopupItem.Text = "High";
+			this.QualityHighPopupItem.Click += new System.EventHandler(this.VwqHighMenuItem_Click);
+			// 
+			// toolStripSeparator10
+			// 
+			this.toolStripSeparator10.Name = "toolStripSeparator10";
+			this.toolStripSeparator10.Size = new System.Drawing.Size(177, 6);
+			// 
+			// QualityHqBilinearPopupItem
+			// 
+			this.QualityHqBilinearPopupItem.ForeColor = System.Drawing.Color.White;
+			this.QualityHqBilinearPopupItem.Name = "QualityHqBilinearPopupItem";
+			this.QualityHqBilinearPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.QualityHqBilinearPopupItem.Text = "HQ Bilinear";
+			this.QualityHqBilinearPopupItem.Click += new System.EventHandler(this.VwqHqBilinearMenuItem_Click);
+			// 
+			// QualityHqBicubicPopupItem
+			// 
+			this.QualityHqBicubicPopupItem.ForeColor = System.Drawing.Color.White;
+			this.QualityHqBicubicPopupItem.Name = "QualityHqBicubicPopupItem";
+			this.QualityHqBicubicPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.QualityHqBicubicPopupItem.Text = "HQ Bicubic";
+			this.QualityHqBicubicPopupItem.Click += new System.EventHandler(this.VwqHqBicubicMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -467,7 +636,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripMenuItem PagesPopupItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-		private System.Windows.Forms.ToolStripMenuItem reservedToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem QualityPopupItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 		private System.Windows.Forms.ToolStripMenuItem reservedToolStripMenuItem1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
@@ -477,6 +646,23 @@
 		private System.Windows.Forms.ToolStripMenuItem FileTestMenuItem;
 		private System.Windows.Forms.TextBox FocusTextBox;
 		private System.Windows.Forms.Button FocusButton;
+		private System.Windows.Forms.ToolStripMenuItem ViewQualityMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem VwqLowMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem VwqDefaultMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem VwqBilinearMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem VwqBicubicMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem VwqHighMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+		private System.Windows.Forms.ToolStripMenuItem VwqHqBilinearMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem VwqHqBicubicMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem QualityLowPopupItem;
+		private System.Windows.Forms.ToolStripMenuItem QualityDefaultPopupItem;
+		private System.Windows.Forms.ToolStripMenuItem QualityBilinearPopupItem;
+		private System.Windows.Forms.ToolStripMenuItem QualityBicubicPopupItem;
+		private System.Windows.Forms.ToolStripMenuItem QualityHighPopupItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+		private System.Windows.Forms.ToolStripMenuItem QualityHqBilinearPopupItem;
+		private System.Windows.Forms.ToolStripMenuItem QualityHqBicubicPopupItem;
 	}
 }
 

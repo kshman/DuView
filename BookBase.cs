@@ -76,18 +76,22 @@ namespace DuView
 		//
 		private void CacheImage(int page, Image img)
 		{
+			const int bpp = 4;  // byte per pixel
+
 			if (_cache.ContainsKey(page))
 				return;
 
-			var size = img.Width * img.Height * 4;
+			var size = img.Width * img.Height * bpp;
 
 			if ((_csize + size) > Settings.MaxCacheSize && _cache.Count > 0)
 			{
 				var first = _cache.ElementAt(0);
-				var fsize = first.Value.Width * first.Value.Height * 4;
+				var fsize = first.Value.Width * first.Value.Height * bpp;
 
 				_cache.Remove(first.Key);
 				_csize -= fsize;
+
+				//first.Value?.Dispose();
 			}
 
 			_cache.Add(page, img);
@@ -153,18 +157,25 @@ namespace DuView
 				else
 				{
 					if (CurrentPage < TotalPage)
+					{
 						right = ReadPage(CurrentPage + 1);
+						if (right.Width > right.Height)
+						{
+							// 다른쪽도 넓으면 1장만 나오게 함
+							right = null;
+						}
+					}
 				}
 
 				if (mode == Types.ViewMode.LeftToRight)
 				{
-					PageLeft = right;
-					PageRight = left;
+					PageLeft = left;
+					PageRight = right;
 				}
 				else
 				{
-					PageLeft = left;
-					PageRight = right;
+					PageLeft = right;
+					PageRight = left;
 				}
 			}
 			else
@@ -176,9 +187,17 @@ namespace DuView
 		}
 
 		// 
-		public void MoveNext(Types.ViewMode mode)
+		public bool MoveNext(Types.ViewMode mode)
 		{
-			if (mode == Types.ViewMode.FitWidth || mode != Types.ViewMode.FitHeight)
+			int prev = CurrentPage;
+
+			if (PageLeft == null || PageRight == null)
+			{
+				// 이건 위험하지만 일단 쓰자
+				mode = Types.ViewMode.FitWidth;
+			}
+
+			if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
 			{
 				if (CurrentPage + 1 < TotalPage)
 					CurrentPage++;
@@ -188,23 +207,37 @@ namespace DuView
 				if (CurrentPage + 2 < TotalPage)
 					CurrentPage += 2;
 			}
+
+			return prev != CurrentPage;
 		}
 
 		// 
-		public void MovePrev(Types.ViewMode mode)
+		public bool MovePrev(Types.ViewMode mode)
 		{
-			if (mode == Types.ViewMode.FitWidth || mode != Types.ViewMode.FitHeight)
+			int prev = CurrentPage;
+
+			if (PageLeft == null || PageRight == null)
+			{
+				// 이건 위험하지만 일단 쓰자
+				mode = Types.ViewMode.FitWidth;
+			}
+
+			if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
 				CurrentPage--;
 			else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
 				CurrentPage -= 2;
 
 			if (CurrentPage < 0)
 				CurrentPage = 0;
+
+			return prev != CurrentPage;
 		}
 
 		//
-		public void MovePage(Types.ViewMode mode, int page)
+		public bool MovePage(Types.ViewMode mode, int page)
 		{
+			int prev = CurrentPage;
+
 			// 하... Math.Clamp 는 Net6 전용이네
 			if (page < 0)
 				CurrentPage = 0;
@@ -212,6 +245,14 @@ namespace DuView
 				CurrentPage = TotalPage - 1;
 			else
 				CurrentPage = page;
+
+			return prev != CurrentPage;
+		}
+
+		//
+		public virtual string FindNextFile(bool no_i_want_prev_file)
+		{
+			return null;
 		}
 	}
 }

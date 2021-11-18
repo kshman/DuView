@@ -15,6 +15,8 @@ namespace DuView
 	{
 		private BookBase Book { get; set; }
 
+		private Bitmap _bmp = null;
+
 		public MainForm()
 		{
 			InitializeComponent();
@@ -59,18 +61,28 @@ namespace DuView
 		{
 			switch (e.KeyCode)
 			{
+				// 끝냄
 				case Keys.Escape:
 					Close();
 					break;
 
+				// 페이지 조작
 				case Keys.Left:
-					PageMovePrev();
+				case Keys.Up:
+					if (e.Control)
+						PageMoveDelta(-1);
+					else
+						PageMovePrev();
 					break;
 
-				case Keys.NumPad0:
 				case Keys.Right:
+				case Keys.Down:
 				case Keys.Space:
-					PageMoveNext();
+				case Keys.NumPad0:
+					if (e.Control)
+						PageMoveDelta(+1);
+					else
+						PageMoveNext();
 					break;
 
 				case Keys.Home:
@@ -81,8 +93,50 @@ namespace DuView
 					PageMovePage(int.MaxValue);
 					break;
 
+				case Keys.PageUp:
+					PageMoveDelta(-10);
+					break;
+
+				case Keys.PageDown:
+					PageMoveDelta(+10);
+					break;
+
+				// 화면 전환
 				case Keys.F:
 					BadakMaximize();
+					break;
+
+				// 보기 설정
+				case Keys.D0:
+					UpdateViewZoom(!Settings.ViewZoom);
+					break;
+
+				case Keys.D1:
+					UpdateViewMode(Types.ViewMode.FitWidth);
+					break;
+
+				case Keys.D3:
+					UpdateViewMode(Types.ViewMode.LeftToRight);
+					ViewLeftRightMenuItem_Click(null, null);
+					break;
+
+				case Keys.D4:
+					UpdateViewMode(Types.ViewMode.RightToLeft);
+					break;
+
+				case Keys.D5:
+					UpdateViewQuality(Types.ViewQuality.Default);
+					break;
+
+				// 파일이나 디렉토리
+				case Keys.BrowserBack:
+				case Keys.OemOpenBrackets:
+					OpenPrevBook();
+					break;
+
+				case Keys.BrowserForward:
+				case Keys.OemCloseBrackets:
+					OpenNextBook();
 					break;
 			}
 		}
@@ -97,9 +151,7 @@ namespace DuView
 
 		private void MainForm_DragDrop(object sender, DragEventArgs e)
 		{
-			var filenames = e.Data.GetData(DataFormats.FileDrop) as string[];
-
-			if (filenames != null && filenames.Length > 0)
+			if (e.Data.GetData(DataFormats.FileDrop) is string[] filenames && filenames.Length > 0)
 			{
 				// 하나만 쓴다
 				OpenArchive(filenames[0]);
@@ -120,19 +172,6 @@ namespace DuView
 		{
 			ViewBook();
 		}
-
-		private void ImagePictureBox_MouseWheel(object sender, MouseEventArgs e)
-		{
-			// 위 + / 아래 -
-			if (e.Delta > 0)
-				PageMovePrev();
-			else if (e.Delta < 0)
-				PageMoveNext();
-		}
-
-		private void ImagePictureBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-		{
-		}
 		#endregion
 
 		#region 메뉴 및 명령
@@ -149,46 +188,105 @@ namespace DuView
 
 		private void SetupBySetting()
 		{
-			ViewZoomMenuItem.Checked = Settings.ViewZoom;
-			ViewModeCheck();
+			UpdateViewZoom(Settings.ViewZoom, false);
+			UpdateViewMode(Settings.ViewMode, false);
+			UpdateViewQuality(Settings.ViewQuality, false);
 		}
 
-		private void ViewModeCheck()
+		private void UpdateViewZoom(bool zoom, bool viewbook = true)
 		{
-			ViewFitMenuItem.Checked = Settings.ViewMode == Types.ViewMode.FitWidth;
-			ViewLeftRightMenuItem.Checked = Settings.ViewMode == Types.ViewMode.LeftToRight;
-			ViewRightLeftMenuItem.Checked = Settings.ViewMode == Types.ViewMode.RightToLeft;
+			Settings.ViewZoom = zoom;
 
-			if (Book != null)
+			ViewZoomMenuItem.Checked = Settings.ViewZoom;
+
+			if (viewbook)
+				ViewBook();
+		}
+
+		private void UpdateViewMode(Types.ViewMode mode, bool viewbook = true)
+		{
+			Settings.ViewMode = mode;
+
+			ViewFitMenuItem.Checked = mode == Types.ViewMode.FitWidth;
+			ViewLeftRightMenuItem.Checked = mode == Types.ViewMode.LeftToRight;
+			ViewRightLeftMenuItem.Checked = mode == Types.ViewMode.RightToLeft;
+
+			if (viewbook)
 			{
-				Book.PrepareCurrent(Settings.ViewMode);
+				Book?.PrepareCurrent(Settings.ViewMode);
 				ViewBook();
 			}
 		}
 
+		private void UpdateViewQuality(Types.ViewQuality quality, bool viewbook = true)
+		{
+			Settings.ViewQuality = quality;
+
+			QualityLowPopupItem.Checked = VwqLowMenuItem.Checked = quality == Types.ViewQuality.Low;
+			QualityDefaultPopupItem.Checked = VwqDefaultMenuItem.Checked = quality == Types.ViewQuality.Default;
+			QualityBilinearPopupItem.Checked = VwqBilinearMenuItem.Checked = quality == Types.ViewQuality.Bilinear;
+			QualityBicubicPopupItem.Checked = VwqBicubicMenuItem.Checked = quality == Types.ViewQuality.Bicubic;
+			QualityHighPopupItem.Checked = VwqHighMenuItem.Checked = quality == Types.ViewQuality.High;
+			QualityHqBilinearPopupItem.Checked = VwqHqBilinearMenuItem.Checked = quality == Types.ViewQuality.HqBilinear;
+			QualityHqBicubicPopupItem.Checked = VwqHqBicubicMenuItem.Checked = quality == Types.ViewQuality.HqBicubic;
+
+			if (viewbook)
+				ViewBook();
+		}
+
 		private void ViewZoomMenuItem_Click(object sender, EventArgs e)
 		{
-			Settings.ViewZoom = !Settings.ViewZoom;
-			ViewZoomMenuItem.Checked = Settings.ViewZoom;
-			ViewBook();
+			UpdateViewZoom(!Settings.ViewZoom);
 		}
 
 		private void ViewFitMenuItem_Click(object sender, EventArgs e)
 		{
-			Settings.ViewMode = Types.ViewMode.FitWidth;
-			ViewModeCheck();
+			UpdateViewMode(Types.ViewMode.FitWidth);
 		}
 
 		private void ViewLeftRightMenuItem_Click(object sender, EventArgs e)
 		{
-			Settings.ViewMode = Types.ViewMode.LeftToRight;
-			ViewModeCheck();
+			UpdateViewMode(Types.ViewMode.LeftToRight);
 		}
 
 		private void ViewRightLeftMenuItem_Click(object sender, EventArgs e)
 		{
-			Settings.ViewMode = Types.ViewMode.RightToLeft;
-			ViewModeCheck();
+			UpdateViewMode(Types.ViewMode.RightToLeft);
+		}
+
+		private void VwqLowMenuItem_Click(object sender, EventArgs e)
+		{
+			UpdateViewQuality(Types.ViewQuality.Low);
+		}
+
+		private void VwqDefaultMenuItem_Click(object sender, EventArgs e)
+		{
+			UpdateViewQuality(Types.ViewQuality.Default);
+		}
+
+		private void VwqBilinearMenuItem_Click(object sender, EventArgs e)
+		{
+			UpdateViewQuality(Types.ViewQuality.Bilinear);
+		}
+
+		private void VwqBicubicMenuItem_Click(object sender, EventArgs e)
+		{
+			UpdateViewQuality(Types.ViewQuality.Bicubic);
+		}
+
+		private void VwqHighMenuItem_Click(object sender, EventArgs e)
+		{
+			UpdateViewQuality(Types.ViewQuality.High);
+		}
+
+		private void VwqHqBilinearMenuItem_Click(object sender, EventArgs e)
+		{
+			UpdateViewQuality(Types.ViewQuality.HqBilinear);
+		}
+
+		private void VwqHqBicubicMenuItem_Click(object sender, EventArgs e)
+		{
+			UpdateViewQuality(Types.ViewQuality.HqBicubic);
 		}
 
 		private void FavorityAddMenuItem_Click(object sender, EventArgs e)
@@ -242,6 +340,7 @@ namespace DuView
 
 		private void FileTestMenuItem_Click(object sender, EventArgs e)
 		{
+			Book.PrepareCurrent(Settings.ViewMode);
 			ViewBook();
 		}
 		#endregion
@@ -263,6 +362,19 @@ namespace DuView
 		{
 			if (SizeMoveHitTest.BodyAsTitle)
 				BadakDragOnMouseMove(e);
+		}
+
+		private void ImagePictureBox_MouseWheel(object sender, MouseEventArgs e)
+		{
+			// 위 + / 아래 -
+			if (e.Delta > 0)
+				PageMovePrev();
+			else if (e.Delta < 0)
+				PageMoveNext();
+		}
+
+		private void ImagePictureBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
 		}
 		#endregion
 
@@ -345,37 +457,80 @@ namespace DuView
 
 			ActivateFocus();
 		}
+
+		//
+		private void OpenPrevBook()
+		{
+			if (Book == null)
+				return;
+
+			var filename = Book.FindNextFile(true);
+			if (filename==null)
+			{
+				Notifier.ShowBalloonTip(1000, "Open Book", "No previous book found", ToolTipIcon.Info);
+				return;
+			}
+
+			OpenArchive(filename);
+		}
+
+		//
+		private void OpenNextBook()
+		{
+			if (Book == null)
+				return;
+
+			var filename = Book.FindNextFile(false);
+			if (filename == null)
+			{
+				Notifier.ShowBalloonTip(1000, "Open Book", "No next book found", ToolTipIcon.Info);
+				return;
+			}
+
+			OpenArchive(filename);
+		}
 		#endregion
 
 		#region 그리기
 		//
-		private void DrawLogo(Bitmap bmp, int w, int h)
+		private void DrawLogo(Graphics g, Bitmap bmp, int w, int h)
 		{
-			using (var g = Graphics.FromImage(bmp))
+			var img = Properties.Resources.housebari_head_128;
+			if (w > img.Width && h > img.Height)
+				g.DrawImage(img, w - img.Width - 50, h - img.Height - 50);
+			else
 			{
-				g.Clear(Color.FromArgb(10, 10, 10));
-
-				var img = Properties.Resources.housebari_head_128;
-				if (w > img.Width && h > img.Height)
-					g.DrawImage(img, w - img.Width - 50, h - img.Height - 50);
-				else
-				{
-					Rectangle rt = new Rectangle(0, 0, w, h);
-					g.DrawImage(img, rt);
-				}
+				Rectangle rt = new Rectangle(0, 0, w, h);
+				g.DrawImage(img, rt);
 			}
 		}
 
 		//
-		private void DrawBitmapFit(Bitmap bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
+		private void DrawBitmapFit(Graphics g, Bitmap bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
 		{
 			(int nw, int nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
 			var rt = ToolBox.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
 
-			using (var g = Graphics.FromImage(bmp))
-			{
-				g.DrawImage(img, rt, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
-			}
+			g.DrawImage(img, rt, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
+		}
+
+		//
+		private void DrawBitmapHalfAndHalf(Graphics g, Bitmap bmp, Image left, Image right)
+		{
+			int f = bmp.Width / 2;
+			int w, h;
+			Rectangle rt;
+
+			// 왼쪽
+			(w, h) = ToolBox.CalcDestSize(Settings.ViewZoom, f, bmp.Height, left.Width, left.Height);
+			rt = ToolBox.CalcDestRect(f, bmp.Height, w, h, HorizontalAlignment.Right);
+			g.DrawImage(left, rt, 0, 0, left.Width, left.Height, GraphicsUnit.Pixel);
+
+			// 오른쪽
+			(w, h) = ToolBox.CalcDestSize(Settings.ViewZoom, f, bmp.Height, right.Width, right.Height);
+			rt = ToolBox.CalcDestRect(f, bmp.Height, w, h, HorizontalAlignment.Left);
+			rt.X += f;
+			g.DrawImage(right, rt, 0, 0, right.Width, right.Height, GraphicsUnit.Pixel);
 		}
 		#endregion
 
@@ -389,6 +544,50 @@ namespace DuView
 				var cachesize = ToolBox.SizeToString(Book.CacheSize);
 				PageInfoLabel.Text = $"{Book.CurrentPage + 1}/{Book.TotalPage} [{cachesize}]";
 				PageInfoLabel.Visible = true;
+			}
+		}
+
+		private void PageMovePrev()
+		{
+			if (Book != null && Book.MovePrev(Settings.ViewMode))
+			{
+				Book.PrepareCurrent(Settings.ViewMode);
+
+				RefreshPageInfo();
+				ViewBook();
+			}
+		}
+
+		private void PageMoveNext()
+		{
+			if (Book != null && Book.MoveNext(Settings.ViewMode))
+			{
+				Book.PrepareCurrent(Settings.ViewMode);
+
+				RefreshPageInfo();
+				ViewBook();
+			}
+		}
+
+		private void PageMovePage(int page)
+		{
+			if (Book != null && Book.MovePage(Settings.ViewMode, page))
+			{
+				Book.PrepareCurrent(Settings.ViewMode);
+
+				RefreshPageInfo();
+				ViewBook();
+			}
+		}
+
+		private void PageMoveDelta(int delta)
+		{
+			if (Book != null && Book.MovePage(Settings.ViewMode, Book.CurrentPage + delta))
+			{
+				Book.PrepareCurrent(Settings.ViewMode);
+
+				RefreshPageInfo();
+				ViewBook();
 			}
 		}
 
@@ -406,65 +605,59 @@ namespace DuView
 				return;
 			}
 
-			if (Book == null)
+			if (_bmp == null || _bmp.Width != w || _bmp.Height != h)
 			{
-				Bitmap bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-				DrawLogo(bmp, w, h);
-				ImagePictureBox.Image = bmp;
+				_bmp?.Dispose();
+				_bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			}
-			else
-			{
-				Bitmap bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-				if (Settings.ViewMode == Types.ViewMode.FitWidth)
-				{
-					if (Book.PageLeft != null)
-						DrawBitmapFit(bmp, Book.PageLeft);
-				}
+			using (var g = Graphics.FromImage(_bmp))
+			{
+				g.Clear(Color.FromArgb(10, 10, 10));
+				g.InterpolationMode = ToolBox.QualityToInterpolationMode(Settings.ViewQuality);
+
+				if (Book == null)
+					DrawLogo(g, _bmp, w, h);
 				else
 				{
-					DrawLogo(bmp, w, h);
+					if (Settings.ViewMode == Types.ViewMode.FitWidth)
+					{
+						if (Book.PageLeft != null)
+							DrawBitmapFit(g, _bmp, Book.PageLeft);
+					}
+					else
+					{
+						if (Book.PageLeft == null)
+						{
+							if (Book.PageRight == null)
+							{
+								// 헐 뭐지
+								DrawLogo(g, _bmp, w, h);
+							}
+							else
+							{
+								// 오른쪽 한장만 그리는거다
+								DrawBitmapFit(g, _bmp, Book.PageRight);
+							}
+						}
+						else if (Book.PageRight == null)
+						{
+							// 왼쪽 한장만 그리는거다
+							DrawBitmapFit(g, _bmp, Book.PageLeft);
+						}
+						else
+						{
+							// 양쪽 다
+							DrawBitmapHalfAndHalf(g, _bmp, Book.PageLeft, Book.PageRight);
+						}
+					}
 				}
 
-				ImagePictureBox.Image = bmp;
+				// 그림위에 그리려면 여기에다가
+				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
 			}
-		}
 
-		private void PageMovePrev()
-		{
-			if (Book != null)
-			{
-				Book.MovePrev(Settings.ViewMode);
-				Book.PrepareCurrent(Settings.ViewMode);
-
-				RefreshPageInfo();
-				ViewBook();
-			}
-		}
-
-		private void PageMoveNext()
-		{
-			if (Book != null)
-			{
-				Book.MoveNext(Settings.ViewMode);
-				Book.PrepareCurrent(Settings.ViewMode);
-
-				RefreshPageInfo();
-				ViewBook();
-			}
-		}
-
-		private void PageMovePage(int page)
-		{
-			if (Book != null)
-			{
-				Book.MovePage(Settings.ViewMode, page);
-				Book.PrepareCurrent(Settings.ViewMode);
-
-				RefreshPageInfo();
-				ViewBook();
-			}
+			ImagePictureBox.Image = _bmp;
 		}
 		#endregion
 	}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,30 @@ namespace DuView
 					return true;
 				default:
 					return false;
+			}
+		}
+
+		// 퀄리티 변환
+		public static System.Drawing.Drawing2D.InterpolationMode QualityToInterpolationMode(Types.ViewQuality q)
+		{
+			switch (q)
+			{
+				case Types.ViewQuality.Low:
+					return System.Drawing.Drawing2D.InterpolationMode.Low;
+				case Types.ViewQuality.Default:
+					return System.Drawing.Drawing2D.InterpolationMode.Default;
+				case Types.ViewQuality.Bilinear:
+					return System.Drawing.Drawing2D.InterpolationMode.Bilinear;
+				case Types.ViewQuality.Bicubic:
+					return System.Drawing.Drawing2D.InterpolationMode.Bicubic;
+				case Types.ViewQuality.High:
+					return System.Drawing.Drawing2D.InterpolationMode.High;
+				case Types.ViewQuality.HqBilinear:
+					return System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
+				case Types.ViewQuality.HqBicubic:
+					return System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+				default:
+					return System.Drawing.Drawing2D.InterpolationMode.Default;
 			}
 		}
 
@@ -117,6 +142,24 @@ namespace DuView
 			}
 
 			return (nw, nh);
+		}
+
+		//
+		public class FileInfoComparer : IComparer<FileInfo>
+		{
+			public FileInfoComparer()
+			{ }
+
+			public int Compare(object x, object y)
+			{
+				return (x is FileInfo ex) && (y is FileInfo ey) ?
+					DuLib.Data.StringAsNumericComparer.Comparer.Compare(ex.FullName, ey.FullName) : -1;
+			}
+
+			public int Compare(FileInfo x, FileInfo y)
+			{
+				return DuLib.Data.StringAsNumericComparer.Comparer.Compare(x.FullName, y.FullName);
+			}
 		}
 	}
 }

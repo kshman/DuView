@@ -18,6 +18,18 @@ namespace DuView
 			LeftToRight,
 			RightToLeft
 		}
+
+		// 보기 품질
+		public enum ViewQuality : int
+		{
+			Low,
+			Default,
+			Bilinear,
+			Bicubic,
+			High,
+			HqBilinear,
+			HqBicubic,
+		}
 	}
 }
 
