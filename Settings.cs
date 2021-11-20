@@ -3,6 +3,7 @@ using Du.Platform;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 namespace DuView
@@ -208,9 +209,7 @@ namespace DuView
 				return 0;
 
 			var s = Converter.EncodingString(onlyfilename);
-			var v = _recently.Get(s);
-
-			return string.IsNullOrEmpty(v) ? 0 : Convert.ToInt32(v);
+			return _recently.Get(s);
 		}
 
 		//
@@ -222,10 +221,8 @@ namespace DuView
 
 				if (page > 0)
 				{
-					var v = page.ToString();
-
-					_recently.Set(s, v);
-					_recently.ResizeCutBeginSlowly(_max_recently);
+					_recently.Set(s, page);
+					_recently.ResizeCutFrontSlowly(_max_recently);
 				}
 				else
 				{
@@ -246,7 +243,11 @@ namespace DuView
 		public static void SaveFileInfos()
 		{
 			var rfn = RecentlyPath;
-			_recently.SaveToFile(rfn, System.Text.Encoding.UTF8, "# DuView recently files");
+			_recently.SaveToFile(rfn, Encoding.UTF8, new string[]
+			{
+				"DuView recently files list",
+				$"Created: {DateTime.Now}"
+			});
 		}
 	}
 }

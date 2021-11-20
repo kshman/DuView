@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DuView
 {
-	internal class ResizableLineDb : LineDb
+	internal class ResizableLineDb : LineStringDb<int>
 	{
 		private ResizableLineDb()
 		{
@@ -18,18 +18,18 @@ namespace DuView
 		public static ResizableLineDb FromFile(string filename)
 		{
 			var l = new ResizableLineDb();
-			l.AddFromFile(filename, Encoding.UTF8, false);
+			l.AddFromFile(filename, Encoding.UTF8, new IntValueConverter());
 			return l;
 		}
 
-		public void ResizeCutBeginSlowly(int count)
+		public void ResizeCutFrontSlowly(int count)
 		{
-			if (count < StringDb.Count)
+			if (count < Db.Count)
 			{
-				var ns = new List<KeyValuePair<string, string>>();
+				var ns = new List<KeyValuePair<string, int>>();
 
-				var n = StringDb.Count - count;
-				foreach (var i in StringDb)
+				var n = Db.Count - count;
+				foreach (var i in Db)
 				{
 					if (n > 0)
 						n--;
@@ -37,16 +37,19 @@ namespace DuView
 						ns.Add(i);
 				}
 
-				StringDb.Clear();
+				Db.Clear();
 
 				foreach (var i in ns)
-					StringDb[i.Key] = i.Value;
+					Db[i.Key] = i.Value;
 			}
 		}
 
-		public bool Remove(string key)
+		internal class IntValueConverter : Du.Data.Generic.IConverter<int>
 		{
-			return StringDb.Remove(key);
+			public int Convert(string s)
+			{
+				return int.TryParse(s, out var n) ? n : 0;
+			}
 		}
 	}
 }
