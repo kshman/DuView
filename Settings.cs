@@ -21,7 +21,7 @@ namespace DuView
 		public static Types.ViewMode _view_mode = Types.ViewMode.FitWidth;
 		public static Types.ViewQuality _view_quality = Types.ViewQuality.Default;
 
-		public static long _max_cache_size = 230 * 1048576; // 쉽게해서 180메가
+		public static long _max_cache_size = 230 * 1048576; // 쉽게해서 230메가
 		public static int _max_recently = 1000;
 
 		public static ResizableLineDb _recently;
@@ -94,7 +94,7 @@ namespace DuView
 		//
 		public static string RecentlyPath
 		{
-			get { return Path.Combine(Application.StartupPath, @"DuView.recently"); }
+			get { return Path.Combine(Application.StartupPath, "DuView.recently"); }
 		}
 
 		//

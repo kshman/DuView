@@ -17,6 +17,7 @@ namespace DuView
 		private readonly string _init_filename;
 
 		private readonly BadakFormWorker _bfw;
+		private PageSelectForm _select;
 
 		public MainForm(string filename)
 		{
@@ -35,6 +36,8 @@ namespace DuView
 			};
 
 			_init_filename = filename;
+
+			_select = new PageSelectForm();
 		}
 
 		#region 폼 자산
@@ -148,6 +151,13 @@ namespace DuView
 				case Keys.PageDown:
 				case Keys.Back:
 					PageMoveDelta(+10);
+					break;
+
+				case Keys.Enter:
+					if (e.Alt)
+						_bfw.Maximize();
+					else
+						PageSelect();
 					break;
 
 				// 화면 전환
@@ -414,8 +424,7 @@ namespace DuView
 					return;
 			}
 
-			if (File.Exists(Settings.LastFileName))
-				OpenArchive(Settings.LastFileName);
+			OpenBook(Settings.LastFileName);
 		}
 
 		private void FileCloseMenuItem_Click(object sender, EventArgs e)
@@ -495,6 +504,11 @@ namespace DuView
 		{
 
 		}
+
+		private void PagesPopupItem_Click(object sender, EventArgs e)
+		{
+			PageSelect();
+		}
 		#endregion
 
 		#region 파일
@@ -502,14 +516,17 @@ namespace DuView
 		{
 			if (Book != null)
 			{
+				Text = _title;
+
 				Settings.SetRecentlyPage(Book);
+
 				Book.Dispose();
 				Book = null;
 
 				RefreshPageInfo();
 				ViewBook();
 
-				Text = _title;
+				_select.ResetBook();
 			}
 
 			ActivateFocus();
@@ -539,6 +556,20 @@ namespace DuView
 			{
 				// 이건 디렉토리
 			}
+
+			if (Book != null)
+			{
+				Text = Book.OnlyFileName;
+
+				Settings.LastFileName = filename;
+
+				RefreshPageInfo();
+				ViewBook();
+
+				_select.SetBook(Book);
+			}
+
+			ActivateFocus();
 		}
 
 		private void OpenArchive(string filename, int page = -1)
@@ -578,16 +609,7 @@ namespace DuView
 				Book = bk;
 				Book.CurrentPage = page;
 				Book.PrepareCurrent();
-
-				Settings.LastFileName = filename;
-
-				RefreshPageInfo();
-				ViewBook();
-
-				Text = Book.OnlyFileName;
 			}
-
-			ActivateFocus();
 		}
 
 		//
@@ -603,7 +625,7 @@ namespace DuView
 				return;
 			}
 
-			OpenArchive(filename);
+			OpenBook(filename);
 		}
 
 		//
@@ -619,7 +641,7 @@ namespace DuView
 				return;
 			}
 
-			OpenArchive(filename);
+			OpenBook(filename);
 		}
 		#endregion
 
@@ -725,6 +747,22 @@ namespace DuView
 		{
 			if (Book != null && Book.MovePage(Book.CurrentPage + delta))
 			{
+				Book.PrepareCurrent();
+
+				RefreshPageInfo();
+				ViewBook();
+			}
+		}
+
+		private void PageSelect()
+		{
+			if (Book == null)
+				return;
+
+			_select.SelectedPage = Book.CurrentPage;
+			if (_select.ShowDialog(this) == DialogResult.OK)
+			{
+				Book.CurrentPage = _select.SelectedPage;
 				Book.PrepareCurrent();
 
 				RefreshPageInfo();

@@ -60,6 +60,26 @@ namespace DuView
 			return e.FullName;
 		}
 
+		public override Types.BookEntryInfo[] GetEntryInfos()
+		{
+			var r = new Types.BookEntryInfo[_entries.Count];
+
+			int n = 0;
+			foreach (var i in _entries)
+			{
+				var e = i as ZipArchiveEntry;
+
+				r[n++] = new Types.BookEntryInfo()
+				{
+					Name = e.FullName,
+					DateTime = e.LastWriteTime.LocalDateTime,
+					Size = e.Length,
+				};
+			}
+
+			return r;
+		}
+
 		//
 		private bool InternalOpenZip(string filename)
 		{

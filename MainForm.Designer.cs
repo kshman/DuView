@@ -57,6 +57,7 @@
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.FileTestMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.MaxCacheMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ImagePictureBox = new System.Windows.Forms.PictureBox();
 			this.ContextPopup = new Du.WinForms.BadakContextMenuStrip(this.components);
 			this.OpenPopupItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,9 +94,8 @@
 			this.PageInfoLabel = new System.Windows.Forms.Label();
 			this.Notifier = new System.Windows.Forms.NotifyIcon(this.components);
 			this.TopPanel = new System.Windows.Forms.Panel();
-			this.SystemButton = new Du.WinForms.BadakSystemButton();
-			this.MaxCacheMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.TitleLabel = new System.Windows.Forms.Label();
+			this.SystemButton = new Du.WinForms.BadakSystemButton();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ImagePictureBox)).BeginInit();
 			this.ContextPopup.SuspendLayout();
@@ -263,7 +263,7 @@
 			this.FavorityAddMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FavorityAddMenuItem.Name = "FavorityAddMenuItem";
 			this.FavorityAddMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-			this.FavorityAddMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FavorityAddMenuItem.Size = new System.Drawing.Size(134, 22);
 			this.FavorityAddMenuItem.Text = "추가(&A)";
 			this.FavorityAddMenuItem.Click += new System.EventHandler(this.FavorityAddMenuItem_Click);
 			// 
@@ -347,6 +347,14 @@
 			this.FileExitMenuItem.Text = "끝내기(&X)";
 			this.FileExitMenuItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
+			// MaxCacheMenuItem
+			// 
+			this.MaxCacheMenuItem.ForeColor = System.Drawing.Color.White;
+			this.MaxCacheMenuItem.Name = "MaxCacheMenuItem";
+			this.MaxCacheMenuItem.Size = new System.Drawing.Size(43, 20);
+			this.MaxCacheMenuItem.Text = "캐시";
+			this.MaxCacheMenuItem.Click += new System.EventHandler(this.MaxCacheMenuItem_Click);
+			// 
 			// ImagePictureBox
 			// 
 			this.ImagePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -381,7 +389,7 @@
             this.toolStripSeparator8,
             this.ExitPopupItem});
 			this.ContextPopup.Name = "ContextMenuStrip";
-			this.ContextPopup.Size = new System.Drawing.Size(197, 210);
+			this.ContextPopup.Size = new System.Drawing.Size(197, 232);
 			// 
 			// OpenPopupItem
 			// 
@@ -504,6 +512,7 @@
 			this.PagesPopupItem.Name = "PagesPopupItem";
 			this.PagesPopupItem.Size = new System.Drawing.Size(196, 22);
 			this.PagesPopupItem.Text = "페이지 목록";
+			this.PagesPopupItem.Click += new System.EventHandler(this.PagesPopupItem_Click);
 			// 
 			// toolStripSeparator5
 			// 
@@ -664,6 +673,21 @@
 			this.TopPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
 			this.TopPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseUp);
 			// 
+			// TitleLabel
+			// 
+			this.TitleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.TitleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.TitleLabel.ForeColor = System.Drawing.Color.White;
+			this.TitleLabel.Location = new System.Drawing.Point(12, 33);
+			this.TitleLabel.Name = "TitleLabel";
+			this.TitleLabel.Size = new System.Drawing.Size(670, 37);
+			this.TitleLabel.TabIndex = 9;
+			this.TitleLabel.Text = "두뷰";
+			this.TitleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
+			this.TitleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
+			this.TitleLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseUp);
+			// 
 			// SystemButton
 			// 
 			this.SystemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -679,29 +703,6 @@
 			this.SystemButton.ShowMinimize = true;
 			this.SystemButton.Size = new System.Drawing.Size(150, 30);
 			this.SystemButton.TabIndex = 8;
-			// 
-			// MaxCacheMenuItem
-			// 
-			this.MaxCacheMenuItem.ForeColor = System.Drawing.Color.White;
-			this.MaxCacheMenuItem.Name = "MaxCacheMenuItem";
-			this.MaxCacheMenuItem.Size = new System.Drawing.Size(43, 20);
-			this.MaxCacheMenuItem.Text = "캐시";
-			this.MaxCacheMenuItem.Click += new System.EventHandler(this.MaxCacheMenuItem_Click);
-			// 
-			// TitleLabel
-			// 
-			this.TitleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.TitleLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.TitleLabel.ForeColor = System.Drawing.Color.White;
-			this.TitleLabel.Location = new System.Drawing.Point(12, 33);
-			this.TitleLabel.Name = "TitleLabel";
-			this.TitleLabel.Size = new System.Drawing.Size(670, 37);
-			this.TitleLabel.TabIndex = 9;
-			this.TitleLabel.Text = "두뷰";
-			this.TitleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
-			this.TitleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
-			this.TitleLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseUp);
 			// 
 			// MainForm
 			// 

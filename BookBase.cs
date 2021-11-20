@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DuView
 {
-	internal abstract class BookBase : IDisposable
+	public abstract class BookBase : IDisposable
 	{
 		public string FileName { get; set; }
 		public string OnlyFileName { get; set; }
@@ -104,6 +104,7 @@ namespace DuView
 		//
 		protected abstract Stream OpenStream(object entry);
 		protected abstract string GetEntryName(object entry);
+		public abstract Types.BookEntryInfo[] GetEntryInfos();
 
 		//
 		public Image ReadPage(int pageno)
