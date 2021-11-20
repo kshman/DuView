@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DuView
 {
@@ -30,10 +27,18 @@ namespace DuView
 		}
 
 		//
-		public override void Close()
+		protected override void Dispose(bool disposing)
 		{
-			if (_zip != null)
-				_zip.Dispose();
+			base.Dispose(disposing);
+
+			if (disposing)
+			{
+				if (_zip != null)
+				{
+					_zip.Dispose();
+					_zip = null;
+				}
+			}
 		}
 
 		//
@@ -104,12 +109,12 @@ namespace DuView
 			public int Compare(object x, object y)
 			{
 				return (x is ZipArchiveEntry ex) && (y is ZipArchiveEntry ey) ?
-					DuLib.Data.StringAsNumericComparer.Comparer.Compare(ex.FullName, ey.FullName) : -1;
+					Du.Data.StringAsNumericComparer.Comparer.Compare(ex.FullName, ey.FullName) : -1;
 			}
 
 			public int Compare(ZipArchiveEntry x, ZipArchiveEntry y)
 			{
-				return DuLib.Data.StringAsNumericComparer.Comparer.Compare(x.FullName, y.FullName);
+				return Du.Data.StringAsNumericComparer.Comparer.Compare(x.FullName, y.FullName);
 			}
 		}
 

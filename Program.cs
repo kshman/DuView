@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Du.WinForms;
+using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -25,41 +26,23 @@ namespace DuView
 
 		static bool HasProductProcess(string filename)
 		{
-#if false
-			bool ret;
-			Mutex m = new Mutex(true, "PurLiveDuView", out var flag);
-			return !ret;
-#else
 			var prcs = System.Diagnostics.Process.GetProcessesByName(Application.ProductName);
+
 			if (prcs == null || prcs.Length == 1)
 				return false;
 			else if (prcs.Length == 2)
 			{
 				var p = prcs[0].Id == System.Diagnostics.Process.GetCurrentProcess().Id ? prcs[1] : prcs[0];
 				IntPtr h = p.MainWindowHandle;
-				if (NativeMethods.IsIconic(h))
-					NativeMethods.ShowWindowAsync(h, NativeMethods.SW_RESTORE);
-				NativeMethods.SetForegroundWindow(h);
+				
+				ControlDu.ShowIfIconic(h);
+				ControlDu.SetForeground(h);
 
-				// https://iwoohaha.tistory.com/90
-				var enc = DuLib.Converter.EncodingString(filename);
-				NativeMethods.CopyDataStruct s = new NativeMethods.CopyDataStruct();
-				try
-				{
-					s.cbData = (enc.Length + 1) * 2;
-					s.lpData = NativeMethods.LocalAlloc(0x40, s.cbData);
-					Marshal.Copy(enc.ToCharArray(), 0, s.lpData, enc.Length);
-					s.dwData = (IntPtr)1;
-					NativeMethods.SendMessage(h, NativeMethods.WM_COPYDATA, IntPtr.Zero, ref s);
-				}
-				finally
-				{
-					s.Dispose();
-				}
+				var enc = Du.Converter.EncodingString(filename);
+				ControlDu.SendCopyDataString(h, enc);
 			}
 
 			return true;
-#endif
 		}
 	}
 }

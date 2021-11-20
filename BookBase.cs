@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DuView
 {
@@ -57,20 +55,21 @@ namespace DuView
 		//
 		public void Dispose()
 		{
-			Close();
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
 		//
-		public virtual void Close()
+		protected virtual void Dispose(bool disposing)
 		{
-			_cache.Clear();
-		}
+			if (disposing)
+			{
+				_entries.Clear();
+				_entries = null;
 
-		//
-		public void ActivateSetting()
-		{
-			Settings.LastFileName = FileName;
-			Settings.LastFilePage = CurrentPage;
+				_cache.Clear();
+				_cache = null;
+			}
 		}
 
 		//
@@ -90,8 +89,6 @@ namespace DuView
 
 				_cache.Remove(first.Key);
 				_csize -= fsize;
-
-				//first.Value?.Dispose();
 			}
 
 			_cache.Add(page, img);
@@ -140,8 +137,10 @@ namespace DuView
 		}
 
 		//
-		public void PrepareCurrent(Types.ViewMode mode)
+		public void PrepareCurrent()
 		{
+			var mode = Settings.ViewMode;
+
 			if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
 			{
 				PageLeft = ReadPage(CurrentPage);
@@ -158,7 +157,7 @@ namespace DuView
 				}
 				else
 				{
-					if (CurrentPage < TotalPage)
+					if (CurrentPage + 1 < TotalPage)
 					{
 						right = ReadPage(CurrentPage + 1);
 						if (right.Width > right.Height)
@@ -189,8 +188,9 @@ namespace DuView
 		}
 
 		// 
-		public bool MoveNext(Types.ViewMode mode)
+		public bool MoveNext()
 		{
+			var mode = Settings.ViewMode;
 			int prev = CurrentPage;
 
 			if (PageLeft == null || PageRight == null)
@@ -214,8 +214,9 @@ namespace DuView
 		}
 
 		// 
-		public bool MovePrev(Types.ViewMode mode)
+		public bool MovePrev()
 		{
+			var mode = Settings.ViewMode;
 			int prev = CurrentPage;
 
 			if (PageLeft == null || PageRight == null)
@@ -236,7 +237,7 @@ namespace DuView
 		}
 
 		//
-		public bool MovePage(Types.ViewMode mode, int page)
+		public bool MovePage(int page)
 		{
 			int prev = CurrentPage;
 

@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Du;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DuView
@@ -50,6 +47,25 @@ namespace DuView
 				default:
 					return System.Drawing.Drawing2D.InterpolationMode.Default;
 			}
+		}
+
+		// 파일이름 정보를 파일이름과 줄로
+		public static (string filename, int line) StringToFileLine(string s)
+		{
+			var n = s.IndexOf('|');
+			if (n < 0)
+				return (string.Empty, 0);
+
+			var line = Converter.ToInt(s.Substring(0, n));
+			var filename = s.Substring(n + 1);
+
+			return (filename, line);
+		}
+
+		// 파일이름과 줄을 파일 이름 정보로
+		public static string FileLineToString(string filename, int line)
+		{
+			return string.IsNullOrEmpty(filename) ? string.Empty : $"{line}|{filename}";
 		}
 
 		// 크기를 문자열로 표시
@@ -153,12 +169,12 @@ namespace DuView
 			public int Compare(object x, object y)
 			{
 				return (x is FileInfo ex) && (y is FileInfo ey) ?
-					DuLib.Data.StringAsNumericComparer.Comparer.Compare(ex.FullName, ey.FullName) : -1;
+					Du.Data.StringAsNumericComparer.Comparer.Compare(ex.FullName, ey.FullName) : -1;
 			}
 
 			public int Compare(FileInfo x, FileInfo y)
 			{
-				return DuLib.Data.StringAsNumericComparer.Comparer.Compare(x.FullName, y.FullName);
+				return Du.Data.StringAsNumericComparer.Comparer.Compare(x.FullName, y.FullName);
 			}
 		}
 	}

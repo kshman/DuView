@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using Du;
+using Du.WinForms;
+using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DuView
 {
-	public partial class MainForm : DuLib.WinForms.BadakForm
+	public partial class MainForm : Form
 	{
+		private readonly string _title = "두뷰";
+
 		private BookBase Book { get; set; }
 
 		private Bitmap _bmp = null;
 		private string _init_filename;
+
+		private BadakFormWorker _bfw;
 
 		public MainForm(string filename)
 		{
@@ -25,18 +24,17 @@ namespace DuView
 
 			ImagePictureBox.MouseWheel += ImagePictureBox_MouseWheel;
 
+			SystemButton.Form = this;
+			_bfw = new BadakFormWorker(this, SystemButton);
+			//_bfw.BodyAsTitle = true;
+
 			_init_filename = filename;
 		}
 
 		#region 폼 자산
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			//SizeMoveHitTest.BodyAsTitle = true;
-
 			Settings.WhenLoad(this);
-			Location = Settings.Window.Location;
-			Size = Settings.Window.Size;
-
 			SetupBySetting();
 
 			//
@@ -44,10 +42,7 @@ namespace DuView
 
 			//
 			if (!string.IsNullOrEmpty(_init_filename))
-			{
-				if (File.Exists(_init_filename))
-					OpenArchive(_init_filename);
-			}
+				OpenBook(_init_filename);
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -59,30 +54,38 @@ namespace DuView
 		{
 			if (Book != null)
 			{
-				Settings.LastFileName = Book.FileName;
-				Settings.LastFilePage = Book.CurrentPage;
-				// 책깔피?
 				Book.Dispose();
+				Book = null;
 			}
 
-			Settings.WhenClose(this);
+			Settings.KeepLocationSize(WindowState, Location, Size);
 		}
 
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == NativeMethods.WM_COPYDATA)
+			if (ControlDu.ReceiveCopyDataString(m.Msg, m.LParam, out var s))
 			{
-				// https://iwoohaha.tistory.com/90
-				var s = Marshal.PtrToStructure<NativeMethods.CopyDataStruct>(m.LParam);
-				var dec = Marshal.PtrToStringUni(s.lpData);
-				var filename = DuLib.Converter.DecodingString(dec);
-
-				OpenArchive(filename);
+				var filename = Converter.DecodingString(s);
+				OpenBook(filename);
+			}
+			else if (_bfw.WndProc(ref m))
+			{
+				// 할건 없다
 			}
 			else
 			{
 				// 후....
 				base.WndProc(ref m);
+			}
+		}
+
+		public override string Text
+		{
+			get => base.Text;
+			set
+			{
+				base.Text = value;
+				TitleLabel.Text = value;
 			}
 		}
 
@@ -147,7 +150,7 @@ namespace DuView
 
 					// 화면 전환
 					case Keys.F:
-						BadakMaximize();
+						_bfw.Maximize();
 						break;
 
 					// 보기 설정
@@ -199,7 +202,7 @@ namespace DuView
 			if (e.Data.GetData(DataFormats.FileDrop) is string[] filenames && filenames.Length > 0)
 			{
 				// 하나만 쓴다
-				OpenArchive(filenames[0]);
+				OpenBook(filenames[0]);
 			}
 		}
 
@@ -217,31 +220,46 @@ namespace DuView
 		{
 			ViewBook();
 		}
+
+		private void TopPanel_MouseDown(object sender, MouseEventArgs e)
+		{
+			_bfw.DragOnDown(e);
+		}
+
+		private void TopPanel_MouseUp(object sender, MouseEventArgs e)
+		{
+			_bfw.DragOnUp(e);
+		}
+
+		private void TopPanel_MouseMove(object sender, MouseEventArgs e)
+		{
+			_bfw.DragOnMove(e);
+		}
 		#endregion
 
 		#region 그림 영역 UI
 		private void ImagePictureBox_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (SizeMoveHitTest.BodyAsTitle)
-				BadakDragOnMouseDown(e);
+			if (_bfw.BodyAsTitle)
+				_bfw.DragOnDown(e);
 			else
 			{
 				// 최대화만 쓰자
 				if (e.Clicks == 2)
-					BadakMaximize();
+					_bfw.Maximize();
 			}
 		}
 
 		private void ImagePictureBox_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (SizeMoveHitTest.BodyAsTitle)
-				BadakDragOnMouseUp(e);
+			if (_bfw.BodyAsTitle)
+				_bfw.DragOnUp(e);
 		}
 
 		private void ImagePictureBox_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (SizeMoveHitTest.BodyAsTitle)
-				BadakDragOnMouseMove(e);
+			if (_bfw.BodyAsTitle)
+				_bfw.DragOnMove(e);
 		}
 
 		private void ImagePictureBox_MouseWheel(object sender, MouseEventArgs e)
@@ -261,6 +279,9 @@ namespace DuView
 		#region 메뉴 및 명령
 		private void ActivateFocus()
 		{
+			ActiveControl = ImagePictureBox;
+
+			/*
 			if (!FocusTextBox.Enabled)
 				ImagePictureBox.Focus();
 			else
@@ -268,6 +289,7 @@ namespace DuView
 				FocusTextBox.Clear();
 				FocusTextBox.Focus();
 			}
+			*/
 		}
 
 		private void SetupBySetting()
@@ -297,7 +319,7 @@ namespace DuView
 
 			if (viewbook)
 			{
-				Book?.PrepareCurrent(Settings.ViewMode);
+				Book?.PrepareCurrent();
 				ViewBook();
 			}
 		}
@@ -392,7 +414,7 @@ namespace DuView
 			}
 
 			if (File.Exists(Settings.LastFileName))
-				OpenArchive(Settings.LastFileName, Settings.LastFilePage);
+				OpenArchive(Settings.LastFileName);
 		}
 
 		private void FileCloseMenuItem_Click(object sender, EventArgs e)
@@ -424,7 +446,7 @@ namespace DuView
 
 		private void FileTestMenuItem_Click(object sender, EventArgs e)
 		{
-			Book.PrepareCurrent(Settings.ViewMode);
+			Book.PrepareCurrent();
 			ViewBook();
 		}
 
@@ -467,24 +489,26 @@ namespace DuView
 		{
 			OpenNextBook();
 		}
+
+		private void MaxCacheMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
 		#endregion
 
 		#region 파일
 		private void CloseBook()
 		{
-			if (Book == null)
-				return;
+			if (Book != null)
+			{
+				Book.Dispose();
+				Book = null;
 
-			Settings.LastFileName = Book.FileName;
-			Settings.LastFilePage = Book.CurrentPage;
+				RefreshPageInfo();
+				ViewBook();
 
-			Book.Close();
-			Book = null;
-
-			RefreshPageInfo();
-			ViewBook();
-
-			Text = "DuView";
+				Text = _title;
+			}
 
 			ActivateFocus();
 		}
@@ -499,7 +523,20 @@ namespace DuView
 			};
 
 			if (dlg.ShowDialog() == DialogResult.OK)
-				OpenArchive(dlg.FileName);
+				OpenBook(dlg.FileName);
+		}
+
+		private void OpenBook(string filename, int page = -1)
+		{
+			if (File.Exists(filename))
+			{
+				// 이건 단일 파일이나 아카이브
+				OpenArchive(filename, page);
+			}
+			else if (Directory.Exists(filename))
+			{
+				// 이건 디렉토리
+			}
 		}
 
 		private void OpenArchive(string filename, int page = -1)
@@ -523,7 +560,7 @@ namespace DuView
 			if (bk == null)
 			{
 				// 음... 뭘까
-				Notifier.ShowBalloonTip(1000, "Open Book", "Unknown file type", ToolTipIcon.Error);
+				Notifier.ShowBalloonTip(1000, "책 열기", "어떤 책인지 알 수 없어요!", ToolTipIcon.Error);
 			}
 			else
 			{
@@ -531,14 +568,13 @@ namespace DuView
 					page = Settings.GetRecentlyPage(bk.OnlyFileName);
 
 				if (Book != null)
-					Book.Close();
+					Book.Dispose();
 
 				Book = bk;
 				Book.CurrentPage = page;
-				Book.PrepareCurrent(Settings.ViewMode);
+				Book.PrepareCurrent();
 
 				Settings.LastFileName = filename;
-				Settings.LastFilePage = page;
 
 				RefreshPageInfo();
 				ViewBook();
@@ -558,7 +594,7 @@ namespace DuView
 			var filename = Book.FindNextFile(true);
 			if (filename == null)
 			{
-				Notifier.ShowBalloonTip(1000, "Open Book", "No previous book found", ToolTipIcon.Info);
+				Notifier.ShowBalloonTip(1000, "책 열기", "이전 책이 없어요", ToolTipIcon.Info);
 				return;
 			}
 
@@ -574,7 +610,7 @@ namespace DuView
 			var filename = Book.FindNextFile(false);
 			if (filename == null)
 			{
-				Notifier.ShowBalloonTip(1000, "Open Book", "No next book found", ToolTipIcon.Info);
+				Notifier.ShowBalloonTip(1000, "책 열기", "다음 책이 없어요", ToolTipIcon.Info);
 				return;
 			}
 
@@ -584,9 +620,10 @@ namespace DuView
 
 		#region 그리기
 		//
-		private void DrawLogo(Graphics g, Bitmap bmp, int w, int h)
+		private void DrawLogo(Graphics g, int w, int h)
 		{
 			var img = Properties.Resources.housebari_head_128;
+
 			if (w > img.Width && h > img.Height)
 				g.DrawImage(img, w - img.Width - 50, h - img.Height - 50);
 			else
@@ -615,12 +652,14 @@ namespace DuView
 			// 왼쪽
 			(w, h) = ToolBox.CalcDestSize(Settings.ViewZoom, f, bmp.Height, left.Width, left.Height);
 			rt = ToolBox.CalcDestRect(f, bmp.Height, w, h, HorizontalAlignment.Right);
+
 			g.DrawImage(left, rt, 0, 0, left.Width, left.Height, GraphicsUnit.Pixel);
 
 			// 오른쪽
 			(w, h) = ToolBox.CalcDestSize(Settings.ViewZoom, f, bmp.Height, right.Width, right.Height);
 			rt = ToolBox.CalcDestRect(f, bmp.Height, w, h, HorizontalAlignment.Left);
 			rt.X += f;
+
 			g.DrawImage(right, rt, 0, 0, right.Width, right.Height, GraphicsUnit.Pixel);
 		}
 		#endregion
@@ -630,8 +669,9 @@ namespace DuView
 		{
 			if (Book == null)
 			{
+				// 페이지 숨김
 				PageInfoLabel.Visible = false;
-				PageNameLabel.Visible = false;
+				MaxCacheMenuItem.Text = "캐시";
 			}
 			else
 			{
@@ -639,20 +679,15 @@ namespace DuView
 				PageInfoLabel.Visible = true;
 
 				var cachesize = ToolBox.SizeToString(Book.CacheSize);
-				var img = Book.PageLeft ?? Book.PageRight;
-				if (img == null)
-					PageNameLabel.Text = $"[{cachesize}]";
-				else
-					PageNameLabel.Text = $"[{cachesize}] {img.Tag as string}";
-				PageNameLabel.Visible = true;
+				MaxCacheMenuItem.Text = $"[{cachesize}]";
 			}
 		}
 
 		private void PageMovePrev()
 		{
-			if (Book != null && Book.MovePrev(Settings.ViewMode))
+			if (Book != null && Book.MovePrev())
 			{
-				Book.PrepareCurrent(Settings.ViewMode);
+				Book.PrepareCurrent();
 
 				RefreshPageInfo();
 				ViewBook();
@@ -661,9 +696,9 @@ namespace DuView
 
 		private void PageMoveNext()
 		{
-			if (Book != null && Book.MoveNext(Settings.ViewMode))
+			if (Book != null && Book.MoveNext())
 			{
-				Book.PrepareCurrent(Settings.ViewMode);
+				Book.PrepareCurrent();
 
 				RefreshPageInfo();
 				ViewBook();
@@ -672,9 +707,9 @@ namespace DuView
 
 		private void PageMovePage(int page)
 		{
-			if (Book != null && Book.MovePage(Settings.ViewMode, page))
+			if (Book != null && Book.MovePage(page))
 			{
-				Book.PrepareCurrent(Settings.ViewMode);
+				Book.PrepareCurrent();
 
 				RefreshPageInfo();
 				ViewBook();
@@ -683,9 +718,9 @@ namespace DuView
 
 		private void PageMoveDelta(int delta)
 		{
-			if (Book != null && Book.MovePage(Settings.ViewMode, Book.CurrentPage + delta))
+			if (Book != null && Book.MovePage(Book.CurrentPage + delta))
 			{
-				Book.PrepareCurrent(Settings.ViewMode);
+				Book.PrepareCurrent();
 
 				RefreshPageInfo();
 				ViewBook();
@@ -718,7 +753,7 @@ namespace DuView
 				g.InterpolationMode = ToolBox.QualityToInterpolationMode(Settings.ViewQuality);
 
 				if (Book == null)
-					DrawLogo(g, _bmp, w, h);
+					DrawLogo(g, w, h);
 				else
 				{
 					if (Settings.ViewMode == Types.ViewMode.FitWidth)
@@ -733,7 +768,7 @@ namespace DuView
 							if (Book.PageRight == null)
 							{
 								// 헐 뭐지
-								DrawLogo(g, _bmp, w, h);
+								DrawLogo(g, w, h);
 							}
 							else
 							{

@@ -1,12 +1,7 @@
-﻿using DuLib;
-using DuLib.Platform;
+﻿using Du.Platform;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DuView
@@ -15,29 +10,22 @@ namespace DuView
 	{
 		private static readonly string _keyname = @"PuruLive\DuView";
 
-		public static Rectangle Window { get; set; } = new Rectangle();
-		public static string LastFolder { get; set; } = string.Empty;
+		private static string _last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+		private static string _last_filename;
 
-		public static string LastFileName { get; set; } = string.Empty;
-		public static int LastFilePage { get; set; } = 0;
+		public static bool _view_zoom = true;
+		public static Types.ViewMode _view_mode = Types.ViewMode.FitWidth;
+		public static Types.ViewQuality _view_quality = Types.ViewQuality.Default;
 
-		public static bool ViewZoom { get; set; } = true;
-		public static Types.ViewMode ViewMode { get; set; } = Types.ViewMode.FitWidth;
-		public static Types.ViewQuality ViewQuality { get; set; } = Types.ViewQuality.Default;
-
-		public static long MaxCacheSize { get; set; } = 180 * 1048576;
+		public static long _max_cache_size = 180 * 1048576; // 쉽게해서 180메가
 
 		public static void WhenLoad(Form form)
 		{
-			Window = new Rectangle(form.Location, form.Size);
-			LastFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-
-			using (RegKey rk = new RegKey(_keyname))
+			using (var rk = new RegKey(_keyname))
 			{
 				if (rk.IsOpen)
 				{
 					string v;
-					int n;
 
 					v = rk.GetString("Window");
 					if (!string.IsNullOrEmpty(v))
@@ -45,73 +33,141 @@ namespace DuView
 						string[] ss = v.Split(',');
 						if (ss.Length == 4)
 						{
-							Window = new Rectangle(
+							var rt = new Rectangle(
 								int.Parse(ss[0]),
 								int.Parse(ss[1]),
 								int.Parse(ss[2]),
 								int.Parse(ss[3]));
+
+							form.Location = rt.Location;
+							form.Size = rt.Size;
 						}
 					}
 
 					v = rk.GetDecodingString("LastFolder");
 					if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
-						LastFolder = v;
+						_last_folder = v;
 
-					v = rk.GetDecodingString("LastFile");
-					if (!string.IsNullOrEmpty(v))
-						(LastFileName, LastFilePage) = ConvertFileString(v);
+					v = rk.GetDecodingString("LastFileName");
+					if (!string.IsNullOrEmpty(v) && File.Exists(v))
+						_last_filename = v;
 
-					ViewZoom = rk.GetInt("ViewZoom", ViewZoom ? 1 : 0) != 0;
+					_view_zoom = rk.GetInt("ViewZoom", _view_zoom ? 1 : 0) != 0;
+					_view_mode = (Types.ViewMode)rk.GetInt("ViewMode", (int)_view_mode);
+					_view_quality = (Types.ViewQuality)rk.GetInt("ViewQuality", (int)_view_quality);
 
-					n = rk.GetInt("ViewMode", (int)ViewMode);
-					ViewMode = (Types.ViewMode)n;
-
-					n = rk.GetInt("ViewQuality", (int)ViewQuality);
-					ViewQuality = (Types.ViewQuality)n;
-
-					MaxCacheSize = rk.GetLong("MaxCacheSize", MaxCacheSize);
+					_max_cache_size = rk.GetLong("MaxCacheSize", _max_cache_size);
 				}
 			}
 		}
 
-		public static void WhenClose(Form form)
+		//
+		public static void KeepLocationSize(FormWindowState state, Point location, Size size)
 		{
-			Window = new Rectangle(form.Location, form.Size);
-
-			using (RegKey rk = new RegKey(_keyname, true))
+			if (state == FormWindowState.Normal)
 			{
-				if (form.WindowState == FormWindowState.Normal)
-					rk.SetString("Window", $"{Window.X},{Window.Y},{Window.Width},{Window.Height}");
-				rk.SetEncodingString("LastFolder", LastFolder);
-				rk.SetEncodingString("LastFile", ConvertRegString(LastFileName, LastFilePage));
-				rk.SetInt("ViewZoom", ViewZoom ? 1 : 0);
-				rk.SetInt("ViewMode", (int)ViewMode);
-				rk.SetInt("ViewQuality", (int)ViewQuality);
-				rk.SetLong("MaxCacheSize", MaxCacheSize);
+				var rt = new Rectangle(location, size);
+
+				using (var rk = new RegKey(_keyname, true))
+					rk.SetString("Window", $"{rt.X},{rt.Y},{rt.Width},{rt.Height}");
 			}
 		}
 
+		//
+		public static string LastFolder
+		{
+			get => _last_folder;
+			set
+			{
+				if (!value.Equals(_last_folder))
+				{
+					_last_folder = value;
+					using (var rk = new RegKey(_keyname, true))
+						rk.SetEncodingString("LastFolder", value);
+				}
+			}
+		}
+
+		//
+		public static string LastFileName
+		{
+			get => _last_filename;
+			set
+			{
+				if (!value.Equals(_last_filename))
+				{
+					_last_filename = value;
+					using (var rk = new RegKey(_keyname, true))
+						rk.SetEncodingString("LastFileName", _last_filename);
+				}
+			}
+		}
+
+		//
+		public static bool ViewZoom
+		{
+			get => _view_zoom;
+			set
+			{
+				if (value != _view_zoom)
+				{
+					_view_zoom = value;
+					using (var rk = new RegKey(_keyname, true))
+						rk.SetInt("ViewZoom", ViewZoom ? 1 : 0);
+				}
+			}
+		}
+
+		//
+		public static Types.ViewMode ViewMode
+		{
+			get => _view_mode;
+			set
+			{
+				if (value != _view_mode)
+				{
+					_view_mode = value;
+					using (var rk = new RegKey(_keyname, true))
+						rk.SetInt("ViewMode", (int)ViewMode);
+				}
+			}
+		}
+
+		//
+		public static Types.ViewQuality ViewQuality
+		{
+			get => _view_quality;
+			set
+			{
+				if (value != _view_quality)
+				{
+					_view_quality = value;
+					using (var rk = new RegKey(_keyname, true))
+						rk.SetInt("ViewQuality", (int)ViewQuality);
+				}
+			}
+		}
+
+		//
+		public static long MaxCacheSize
+		{
+			get => _max_cache_size;
+			set
+			{
+				if (value != _max_cache_size)
+				{
+					_max_cache_size = value;
+					using (var rk = new RegKey(_keyname, true))
+						rk.SetLong("MaxCacheSize", MaxCacheSize);
+				}
+			}
+		}
+
+		//
 		public static int GetRecentlyPage(string onlyfilename)
 		{
 			// 해야함
 			return 0;
-		}
-
-		private static (string filename, int line) ConvertFileString(string s)
-		{
-			var n = s.IndexOf('|');
-			if (n < 0)
-				return (string.Empty, 0);
-
-			var line = Converter.ToInt(s.Substring(0, n));
-			var filename = s.Substring(n + 1);
-
-			return (filename, line);
-		}
-
-		private static string ConvertRegString(string filename, int line)
-		{
-			return string.IsNullOrEmpty(filename) ? string.Empty : $"{line}|{filename}";
 		}
 	}
 }
