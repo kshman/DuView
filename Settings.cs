@@ -10,6 +10,8 @@ namespace DuView
 	{
 		private static readonly string _keyname = @"PuruLive\DuView";
 
+		private static int _magnetic_dock_size = 10;
+
 		private static string _last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 		private static string _last_filename;
 
@@ -17,7 +19,7 @@ namespace DuView
 		public static Types.ViewMode _view_mode = Types.ViewMode.FitWidth;
 		public static Types.ViewQuality _view_quality = Types.ViewQuality.Default;
 
-		public static long _max_cache_size = 180 * 1048576; // 쉽게해서 180메가
+		public static long _max_cache_size = 230 * 1048576; // 쉽게해서 180메가
 
 		public static void WhenLoad(Form form)
 		{
@@ -43,6 +45,8 @@ namespace DuView
 							form.Size = rt.Size;
 						}
 					}
+
+					_magnetic_dock_size = rk.GetInt("MagneticDockSize", _magnetic_dock_size);
 
 					v = rk.GetDecodingString("LastFolder");
 					if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
@@ -70,6 +74,21 @@ namespace DuView
 
 				using (var rk = new RegKey(_keyname, true))
 					rk.SetString("Window", $"{rt.X},{rt.Y},{rt.Width},{rt.Height}");
+			}
+		}
+
+		//
+		public static int MagneticDockSize
+		{
+			get => _magnetic_dock_size;
+			set
+			{
+				if (value!= _magnetic_dock_size)
+				{
+					_magnetic_dock_size = value;
+					using (var rk = new RegKey(_keyname, true))
+						rk.SetInt("MagneticDockSize", value);
+				}
 			}
 		}
 

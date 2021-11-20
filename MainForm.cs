@@ -14,19 +14,25 @@ namespace DuView
 		private BookBase Book { get; set; }
 
 		private Bitmap _bmp = null;
-		private string _init_filename;
+		private readonly string _init_filename;
 
-		private BadakFormWorker _bfw;
+		private readonly BadakFormWorker _bfw;
 
 		public MainForm(string filename)
 		{
 			InitializeComponent();
 
+			// Malgun Gothic / Microsoft Sans Serif
+			TitleLabel.Font = new Font("Malgun Gothic", 21.75F, FontStyle.Regular, GraphicsUnit.Point);
+
 			ImagePictureBox.MouseWheel += ImagePictureBox_MouseWheel;
 
 			SystemButton.Form = this;
-			_bfw = new BadakFormWorker(this, SystemButton);
-			//_bfw.BodyAsTitle = true;
+			_bfw = new BadakFormWorker(this, SystemButton)
+			{
+				//BodyAsTitle = true,
+				MoveTopToMaximize = false,
+			};
 
 			_init_filename = filename;
 		}
@@ -63,7 +69,7 @@ namespace DuView
 
 		protected override void WndProc(ref Message m)
 		{
-			if (ControlDu.ReceiveCopyDataString(m.Msg, m.LParam, out var s))
+			if (ControlDu.ReceiveCopyDataString(ref m, out var s))
 			{
 				var filename = Converter.DecodingString(s);
 				OpenBook(filename);
@@ -74,6 +80,9 @@ namespace DuView
 			}
 			else
 			{
+				// 윈도우포스
+				ControlDu.MagneticDockForm(ref m, this, Settings.MagneticDockSize);
+
 				// 후....
 				base.WndProc(ref m);
 			}
@@ -91,101 +100,91 @@ namespace DuView
 
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.Shift)
+			switch (e.KeyCode)
 			{
-				switch (e.KeyCode)
-				{
-					// 페이지 조작
-					case Keys.Left:
-					case Keys.Up:
+				// 끝냄
+				case Keys.Escape:
+					Close();
+					break;
+
+				case Keys.W:
+					if (e.Control)
+						CloseBook();
+					break;
+
+				// 페이지 조작
+				case Keys.Left:
+				case Keys.Up:
+					if (e.Shift)
 						PageMoveDelta(-1);
-						break;
-
-					case Keys.Right:
-					case Keys.Down:
-					case Keys.Space:
-					case Keys.NumPad0:
-						PageMoveDelta(+1);
-						break;
-				}
-			}
-			else
-			{
-				switch (e.KeyCode)
-				{
-					// 끝냄
-					case Keys.Escape:
-						Close();
-						break;
-
-					// 페이지 조작
-					case Keys.Left:
-					case Keys.Up:
+					else
 						PageMovePrev();
-						break;
+					break;
 
-					case Keys.Right:
-					case Keys.Down:
-					case Keys.Space:
-					case Keys.NumPad0:
+				case Keys.Right:
+				case Keys.Down:
+				case Keys.Space:
+				case Keys.NumPad0:
+					if (e.Shift)
+						PageMoveDelta(+1);
+					else
 						PageMoveNext();
-						break;
+					break;
 
-					case Keys.Home:
-						PageMovePage(0);
-						break;
+				case Keys.Home:
+					PageMovePage(0);
+					break;
 
-					case Keys.End:
-						PageMovePage(int.MaxValue);
-						break;
+				case Keys.End:
+					PageMovePage(int.MaxValue);
+					break;
 
-					case Keys.PageUp:
-						PageMoveDelta(-10);
-						break;
+				case Keys.PageUp:
+					PageMoveDelta(-10);
+					break;
 
-					case Keys.PageDown:
-					case Keys.Back:
-						PageMoveDelta(+10);
-						break;
+				case Keys.PageDown:
+				case Keys.Back:
+					PageMoveDelta(+10);
+					break;
 
-					// 화면 전환
-					case Keys.F:
-						_bfw.Maximize();
-						break;
+				// 화면 전환
+				case Keys.F:
+					_bfw.Maximize();
+					break;
 
-					// 보기 설정
-					case Keys.D0:
-						UpdateViewZoom(!Settings.ViewZoom);
-						break;
+				// 보기 설정
+				case Keys.D0:
+					UpdateViewZoom(!Settings.ViewZoom);
+					break;
 
-					case Keys.D1:
-						UpdateViewMode(Types.ViewMode.FitWidth);
-						break;
+				case Keys.D1:
+					UpdateViewMode(Types.ViewMode.FitWidth);
+					break;
 
-					case Keys.D3:
-						UpdateViewMode(Types.ViewMode.LeftToRight);
-						ViewLeftRightMenuItem_Click(null, null);
-						break;
+				case Keys.D3:
+					UpdateViewMode(Types.ViewMode.LeftToRight);
+					ViewLeftRightMenuItem_Click(null, null);
+					break;
 
-					case Keys.D4:
-						UpdateViewMode(Types.ViewMode.RightToLeft);
-						break;
+				case Keys.D4:
+					UpdateViewMode(Types.ViewMode.RightToLeft);
+					break;
 
-					case Keys.D5:
-						UpdateViewQuality(Types.ViewQuality.Default);
-						break;
+				case Keys.D5:
+					UpdateViewQuality(Types.ViewQuality.Default);
+					break;
 
-					// 파일이나 디렉토리
-					case Keys.BrowserBack:
-					case Keys.OemOpenBrackets:
-						OpenPrevBook();
-						break;
+				// 파일이나 디렉토리
+				case Keys.BrowserBack:
+				case Keys.OemOpenBrackets:
+					OpenPrevBook();
+					break;
 
-					case Keys.BrowserForward:
-					case Keys.OemCloseBrackets:
-						OpenNextBook();
-						break;
-				}
+				case Keys.BrowserForward:
+				case Keys.OemCloseBrackets:
+					OpenNextBook();
+					break;
 			}
 		}
 

@@ -130,17 +130,13 @@ namespace DuView
 
 			Array.Sort(ffs, new ToolBox.FileInfoComparer());
 			var at = Array.FindIndex(ffs, x => x.FullName == FileName);
-
-			if (at < 0)
-				return null;
-
-			if (at == 0)
-				return null;
-
-			if (at >= ffs.Length)
-				return null;
-
 			var want = no_i_want_prev_file ? at - 1 : at + 1;
+
+			if (want < 0)
+				return null;
+
+			if (want >= ffs.Length)
+				return null;
 
 			return ffs[want].FullName;
 		}
