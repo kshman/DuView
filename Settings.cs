@@ -1,4 +1,6 @@
-﻿using Du.Platform;
+﻿using Du;
+using Du.Data;
+using Du.Platform;
 using System;
 using System.Drawing;
 using System.IO;
@@ -20,6 +22,9 @@ namespace DuView
 		public static Types.ViewQuality _view_quality = Types.ViewQuality.Default;
 
 		public static long _max_cache_size = 230 * 1048576; // 쉽게해서 180메가
+		public static int _max_recently = 1000;
+
+		public static ResizableLineDb _recently;
 
 		public static void WhenLoad(Form form)
 		{
@@ -63,6 +68,9 @@ namespace DuView
 					_max_cache_size = rk.GetLong("MaxCacheSize", _max_cache_size);
 				}
 			}
+
+			var rfn = RecentlyPath;
+			_recently = File.Exists(rfn) ? ResizableLineDb.FromFile(rfn) : ResizableLineDb.New();
 		}
 
 		//
@@ -78,12 +86,24 @@ namespace DuView
 		}
 
 		//
+		public static string StartupPath
+		{
+			get { return Application.StartupPath; }
+		}
+
+		//
+		public static string RecentlyPath
+		{
+			get { return Path.Combine(Application.StartupPath, @"DuView.recently"); }
+		}
+
+		//
 		public static int MagneticDockSize
 		{
 			get => _magnetic_dock_size;
 			set
 			{
-				if (value!= _magnetic_dock_size)
+				if (value != _magnetic_dock_size)
 				{
 					_magnetic_dock_size = value;
 					using (var rk = new RegKey(_keyname, true))
@@ -185,8 +205,39 @@ namespace DuView
 		//
 		public static int GetRecentlyPage(string onlyfilename)
 		{
-			// 해야함
-			return 0;
+			if (string.IsNullOrEmpty(onlyfilename))
+				return 0;
+
+			var s = Converter.EncodingString(onlyfilename);
+			var v = _recently.Get(s);
+
+			return string.IsNullOrEmpty(v) ? 0 : Convert.ToInt32(v);
+		}
+
+		//
+		public static void SetRecentlyPage(string onlyfilename, int page)
+		{
+			if (!string.IsNullOrEmpty(onlyfilename))
+			{
+				var s = Converter.EncodingString(onlyfilename);
+				var v = page.ToString();
+
+				_recently.Set(s, v);
+				_recently.ResizeCutBeginSlowly(_max_recently);
+			}
+		}
+
+		//
+		public static void SetRecentlyPage(BookBase book)
+		{
+			SetRecentlyPage(book.OnlyFileName, book.CurrentPage);
+		}
+
+		//
+		public static void SaveFileInfos()
+		{
+			var rfn = RecentlyPath;
+			_recently.SaveToFile(rfn, System.Text.Encoding.UTF8, "# DuView recently files");
 		}
 	}
 }

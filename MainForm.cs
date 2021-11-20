@@ -60,11 +60,13 @@ namespace DuView
 		{
 			if (Book != null)
 			{
+				Settings.SetRecentlyPage(Book);
 				Book.Dispose();
 				Book = null;
 			}
 
 			Settings.KeepLocationSize(WindowState, Location, Size);
+			Settings.SaveFileInfos();
 		}
 
 		protected override void WndProc(ref Message m)
@@ -500,6 +502,7 @@ namespace DuView
 		{
 			if (Book != null)
 			{
+				Settings.SetRecentlyPage(Book);
 				Book.Dispose();
 				Book = null;
 
@@ -567,7 +570,10 @@ namespace DuView
 					page = Settings.GetRecentlyPage(bk.OnlyFileName);
 
 				if (Book != null)
+				{
+					Settings.SetRecentlyPage(Book);
 					Book.Dispose();
+				}
 
 				Book = bk;
 				Book.CurrentPage = page;
