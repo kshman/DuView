@@ -17,7 +17,7 @@ namespace DuView
 		private readonly string _init_filename;
 
 		private readonly BadakFormWorker _bfw;
-		private PageSelectForm _select;
+		private readonly PageSelectForm _select;
 
 		public MainForm(string filename)
 		{
@@ -72,6 +72,12 @@ namespace DuView
 			Settings.SaveFileInfos();
 		}
 
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+			ControlDu.FormEffectAppear(this);
+		}
+
 		protected override void WndProc(ref Message m)
 		{
 			if (ControlDu.ReceiveCopyDataString(ref m, out var s))
@@ -121,9 +127,9 @@ namespace DuView
 				case Keys.Left:
 				case Keys.Up:
 					if (e.Shift)
-						PageMoveDelta(-1);
+						PageGoDelta(-1);
 					else
-						PageMovePrev();
+						PageGoPrev();
 					break;
 
 				case Keys.Right:
@@ -131,26 +137,26 @@ namespace DuView
 				case Keys.Space:
 				case Keys.NumPad0:
 					if (e.Shift)
-						PageMoveDelta(+1);
+						PageGoDelta(+1);
 					else
-						PageMoveNext();
+						PageGoNext();
 					break;
 
 				case Keys.Home:
-					PageMovePage(0);
+					PageGoTo(0);
 					break;
 
 				case Keys.End:
-					PageMovePage(int.MaxValue);
+					PageGoTo(int.MaxValue);
 					break;
 
 				case Keys.PageUp:
-					PageMoveDelta(-10);
+					PageGoDelta(-10);
 					break;
 
 				case Keys.PageDown:
 				case Keys.Back:
-					PageMoveDelta(+10);
+					PageGoDelta(+10);
 					break;
 
 				case Keys.Enter:
@@ -277,9 +283,9 @@ namespace DuView
 		{
 			// 위 + / 아래 -
 			if (e.Delta > 0)
-				PageMovePrev();
+				PageGoPrev();
 			else if (e.Delta < 0)
-				PageMoveNext();
+				PageGoNext();
 		}
 
 		private void ImagePictureBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -462,32 +468,32 @@ namespace DuView
 
 		private void CtrlPrevPopupItem_Click(object sender, EventArgs e)
 		{
-			PageMovePrev();
+			PageGoPrev();
 		}
 
 		private void CtrlNextPopupItem_Click(object sender, EventArgs e)
 		{
-			PageMoveNext();
+			PageGoNext();
 		}
 
 		private void CtrlHomePopupItem_Click(object sender, EventArgs e)
 		{
-			PageMovePage(0);
+			PageGoTo(0);
 		}
 
 		private void CtrlEndPopupItem_Click(object sender, EventArgs e)
 		{
-			PageMovePage(int.MaxValue);
+			PageGoTo(int.MaxValue);
 		}
 
 		private void CtrlPrev10PopupItem_Click(object sender, EventArgs e)
 		{
-			PageMoveDelta(-10);
+			PageGoDelta(-10);
 		}
 
 		private void CtrlNext10PopupItem_Click(object sender, EventArgs e)
 		{
-			PageMoveDelta(+10);
+			PageGoDelta(+10);
 		}
 
 		private void CtrlPrevFilePopupItem_Click(object sender, EventArgs e)
@@ -710,7 +716,7 @@ namespace DuView
 			}
 		}
 
-		private void PageMovePrev()
+		private void PageGoPrev()
 		{
 			if (Book != null && Book.MovePrev())
 			{
@@ -721,7 +727,7 @@ namespace DuView
 			}
 		}
 
-		private void PageMoveNext()
+		private void PageGoNext()
 		{
 			if (Book != null && Book.MoveNext())
 			{
@@ -732,7 +738,7 @@ namespace DuView
 			}
 		}
 
-		private void PageMovePage(int page)
+		private void PageGoTo(int page)
 		{
 			if (Book != null && Book.MovePage(page))
 			{
@@ -743,7 +749,7 @@ namespace DuView
 			}
 		}
 
-		private void PageMoveDelta(int delta)
+		private void PageGoDelta(int delta)
 		{
 			if (Book != null && Book.MovePage(Book.CurrentPage + delta))
 			{

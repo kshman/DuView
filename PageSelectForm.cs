@@ -54,6 +54,12 @@ namespace DuView
 			_bfw.DragOnMove(e);
 		}
 
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+			ControlDu.FormEffectAppear(this);
+		}
+
 		protected override void WndProc(ref Message m)
 		{
 			if (!_bfw.WndProc(ref m))
