@@ -23,6 +23,8 @@ namespace DuView
 		{
 			InitializeComponent();
 
+			Opacity = 0;
+
 			// Malgun Gothic / Microsoft Sans Serif
 			TitleLabel.Font = new Font("Malgun Gothic", 21.75F, FontStyle.Regular, GraphicsUnit.Point);
 
@@ -765,7 +767,9 @@ namespace DuView
 			if (Book == null)
 				return;
 
+			_select.Opacity = 0;
 			_select.SelectedPage = Book.CurrentPage;
+
 			if (_select.ShowDialog(this) == DialogResult.OK)
 			{
 				Book.CurrentPage = _select.SelectedPage;

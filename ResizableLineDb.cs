@@ -43,5 +43,10 @@ namespace DuView
 					StringDb[i.Key] = i.Value;
 			}
 		}
+
+		public bool Remove(string key)
+		{
+			return StringDb.Remove(key);
+		}
 	}
 }

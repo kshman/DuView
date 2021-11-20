@@ -219,17 +219,27 @@ namespace DuView
 			if (!string.IsNullOrEmpty(onlyfilename))
 			{
 				var s = Converter.EncodingString(onlyfilename);
-				var v = page.ToString();
 
-				_recently.Set(s, v);
-				_recently.ResizeCutBeginSlowly(_max_recently);
+				if (page > 0)
+				{
+					var v = page.ToString();
+
+					_recently.Set(s, v);
+					_recently.ResizeCutBeginSlowly(_max_recently);
+				}
+				else
+				{
+					// 페이지가 0 이면 저장할 필요가 없쟎음
+					_recently.Remove(s);
+				}
 			}
 		}
 
 		//
 		public static void SetRecentlyPage(BookBase book)
 		{
-			SetRecentlyPage(book.OnlyFileName, book.CurrentPage);
+			var page = book.CurrentPage - 1 == book.TotalPage ? 0 : book.CurrentPage;
+			SetRecentlyPage(book.OnlyFileName, page);
 		}
 
 		//
