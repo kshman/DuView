@@ -60,7 +60,7 @@ namespace DuView
 			return e.FullName;
 		}
 
-		public override Types.BookEntryInfo[] GetEntryInfos()
+		public override Types.BookEntryInfo[] GetEntriesInfo()
 		{
 			var r = new Types.BookEntryInfo[_entries.Count];
 

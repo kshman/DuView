@@ -104,7 +104,7 @@ namespace DuView
 		//
 		protected abstract Stream OpenStream(object entry);
 		protected abstract string GetEntryName(object entry);
-		public abstract Types.BookEntryInfo[] GetEntryInfos();
+		public abstract Types.BookEntryInfo[] GetEntriesInfo();
 
 		//
 		public Image ReadPage(int pageno)

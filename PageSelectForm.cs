@@ -126,7 +126,7 @@ namespace DuView
 			PageList.BeginUpdate();
 			PageList.Items.Clear();
 
-			var entries = book.GetEntryInfos();
+			var entries = book.GetEntriesInfo();
 			var n = 0;
 			foreach (var e in entries)
 			{
