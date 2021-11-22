@@ -31,6 +31,11 @@ namespace DuView
 			public string Name;
 			public DateTime DateTime;
 			public long Size;
+
+			public override string ToString()
+			{
+				return $"{Name} ({ToolBox.SizeToString(Size)})";
+			}
 		}
 	}
 }

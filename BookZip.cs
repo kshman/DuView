@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Windows.Forms;
 
 namespace DuView
 {
@@ -126,12 +127,6 @@ namespace DuView
 			public ZipArchiveEntryComparer()
 			{ }
 
-			public int Compare(object x, object y)
-			{
-				return (x is ZipArchiveEntry ex) && (y is ZipArchiveEntry ey) ?
-					Du.Data.StringAsNumericComparer.Comparer.Compare(ex.FullName, ey.FullName) : -1;
-			}
-
 			public int Compare(ZipArchiveEntry x, ZipArchiveEntry y)
 			{
 				return Du.Data.StringAsNumericComparer.Comparer.Compare(x.FullName, y.FullName);
@@ -160,5 +155,13 @@ namespace DuView
 
 			return ffs[want].FullName;
 		}
+
+		//
+		public override bool DeleteFile()
+		{
+			return false;
+		}
+
+		// end of class
 	}
 }

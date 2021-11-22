@@ -205,6 +205,10 @@ namespace DuView
 				case Keys.OemCloseBrackets:
 					OpenNextBook();
 					break;
+
+				case Keys.Delete:
+					DeleteBookOrItem();
+					break;
 			}
 		}
 
@@ -555,32 +559,64 @@ namespace DuView
 
 		private void OpenBook(string filename, int page = -1)
 		{
+			BookBase bk;
+
 			if (File.Exists(filename))
 			{
 				// 이건 단일 파일이나 아카이브
-				OpenArchive(filename, page);
+				FileInfo fi = new FileInfo(filename);
+				var exl = fi.Extension.ToLower();
+
+				if (ToolBox.IsArchiveType(exl))
+					bk = OpenArchive(filename);
+				else if (ToolBox.IsValidImageFile(exl))
+					bk = null;
+				else
+					bk = null;
+
 			}
 			else if (Directory.Exists(filename))
 			{
 				// 이건 디렉토리
+				DirectoryInfo di = new DirectoryInfo(filename);
+
+				bk = OpenFolder(di);
+			}
+			else
+			{
+				// 엌
+				bk = null;
 			}
 
-			if (Book != null)
+			if (bk != null)
 			{
-				Text = Book.OnlyFileName;
+				if (Book != null)
+				{
+					Settings.SetRecentlyPage(Book);
+					Book.Dispose();
+				}
 
+				Book = bk;
+
+				if (page < 0)
+					page = Settings.GetRecentlyPage(bk.OnlyFileName);
+
+				bk.CurrentPage = page;
+				bk.PrepareCurrent();
+
+				Text = bk.OnlyFileName;
 				Settings.LastFileName = filename;
 
 				RefreshPageInfo();
 				ViewBook();
 
-				_select.SetBook(Book);
+				_select.SetBook(bk);
 			}
 
 			ActivateFocus();
 		}
 
-		private void OpenArchive(string filename, int page = -1)
+		private BookBase OpenArchive(string filename)
 		{
 			FileInfo fi = new FileInfo(filename);
 			Settings.LastFolder = fi.DirectoryName;
@@ -603,21 +639,24 @@ namespace DuView
 				// 음... 뭘까
 				Notifier.ShowBalloonTip(1000, "책 열기", "어떤 책인지 알 수 없어요!", ToolTipIcon.Error);
 			}
-			else
+
+			return bk;
+		}
+
+		//
+		private BookBase OpenFolder(DirectoryInfo di)
+		{
+			Settings.LastFolder = di.Parent.FullName;
+
+			BookFolder bk = BookFolder.FromFolder(di);
+
+			if (bk == null)
 			{
-				if (page < 0)
-					page = Settings.GetRecentlyPage(bk.OnlyFileName);
-
-				if (Book != null)
-				{
-					Settings.SetRecentlyPage(Book);
-					Book.Dispose();
-				}
-
-				Book = bk;
-				Book.CurrentPage = page;
-				Book.PrepareCurrent();
+				// 음... 디렉토리가..
+				Notifier.ShowBalloonTip(1000, "책 열기", "폴더를 열 수 없어요!", ToolTipIcon.Error);
 			}
+
+			return bk;
 		}
 
 		//
@@ -650,6 +689,12 @@ namespace DuView
 			}
 
 			OpenBook(filename);
+		}
+
+		//
+		private void DeleteBookOrItem()
+		{
+
 		}
 		#endregion
 

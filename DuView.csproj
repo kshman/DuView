@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BookFolder.cs" />
     <Compile Include="BookZip.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

@@ -39,6 +39,13 @@ namespace DuView
 		}
 
 		//
+		protected abstract Stream OpenStream(object entry);
+		protected abstract string GetEntryName(object entry);
+		public abstract Types.BookEntryInfo[] GetEntriesInfo();
+		public virtual bool CanDeleteFile(out string reason) { reason = string.Empty; return true; }
+		public abstract bool DeleteFile();
+
+		//
 		protected void SetFileInfo(FileInfo fi)
 		{
 			FileName = fi.FullName;
@@ -100,11 +107,6 @@ namespace DuView
 		{
 			return _cache.TryGetValue(page, out img);
 		}
-
-		//
-		protected abstract Stream OpenStream(object entry);
-		protected abstract string GetEntryName(object entry);
-		public abstract Types.BookEntryInfo[] GetEntriesInfo();
 
 		//
 		public Image ReadPage(int pageno)
@@ -257,6 +259,18 @@ namespace DuView
 		public virtual string FindNextFile(bool no_i_want_prev_file)
 		{
 			return null;
+		}
+
+		//
+		public class BookEntryInfoComparer : IComparer<Types.BookEntryInfo>
+		{
+			public BookEntryInfoComparer()
+			{ }
+
+			public int Compare(Types.BookEntryInfo x, Types.BookEntryInfo y)
+			{
+				return Du.Data.StringAsNumericComparer.Comparer.Compare(x.Name, y.Name);
+			}
 		}
 	}
 }

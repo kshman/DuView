@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace DuView
 {
-	internal static class ToolBox
+	public static class ToolBox
 	{
 		// 열 수 있는 이미지
 		public static bool IsValidImageFile(string extension)
@@ -19,6 +19,18 @@ namespace DuView
 				case ".bmp":
 				case ".tga":
 				case ".gif":
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		// 아카이브?
+		public static bool IsArchiveType(string extension)
+		{
+			switch (extension)
+			{
+				case ".zip":
 					return true;
 				default:
 					return false;
@@ -166,13 +178,19 @@ namespace DuView
 			public FileInfoComparer()
 			{ }
 
-			public int Compare(object x, object y)
-			{
-				return (x is FileInfo ex) && (y is FileInfo ey) ?
-					Du.Data.StringAsNumericComparer.Comparer.Compare(ex.FullName, ey.FullName) : -1;
-			}
-
 			public int Compare(FileInfo x, FileInfo y)
+			{
+				return Du.Data.StringAsNumericComparer.Comparer.Compare(x.FullName, y.FullName);
+			}
+		}
+
+		//
+		public class DirectoryInfoComparer : IComparer<DirectoryInfo>
+		{
+			public DirectoryInfoComparer()
+			{ }
+
+			public int Compare(DirectoryInfo x, DirectoryInfo y)
 			{
 				return Du.Data.StringAsNumericComparer.Comparer.Compare(x.FullName, y.FullName);
 			}
