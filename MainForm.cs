@@ -571,7 +571,7 @@ namespace DuView
 					bk = OpenArchive(filename);
 				else if (ToolBox.IsValidImageFile(exl))
 					bk = null;
-				else
+				 else
 					bk = null;
 
 			}
