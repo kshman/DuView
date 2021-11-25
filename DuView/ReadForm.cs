@@ -162,11 +162,12 @@ public partial class ReadForm : Form
 				break;
 
 			// 페이지
-			case Keys.Subtract:
+			case Keys.Oemcomma:
 				PageControl(Types.Controls.SeekMinusOne);
 				break;
 
-			case Keys.Add:
+			case Keys.OemPeriod:
+			case Keys.OemQuestion:
 				PageControl(Types.Controls.SeekPlusOne);
 				break;
 
@@ -228,7 +229,7 @@ public partial class ReadForm : Form
 				break;
 
 			case Keys.Tab:
-				if (Book != null)   // 혼란 방지 책이 있을때만
+				if (Book != null)   // 혼란 방지: 책이 있을때만
 				{
 					if (Settings.ViewMode == Types.ViewMode.LeftToRight)
 						UpdateViewMode(Types.ViewMode.RightToLeft);
@@ -781,6 +782,14 @@ public partial class ReadForm : Form
 
 			case Types.Controls.SeekNext10:
 				PageGoDelta(10);
+				break;
+
+			case Types.Controls.SeekMinusOne:
+				PageGoDelta(-1);
+				break;
+
+			case Types.Controls.SeekPlusOne:
+				PageGoDelta(1);
 				break;
 
 			case Types.Controls.ScanPrevious:
