@@ -30,9 +30,9 @@
 		{
 			this.PageInfoLabel = new System.Windows.Forms.Label();
 			this.PageList = new System.Windows.Forms.ListView();
-			this.PlFileNameColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.PlDateColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.PlSizeColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.PlFileNameColumn = new System.Windows.Forms.ColumnHeader();
+			this.PlDateColumn = new System.Windows.Forms.ColumnHeader();
+			this.PlSizeColumn = new System.Windows.Forms.ColumnHeader();
 			this.DoOkButton = new System.Windows.Forms.Button();
 			this.DoCancelButton = new System.Windows.Forms.Button();
 			this.SystemButton = new Du.WinForms.BadakSystemButton();
@@ -41,13 +41,13 @@
 			// PageInfoLabel
 			// 
 			this.PageInfoLabel.AutoSize = true;
-			this.PageInfoLabel.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+			this.PageInfoLabel.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.PageInfoLabel.ForeColor = System.Drawing.Color.White;
-			this.PageInfoLabel.Location = new System.Drawing.Point(4, 3);
+			this.PageInfoLabel.Location = new System.Drawing.Point(4, 4);
 			this.PageInfoLabel.Name = "PageInfoLabel";
-			this.PageInfoLabel.Size = new System.Drawing.Size(70, 30);
+			this.PageInfoLabel.Size = new System.Drawing.Size(76, 30);
 			this.PageInfoLabel.TabIndex = 1;
-			this.PageInfoLabel.Text = "label1";
+			this.PageInfoLabel.Text = "페이지";
 			this.PageInfoLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseDown);
 			this.PageInfoLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseMove);
 			this.PageInfoLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseUp);
@@ -65,11 +65,11 @@
             this.PlSizeColumn});
 			this.PageList.FullRowSelect = true;
 			this.PageList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.PageList.HideSelection = false;
-			this.PageList.Location = new System.Drawing.Point(12, 36);
+			this.PageList.Location = new System.Drawing.Point(12, 45);
+			this.PageList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.PageList.MultiSelect = false;
 			this.PageList.Name = "PageList";
-			this.PageList.Size = new System.Drawing.Size(476, 460);
+			this.PageList.Size = new System.Drawing.Size(476, 504);
 			this.PageList.TabIndex = 2;
 			this.PageList.UseCompatibleStateImageBehavior = false;
 			this.PageList.View = System.Windows.Forms.View.Details;
@@ -98,9 +98,10 @@
 			this.DoOkButton.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.DoOkButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.DoOkButton.ForeColor = System.Drawing.Color.White;
-			this.DoOkButton.Location = new System.Drawing.Point(268, 502);
+			this.DoOkButton.Location = new System.Drawing.Point(268, 558);
+			this.DoOkButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.DoOkButton.Name = "DoOkButton";
-			this.DoOkButton.Size = new System.Drawing.Size(220, 36);
+			this.DoOkButton.Size = new System.Drawing.Size(220, 45);
 			this.DoOkButton.TabIndex = 3;
 			this.DoOkButton.Text = "선택";
 			this.DoOkButton.UseVisualStyleBackColor = true;
@@ -108,20 +109,19 @@
 			// 
 			// DoCancelButton
 			// 
-			this.DoCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.DoCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.DoCancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.DoCancelButton.ForeColor = System.Drawing.Color.White;
-			this.DoCancelButton.Location = new System.Drawing.Point(419, 460);
+			this.DoCancelButton.Location = new System.Drawing.Point(30, 490);
+			this.DoCancelButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.DoCancelButton.Name = "DoCancelButton";
-			this.DoCancelButton.Size = new System.Drawing.Size(69, 36);
+			this.DoCancelButton.Size = new System.Drawing.Size(69, 45);
 			this.DoCancelButton.TabIndex = 4;
 			this.DoCancelButton.Text = "취소";
 			this.DoCancelButton.UseVisualStyleBackColor = true;
 			// 
 			// SystemButton
 			// 
-			this.SystemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.SystemButton.BackColor = System.Drawing.Color.Transparent;
 			this.SystemButton.Form = null;
 			this.SystemButton.Location = new System.Drawing.Point(349, 2);
@@ -130,27 +130,27 @@
 			this.SystemButton.MinimumSize = new System.Drawing.Size(150, 30);
 			this.SystemButton.Name = "SystemButton";
 			this.SystemButton.ShowClose = true;
-			this.SystemButton.ShowMaximize = false;
-			this.SystemButton.ShowMinimize = false;
+			this.SystemButton.ShowMaximize = true;
+			this.SystemButton.ShowMinimize = true;
 			this.SystemButton.Size = new System.Drawing.Size(150, 30);
-			this.SystemButton.TabIndex = 0;
-			this.SystemButton.CloseOrder += new System.EventHandler(this.SystemButton_CloseOrder);
+			this.SystemButton.TabIndex = 5;
 			// 
 			// PageSelectForm
 			// 
 			this.AcceptButton = this.DoOkButton;
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
 			this.CancelButton = this.DoCancelButton;
-			this.ClientSize = new System.Drawing.Size(500, 550);
+			this.ClientSize = new System.Drawing.Size(500, 618);
 			this.ControlBox = false;
+			this.Controls.Add(this.SystemButton);
 			this.Controls.Add(this.DoOkButton);
 			this.Controls.Add(this.PageList);
 			this.Controls.Add(this.PageInfoLabel);
-			this.Controls.Add(this.SystemButton);
 			this.Controls.Add(this.DoCancelButton);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "PageSelectForm";
@@ -169,13 +169,13 @@
 
 		#endregion
 
-		private Du.WinForms.BadakSystemButton SystemButton;
-		private System.Windows.Forms.Label PageInfoLabel;
-		private System.Windows.Forms.ListView PageList;
-		private System.Windows.Forms.ColumnHeader PlFileNameColumn;
-		private System.Windows.Forms.ColumnHeader PlDateColumn;
-		private System.Windows.Forms.ColumnHeader PlSizeColumn;
-		private System.Windows.Forms.Button DoOkButton;
-		private System.Windows.Forms.Button DoCancelButton;
+		private Label PageInfoLabel;
+		private ListView PageList;
+		private ColumnHeader PlFileNameColumn;
+		private ColumnHeader PlDateColumn;
+		private ColumnHeader PlSizeColumn;
+		private Button DoOkButton;
+		private Button DoCancelButton;
+		private BadakSystemButton SystemButton;
 	}
 }
