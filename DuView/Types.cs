@@ -5,10 +5,10 @@ public static class Types
 	// 보기 모드
 	public enum ViewMode : int
 	{
-		FitWidth,
-		FitHeight,
-		LeftToRight,
-		RightToLeft
+		FitWidth = 0,
+		FitHeight = 1,
+		LeftToRight = 2,
+		RightToLeft = 3
 	}
 
 	// 보기 품질
@@ -28,7 +28,7 @@ public static class Types
 	{
 		Previous,
 		Next,
-		
+
 		First,
 		Last,
 
@@ -55,6 +55,6 @@ public static class Types
 		//=> (Name, DateTime, Size) = (name, dateTime, size);
 
 		public override string ToString() => $"{Name} ({ToolBox.SizeToString(Size)})";
-	}	
+	}
 }
 

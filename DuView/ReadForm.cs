@@ -333,12 +333,22 @@ public partial class ReadForm : Form
 			DrawBook();
 	}
 
+	private static readonly Bitmap[] s_viewmode_icon = new Bitmap[]
+	{
+		Properties.Resources.viewmode_pitwidth,
+		Properties.Resources.viewmode_pitwidth,
+		Properties.Resources.viewmode_l2r,
+		Properties.Resources.viewmode_r2l,
+	};
+
 	private void UpdateViewMode(Types.ViewMode mode, bool redraw = true)
 	{
 		Settings.ViewMode = mode;
 		ViewFitMenuItem.Checked = mode == Types.ViewMode.FitWidth;
 		ViewLeftRightMenuItem.Checked = mode == Types.ViewMode.LeftToRight;
 		ViewRightLeftMenuItem.Checked = mode == Types.ViewMode.RightToLeft;
+
+		ViewMenuItem.Image = s_viewmode_icon[(int)mode];
 
 		if (redraw)
 		{

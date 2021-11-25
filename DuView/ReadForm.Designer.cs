@@ -177,7 +177,7 @@
             this.MaxCacheMenuItem});
 			this.MenuStrip.Location = new System.Drawing.Point(3, 3);
 			this.MenuStrip.Name = "MenuStrip";
-			this.MenuStrip.Size = new System.Drawing.Size(237, 24);
+			this.MenuStrip.Size = new System.Drawing.Size(373, 24);
 			this.MenuStrip.TabIndex = 1;
 			this.MenuStrip.Text = "MenuStrip";
 			// 
@@ -191,8 +191,9 @@
             this.ViewLeftRightMenuItem,
             this.ViewRightLeftMenuItem});
 			this.ViewMenuItem.ForeColor = System.Drawing.Color.White;
+			this.ViewMenuItem.Image = global::DuView.Properties.Resources.viewmode_pitwidth;
 			this.ViewMenuItem.Name = "ViewMenuItem";
-			this.ViewMenuItem.Size = new System.Drawing.Size(59, 20);
+			this.ViewMenuItem.Size = new System.Drawing.Size(75, 20);
 			this.ViewMenuItem.Text = "보기(&V)";
 			// 
 			// ViewZoomMenuItem
