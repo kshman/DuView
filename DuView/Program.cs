@@ -29,7 +29,7 @@ namespace DuView
 		{
 			var prcs = System.Diagnostics.Process.GetProcessesByName(Application.ProductName);
 
-			if (prcs == null || prcs.Length == 1)
+			if (prcs.Length == 1)
 				return false;
 			else if (prcs.Length == 2)
 			{

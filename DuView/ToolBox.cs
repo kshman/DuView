@@ -1,4 +1,6 @@
-﻿namespace DuView;
+﻿using InterpolationMode = System.Drawing.Drawing2D.InterpolationMode;
+
+namespace DuView;
 
 public static class ToolBox
 {
@@ -23,38 +25,21 @@ public static class ToolBox
 	}
 
 	// 퀄리티 변환
-	public static System.Drawing.Drawing2D.InterpolationMode QualityToInterpolationMode(Types.ViewQuality q)
+	public static InterpolationMode QualityToInterpolationMode(Types.ViewQuality q)
 	{
 		return q switch
 		{
-			Types.ViewQuality.Low => System.Drawing.Drawing2D.InterpolationMode.Low,
-			Types.ViewQuality.Default => System.Drawing.Drawing2D.InterpolationMode.Default,
-			Types.ViewQuality.Bilinear => System.Drawing.Drawing2D.InterpolationMode.Bilinear,
-			Types.ViewQuality.Bicubic => System.Drawing.Drawing2D.InterpolationMode.Bicubic,
-			Types.ViewQuality.High => System.Drawing.Drawing2D.InterpolationMode.High,
-			Types.ViewQuality.HqBilinear => System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear,
-			Types.ViewQuality.HqBicubic => System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic,
-			_ => System.Drawing.Drawing2D.InterpolationMode.Default,
+			Types.ViewQuality.Invalid => InterpolationMode.Invalid,
+			Types.ViewQuality.Default => InterpolationMode.Default,
+			Types.ViewQuality.Low => InterpolationMode.Low,
+			Types.ViewQuality.High => InterpolationMode.High,
+			Types.ViewQuality.Bilinear => InterpolationMode.Bilinear,
+			Types.ViewQuality.Bicubic => InterpolationMode.Bicubic,
+			Types.ViewQuality.NearestNeighbor => InterpolationMode.NearestNeighbor,
+			Types.ViewQuality.HqBilinear => InterpolationMode.HighQualityBilinear,
+			Types.ViewQuality.HqBicubic => InterpolationMode.HighQualityBicubic,
+			_ => InterpolationMode.Default,
 		};
-	}
-
-	// 파일이름 정보를 파일이름과 줄로
-	public static (string filename, int line) StringToFileLine(string s)
-	{
-		var n = s.IndexOf('|');
-		if (n < 0)
-			return (string.Empty, 0);
-
-		var line = Converter.ToInt(s[..n]);
-		var filename = s[(n + 1)..];
-
-		return (filename, line);
-	}
-
-	// 파일이름과 줄을 파일 이름 정보로
-	public static string FileLineToString(string filename, int line)
-	{
-		return string.IsNullOrEmpty(filename) ? string.Empty : $"{line}|{filename}";
 	}
 
 	// 크기를 문자열로 표시
@@ -65,24 +50,25 @@ public static class ToolBox
 		const long kilo = 1024;
 
 		double v;
-		if (size > giga)          // 0.5 기가
+		switch (size)
 		{
-			v = size / (double)giga;
-			return $"{v:0.0}GB";
-		}
-		else if (size > mega)     // 0.5 메가
-		{
-			v = size / (double)mega;
-			return $"{v:0.0}MB";
-		}
-		else if (size > kilo)     // 0.5 킬로
-		{
-			v = size / (double)kilo;
-			return $"{v:0.0}KB";
-		}
-		else
-		{
-			return $"{size}B";
+			// 0.5 기가
+			case > giga:
+				v = size / (double)giga;
+				return $"{v:0.0}GB";
+			
+			// 0.5 메가
+			case > mega:
+				v = size / (double)mega;
+				return $"{v:0.0}MB";
+			
+			// 0.5 킬로
+			case > kilo:
+				v = size / (double)kilo;
+				return $"{v:0.0}KB";
+			
+			default:
+				return $"{size}B";
 		}
 	}
 
@@ -152,9 +138,6 @@ public static class ToolBox
 	//
 	public class FileInfoComparer : IComparer<FileInfo>
 	{
-		public FileInfoComparer()
-		{ }
-
 		public int Compare(FileInfo? x, FileInfo? y)
 		{
 			return StringAsNumericComparer.StringAsNumericCompare(x?.FullName, y?.FullName);
@@ -164,9 +147,6 @@ public static class ToolBox
 	//
 	public class DirectoryInfoComparer : IComparer<DirectoryInfo>
 	{
-		public DirectoryInfoComparer()
-		{ }
-
 		public int Compare(DirectoryInfo? x, DirectoryInfo? y)
 		{
 			return StringAsNumericComparer.StringAsNumericCompare(x?.FullName, y?.FullName);

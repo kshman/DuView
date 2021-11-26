@@ -1,8 +1,10 @@
-﻿namespace DuView;
+﻿using System.Globalization;
+
+namespace DuView;
 
 public partial class PageSelectForm : Form
 {
-	public int SelectedPage { get; set; }
+	public int SelectedPage { get; private set; }
 
 	private readonly BadakFormWorker _bfw;
 
@@ -121,10 +123,10 @@ public partial class PageSelectForm : Form
 		var n = 0;
 		foreach (var e in entries)
 		{
-			var li = new ListViewItem(new string[]
+			var li = new ListViewItem(new[]
 			{
 				e.Name ?? string.Empty,	// name이 널일리가 없는데 c#이 용서하지 않는다
-				e.DateTime.ToString(),
+				e.DateTime.ToString(CultureInfo.InvariantCulture),
 				ToolBox.SizeToString(e.Size)
 			})
 			{

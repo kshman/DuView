@@ -14,11 +14,13 @@ public static class Types
 	// 보기 품질
 	public enum ViewQuality : int
 	{
-		Low,
+		Invalid,
 		Default,
+		Low,
+		High,
 		Bilinear,
 		Bicubic,
-		High,
+		NearestNeighbor,
 		HqBilinear,
 		HqBicubic,
 	}

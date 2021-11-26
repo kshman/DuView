@@ -49,23 +49,18 @@ internal class BookZip : BookBase
 		return (entry is ZipArchiveEntry e) ? e.FullName : null;
 	}
 
-	public override Types.BookEntryInfo[] GetEntriesInfo()
+	public override IEnumerable<Types.BookEntryInfo> GetEntriesInfo()
 	{
 		var r = new Types.BookEntryInfo[_entries.Count];
 
-		int n = 0;
-		foreach (var i in _entries)
-		{
-			if (i is ZipArchiveEntry e)
+		var n = 0;
+		foreach (var e in _entries.Cast<ZipArchiveEntry>())
+			r[n++] = new Types.BookEntryInfo()
 			{
-				r[n++] = new Types.BookEntryInfo()
-				{
-					Name = e.FullName,
-					DateTime = e.LastWriteTime.LocalDateTime,
-					Size = e.Length,
-				};
-			}
-		}
+				Name = e.FullName,
+				DateTime = e.LastWriteTime.LocalDateTime,
+				Size = e.Length,
+			};
 
 		return r;
 	}
@@ -99,7 +94,10 @@ internal class BookZip : BookBase
 				if (ToolBox.IsValidImageFile(fi.Extension.ToLower()))
 					entries.Add(e);
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
 		}
 
 		entries.Sort(new ZipArchiveEntryComparer());
@@ -113,12 +111,9 @@ internal class BookZip : BookBase
 	//
 	private class ZipArchiveEntryComparer : IComparer<ZipArchiveEntry>
 	{
-		public ZipArchiveEntryComparer()
-		{ }
-
 		public int Compare(ZipArchiveEntry? x, ZipArchiveEntry? y)
 		{
-			return Du.Data.StringAsNumericComparer.StringAsNumericCompare(x?.FullName, y?.FullName);
+			return StringAsNumericComparer.StringAsNumericCompare(x?.FullName, y?.FullName);
 		}
 	}
 

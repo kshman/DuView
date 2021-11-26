@@ -4,34 +4,32 @@ namespace DuView;
 
 internal static class Settings
 {
-	private static readonly string _keyname = @"PuruLive\DuView";
+	private const string c_keyname = @"PuruLive\DuView";
 
-	private static int _magnetic_dock_size = 10;
+	private static int s_magnetic_dock_size = 10;
 
-	private static string _last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-	private static string _last_filename = string.Empty;
+	private static string s_last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+	private static string s_last_filename = string.Empty;
 
-	public static bool _view_zoom = true;
-	public static Types.ViewMode _view_mode = Types.ViewMode.FitWidth;
-	public static Types.ViewQuality _view_quality = Types.ViewQuality.Default;
+	private static bool s_view_zoom = true;
+	private static Types.ViewMode s_view_mode = Types.ViewMode.FitWidth;
+	private static Types.ViewQuality s_view_quality = Types.ViewQuality.Default;
 
-	public static long _max_cache_size = 230 * 1048576; // 쉽게해서 230메가
-	public static int _max_recently = 1000;
+	private static long s_max_cache_size = 230 * 1048576; // 쉽게해서 230메가
+	private static int s_max_recently = 1000;
 
-	public static ResizableLineDb? _recently;
+	private static ResizableLineDb? s_recently;
 
 	public static void WhenLoad(Form form)
 	{
-		using (var rk = new RegKey(_keyname))
+		using (var rk = new RegKey(c_keyname))
 		{
 			if (rk.IsOpen)
 			{
-				string? v;
-
-				v = rk.GetString("Window");
+				var v = rk.GetString("Window");
 				if (!string.IsNullOrEmpty(v))
 				{
-					string[] ss = v.Split(',');
+					var ss = v.Split(',');
 					if (ss.Length == 4)
 					{
 						var rt = new Rectangle(
@@ -45,26 +43,27 @@ internal static class Settings
 					}
 				}
 
-				_magnetic_dock_size = rk.GetInt("MagneticDockSize", _magnetic_dock_size);
+				s_magnetic_dock_size = rk.GetInt("MagneticDockSize", s_magnetic_dock_size);
 
 				v = rk.GetDecodingString("LastFolder");
 				if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
-					_last_folder = v;
+					s_last_folder = v;
 
 				v = rk.GetDecodingString("LastFileName");
 				if (!string.IsNullOrEmpty(v) && File.Exists(v))
-					_last_filename = v;
+					s_last_filename = v;
 
-				_view_zoom = rk.GetInt("ViewZoom", _view_zoom ? 1 : 0) != 0;
-				_view_mode = (Types.ViewMode)rk.GetInt("ViewMode", (int)_view_mode);
-				_view_quality = (Types.ViewQuality)rk.GetInt("ViewQuality", (int)_view_quality);
+				s_view_zoom = rk.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
+				s_view_mode = (Types.ViewMode)rk.GetInt("ViewMode", (int)s_view_mode);
+				s_view_quality = (Types.ViewQuality)rk.GetInt("ViewQuality", (int)s_view_quality);
 
-				_max_cache_size = rk.GetLong("MaxCacheSize", _max_cache_size);
+				s_max_cache_size = rk.GetLong("MaxCacheSize", s_max_cache_size);
+				s_max_recently = rk.GetInt("MaxRecently", s_max_recently);
 			}
 		}
 
 		var rfn = RecentlyPath;
-		_recently = File.Exists(rfn) ? ResizableLineDb.FromFile(rfn) : ResizableLineDb.New();
+		s_recently = File.Exists(rfn) ? ResizableLineDb.FromFile(rfn) : ResizableLineDb.New();
 	}
 
 	//
@@ -74,34 +73,28 @@ internal static class Settings
 		{
 			var rt = new Rectangle(location, size);
 
-			using var rk = new RegKey(_keyname, true);
+			using var rk = new RegKey(c_keyname, true);
 			rk.SetString("Window", $"{rt.X},{rt.Y},{rt.Width},{rt.Height}");
 		}
 	}
 
 	//
-	public static string StartupPath
-	{
-		get { return Application.StartupPath; }
-	}
+	public static string StartupPath => Application.StartupPath;
 
 	//
-	public static string RecentlyPath
-	{
-		get { return Path.Combine(Application.StartupPath, "DuView.recently"); }
-	}
+	public static string RecentlyPath => Path.Combine(StartupPath, "DuView.recently");
 
 	//
 	public static int MagneticDockSize
 	{
-		get => _magnetic_dock_size;
+		get => s_magnetic_dock_size;
 		set
 		{
-			if (value != _magnetic_dock_size)
+			if (value != s_magnetic_dock_size)
 			{
-				_magnetic_dock_size = value;
+				s_magnetic_dock_size = value;
 
-				using var rk = new RegKey(_keyname, true);
+				using var rk = new RegKey(c_keyname, true);
 				rk.SetInt("MagneticDockSize", value);
 			}
 		}
@@ -110,14 +103,14 @@ internal static class Settings
 	//
 	public static string LastFolder
 	{
-		get => _last_folder;
+		get => s_last_folder;
 		set
 		{
-			if (!value.Equals(_last_folder))
+			if (!value.Equals(s_last_folder))
 			{
-				_last_folder = value;
+				s_last_folder = value;
 
-				using var rk = new RegKey(_keyname, true);
+				using var rk = new RegKey(c_keyname, true);
 				rk.SetEncodingString("LastFolder", value);
 			}
 		}
@@ -126,15 +119,15 @@ internal static class Settings
 	//
 	public static string LastFileName
 	{
-		get => _last_filename;
+		get => s_last_filename;
 		set
 		{
-			if (!value.Equals(_last_filename))
+			if (!value.Equals(s_last_filename))
 			{
-				_last_filename = value;
+				s_last_filename = value;
 
-				using var rk = new RegKey(_keyname, true);
-				rk.SetEncodingString("LastFileName", _last_filename);
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetEncodingString("LastFileName", value);
 			}
 		}
 	}
@@ -142,15 +135,15 @@ internal static class Settings
 	//
 	public static bool ViewZoom
 	{
-		get => _view_zoom;
+		get => s_view_zoom;
 		set
 		{
-			if (value != _view_zoom)
+			if (value != s_view_zoom)
 			{
-				_view_zoom = value;
+				s_view_zoom = value;
 
-				using var rk = new RegKey(_keyname, true);
-				rk.SetInt("ViewZoom", ViewZoom ? 1 : 0);
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetInt("ViewZoom", value ? 1 : 0);
 			}
 		}
 	}
@@ -158,15 +151,15 @@ internal static class Settings
 	//
 	public static Types.ViewMode ViewMode
 	{
-		get => _view_mode;
+		get => s_view_mode;
 		set
 		{
-			if (value != _view_mode)
+			if (value != s_view_mode)
 			{
-				_view_mode = value;
+				s_view_mode = value;
 
-				using var rk = new RegKey(_keyname, true);
-				rk.SetInt("ViewMode", (int)ViewMode);
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetInt("ViewMode", (int)value);
 			}
 		}
 	}
@@ -174,15 +167,15 @@ internal static class Settings
 	//
 	public static Types.ViewQuality ViewQuality
 	{
-		get => _view_quality;
+		get => s_view_quality;
 		set
 		{
-			if (value != _view_quality)
+			if (value != s_view_quality)
 			{
-				_view_quality = value;
+				s_view_quality = value;
 
-				using var rk = new RegKey(_keyname, true);
-				rk.SetInt("ViewQuality", (int)ViewQuality);
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetInt("ViewQuality", (int)value);
 			}
 		}
 	}
@@ -190,15 +183,31 @@ internal static class Settings
 	//
 	public static long MaxCacheSize
 	{
-		get => _max_cache_size;
+		get => s_max_cache_size;
 		set
 		{
-			if (value != _max_cache_size)
+			if (value != s_max_cache_size)
 			{
-				_max_cache_size = value;
+				s_max_cache_size = value;
 
-				using var rk = new RegKey(_keyname, true);
-				rk.SetLong("MaxCacheSize", MaxCacheSize);
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetLong("MaxCacheSize", value);
+			}
+		}
+	}
+	
+	//
+	public static int MaxRecently
+	{
+		get => s_max_recently;
+		set
+		{
+			if (value != s_max_recently)
+			{
+				s_max_recently = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetInt("MaxRecently", value);
 			}
 		}
 	}
@@ -206,29 +215,29 @@ internal static class Settings
 	//
 	public static int GetRecentlyPage(string onlyfilename)
 	{
-		if (string.IsNullOrEmpty(onlyfilename) || _recently == null)
+		if (string.IsNullOrEmpty(onlyfilename) || s_recently == null)
 			return 0;
 
 		var s = Converter.EncodingString(onlyfilename);
-		return _recently.Get(s);
+		return s_recently.Get(s);
 	}
 
 	//
 	public static void SetRecentlyPage(string onlyfilename, int page)
 	{
-		if (!string.IsNullOrEmpty(onlyfilename) && _recently != null)
+		if (!string.IsNullOrEmpty(onlyfilename) && s_recently != null)
 		{
 			var s = Converter.EncodingString(onlyfilename);
 
 			if (page > 0)
 			{
-				_recently.Set(s, page);
-				_recently.ResizeCutFrontSlowly(_max_recently);
+				s_recently.Set(s, page);
+				s_recently.ResizeCutFrontSlowly(s_max_recently);
 			}
 			else
 			{
 				// 페이지가 0 이면 저장할 필요가 없쟎음
-				_recently.Remove(s);
+				s_recently.Remove(s);
 			}
 		}
 	}
@@ -243,10 +252,10 @@ internal static class Settings
 	//
 	public static void SaveFileInfos()
 	{
-		if (_recently != null)
+		if (s_recently != null)
 		{
 			var rfn = RecentlyPath;
-			_recently.Save(rfn, Encoding.UTF8, new string[]
+			s_recently.Save(rfn, Encoding.UTF8, new string[]
 			{
 				"DuView recently files list",
 				$"Created: {DateTime.Now}"

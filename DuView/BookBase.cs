@@ -2,22 +2,20 @@
 
 public abstract class BookBase : IDisposable
 {
-	public string FileName { get; set; }
-	public string OnlyFileName { get; set; }
+	public string FileName { get; private set; }
+	public string OnlyFileName { get; private set; }
 
 	public int CurrentPage { get; set; }
 	public int TotalPage => _entries.Count;
 
-	public Image? PageLeft { get; set; }
-	public Image? PageRight { get; set; }
+	public Image? PageLeft { get; private set; }
+	public Image? PageRight { get; private set; }
 
-	public long CacheSize => _csize;
+	public long CacheSize { get; private set; }
 
 	//
-	protected List<object> _entries = new();
-
+	protected readonly List<object> _entries = new();
 	private readonly Dictionary<int, Image> _cache = new();
-	private long _csize = 0;
 
 	//
 	protected BookBase()
@@ -27,17 +25,9 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	protected BookBase(string filename, string onlyfilename)
-	{
-		FileName = filename;
-		OnlyFileName = onlyfilename;
-		CurrentPage = 0;
-	}
-
-	//
 	protected abstract Stream? OpenStream(object entry);
 	protected abstract string? GetEntryName(object entry);
-	public abstract Types.BookEntryInfo[] GetEntriesInfo();
+	public abstract IEnumerable<Types.BookEntryInfo> GetEntriesInfo();
 	public virtual bool CanDeleteFile(out string reason) { reason = string.Empty; return true; }
 	public abstract bool DeleteFile();
 
@@ -82,17 +72,17 @@ public abstract class BookBase : IDisposable
 
 		var size = img.Width * img.Height * bpp;
 
-		if ((_csize + size) > Settings.MaxCacheSize && _cache.Count > 0)
+		if ((CacheSize + size) > Settings.MaxCacheSize && _cache.Count > 0)
 		{
 			var first = _cache.ElementAt(0);
 			var fsize = first.Value.Width * first.Value.Height * bpp;
 
 			_cache.Remove(first.Key);
-			_csize -= fsize;
+			CacheSize -= fsize;
 		}
 
 		_cache.Add(page, img);
-		_csize += size;
+		CacheSize += size;
 	}
 
 	//
@@ -102,7 +92,7 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	public Image? ReadPage(int pageno)
+	private Image? ReadPage(int pageno)
 	{
 		Image? img = null;
 
@@ -122,13 +112,7 @@ public abstract class BookBase : IDisposable
 			}
 		}
 
-		if (img == null)
-		{
-			// 기본 이미지
-			img = Properties.Resources.ouch_noimg;
-		}
-
-		return img;
+		return img ?? Properties.Resources.ouch_noimg;
 	}
 
 	//
@@ -136,15 +120,14 @@ public abstract class BookBase : IDisposable
 	{
 		var mode = Settings.ViewMode;
 
-		if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
+		if (mode is Types.ViewMode.FitWidth or Types.ViewMode.FitHeight)
 		{
 			PageLeft = ReadPage(CurrentPage);
 			PageRight = null;
 		}
-		else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
+		else if (mode is Types.ViewMode.LeftToRight or Types.ViewMode.RightToLeft)
 		{
-			Image? left = ReadPage(CurrentPage);
-			Image? right = null;
+			var left = ReadPage(CurrentPage);
 
 			if (left == null)
 			{
@@ -152,6 +135,8 @@ public abstract class BookBase : IDisposable
 			}
 			else
 			{
+				Image? right = null;
+				
 				if (left.Width > left.Height)
 				{
 					// 폭이 넓으면 1장만
@@ -193,7 +178,7 @@ public abstract class BookBase : IDisposable
 	public bool MoveNext()
 	{
 		var mode = Settings.ViewMode;
-		int prev = CurrentPage;
+		var prev = CurrentPage;
 
 		if (PageLeft == null || PageRight == null)
 		{
@@ -201,15 +186,22 @@ public abstract class BookBase : IDisposable
 			mode = Types.ViewMode.FitWidth;
 		}
 
-		if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
+		switch (mode)
 		{
-			if (CurrentPage + 1 < TotalPage)
-				CurrentPage++;
-		}
-		else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
-		{
-			if (CurrentPage + 2 < TotalPage)
-				CurrentPage += 2;
+			case Types.ViewMode.FitWidth:
+			case Types.ViewMode.FitHeight:
+				if (CurrentPage + 1 < TotalPage)
+					CurrentPage++;
+				break;
+			
+			case Types.ViewMode.LeftToRight:
+			case Types.ViewMode.RightToLeft:
+				if (CurrentPage + 2 < TotalPage)
+					CurrentPage += 2;
+				break;
+			
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
 
 		return prev != CurrentPage;
@@ -219,7 +211,7 @@ public abstract class BookBase : IDisposable
 	public bool MovePrev()
 	{
 		var mode = Settings.ViewMode;
-		int prev = CurrentPage;
+		var prev = CurrentPage;
 
 		if (PageLeft == null || PageRight == null)
 		{
@@ -227,10 +219,21 @@ public abstract class BookBase : IDisposable
 			mode = Types.ViewMode.FitWidth;
 		}
 
-		if (mode == Types.ViewMode.FitWidth || mode == Types.ViewMode.FitHeight)
-			CurrentPage--;
-		else if (mode == Types.ViewMode.LeftToRight || mode == Types.ViewMode.RightToLeft)
-			CurrentPage -= 2;
+		switch (mode)
+		{
+			case Types.ViewMode.FitWidth:
+			case Types.ViewMode.FitHeight:
+				CurrentPage--;
+				break;
+			
+			case Types.ViewMode.LeftToRight:
+			case Types.ViewMode.RightToLeft:
+				CurrentPage -= 2;
+				break;
+			
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
 
 		if (CurrentPage < 0)
 			CurrentPage = 0;
@@ -241,15 +244,19 @@ public abstract class BookBase : IDisposable
 	//
 	public bool MovePage(int page)
 	{
-		int prev = CurrentPage;
+		var prev = CurrentPage;
 
+#if true
 		// 하... Math.Clamp 는 Net6 전용이네
+		CurrentPage = Math.Clamp(page, 0, TotalPage - 1);
+#else		
 		if (page < 0)
 			CurrentPage = 0;
 		else if (page >= TotalPage)
 			CurrentPage = TotalPage - 1;
 		else
 			CurrentPage = page;
+#endif		
 
 		return prev != CurrentPage;
 	}
@@ -261,14 +268,11 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	public class BookEntryInfoComparer : IComparer<Types.BookEntryInfo>
+	protected class BookEntryInfoComparer : IComparer<Types.BookEntryInfo>
 	{
-		public BookEntryInfoComparer()
-		{ }
-
 		public int Compare(Types.BookEntryInfo? x, Types.BookEntryInfo? y)
 		{
-			return Du.Data.StringAsNumericComparer.StringAsNumericCompare(x?.Name, y?.Name);
+			return StringAsNumericComparer.StringAsNumericCompare(x?.Name, y?.Name);
 		}
 	}
 }

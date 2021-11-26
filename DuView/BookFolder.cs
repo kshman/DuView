@@ -21,27 +21,17 @@ internal class BookFolder : BookBase
 	//
 	private bool InternalOpenFolder(DirectoryInfo di)
 	{
-		var entries = new List<Types.BookEntryInfo>();
-
-		foreach (var fi in di.EnumerateFiles())
-		{
-			if (!fi.Exists)
-				continue;
-
-			if (!ToolBox.IsValidImageFile(fi.Extension.ToLower()))
-				continue;
-
-			var entry = new Types.BookEntryInfo()
-			{
-				Name = fi.FullName,
-				DateTime = fi.CreationTime,
-				Size = fi.Length,
-			};
-
-			entries.Add(entry);
-		}
-
-		entries.Sort(new BookEntryInfoComparer());
+		var entries =
+			(from fi in di.EnumerateFiles()
+				where fi.Exists
+				where ToolBox.IsValidImageFile(fi.Extension.ToLower())
+				select new Types.BookEntryInfo()
+				{
+					Name = fi.FullName,
+					DateTime = fi.CreationTime,
+					Size = fi.Length,
+				}).ToArray();
+		Array.Sort(entries, new BookEntryInfoComparer());
 
 		foreach (var e in entries)
 			_entries.Add(e);
@@ -64,16 +54,13 @@ internal class BookFolder : BookBase
 		throw new NotImplementedException();
 	}
 
-	public override Types.BookEntryInfo[] GetEntriesInfo()
+	public override IEnumerable<Types.BookEntryInfo> GetEntriesInfo()
 	{
 		var r = new Types.BookEntryInfo[_entries.Count];
 
-		int n = 0;
-		foreach (var i in _entries)
-		{
-			var e = (Types.BookEntryInfo)i;
+		var n = 0;
+		foreach (var e in _entries.Cast<Types.BookEntryInfo>())
 			r[n++] = e;
-		}
 
 		return r;
 	}

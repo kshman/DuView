@@ -1,10 +1,8 @@
-﻿using Debug = System.Diagnostics.Debug;
-
-namespace DuView;
+﻿namespace DuView;
 
 public partial class ReadForm : Form
 {
-	private readonly string _title = "두뷰";
+	private const string c_title = "두뷰";
 
 	private BookBase? Book { get; set; }
 
@@ -127,25 +125,12 @@ public partial class ReadForm : Form
 
 	private void ReadForm_DragDrop(object sender, DragEventArgs e)
 	{
-		if (e.Data != null && e.Data.GetData(DataFormats.FileDrop) is string[] filenames && filenames.Length > 0)
+		if (e.Data?.GetData(DataFormats.FileDrop) is string[] {Length: > 0} filenames)
 		{
 			// 하나만 쓴다
 			OpenBook(filenames[0]);
 		}
 	}
-
-	/*
-	protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-	{
-		if (keyData == Keys.Tab)
-		{
-			//ResetFocus();
-			//return true;
-		}
-
-		return base.ProcessCmdKey(ref msg, keyData);
-	}
-	*/
 
 	private void ReadForm_KeyDown(object sender, KeyEventArgs e)
 	{
@@ -334,8 +319,7 @@ public partial class ReadForm : Form
 			DrawBook();
 	}
 
-	private static readonly Bitmap[] s_viewmode_icon = new Bitmap[]
-	{
+	private static readonly Bitmap[] s_viewmode_icon = {
 		Properties.Resources.viewmode_pitwidth,
 		Properties.Resources.viewmode_pitwidth,
 		Properties.Resources.viewmode_l2r,
@@ -380,18 +364,18 @@ public partial class ReadForm : Form
 
 	private void ViewQualityMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem i && i.Tag is not null)
+		if (sender is ToolStripMenuItem {Tag: { }} i)
 		{
-			Types.ViewQuality q = (Types.ViewQuality)i.Tag;
+			var q = (Types.ViewQuality)i.Tag;
 			UpdateViewQuality(q);
 		}
 	}
 
 	private void ViewModeMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem i && i.Tag is not null)
+		if (sender is ToolStripMenuItem {Tag: { }} i)
 		{
-			Types.ViewMode m = (Types.ViewMode)i.Tag;
+			var m = (Types.ViewMode)i.Tag;
 			UpdateViewMode(m);
 		}
 	}
@@ -423,7 +407,7 @@ public partial class ReadForm : Form
 	{
 		try
 		{
-			if (Book != null && Book.PageLeft != null)
+			if (Book is {PageLeft: { }})
 			{
 				Clipboard.SetImage(Book.PageLeft);
 				Notifier.ShowBalloonTip(1000, "이미지 복사", "클립보드로 복사했습니다!", ToolTipIcon.Info);
@@ -443,9 +427,9 @@ public partial class ReadForm : Form
 
 	private void PageControlMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem i && i.Tag is not null)
+		if (sender is ToolStripMenuItem {Tag: { }} i)
 		{
-			Types.Controls c = (Types.Controls)i.Tag;
+			var c = (Types.Controls)i.Tag;
 			PageControl(c);
 		}
 	}
@@ -457,7 +441,7 @@ public partial class ReadForm : Form
 	{
 		if (Book != null)
 		{
-			Text = _title;
+			Text = c_title;
 
 			Settings.SetRecentlyPage(Book);
 
@@ -634,7 +618,7 @@ public partial class ReadForm : Form
 	}
 
 	// 가로로 차게 이미지 그리기
-	private static void DrawBitmapFitWidth(Graphics g, Bitmap bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
+	private static void DrawBitmapFitWidth(Graphics g, Image bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
 	{
 		(int nw, int nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
 		var rt = ToolBox.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
@@ -643,9 +627,10 @@ public partial class ReadForm : Form
 	}
 
 	// 두장 그리기
-	private static void DrawBitmapHalfAndHalf(Graphics g, Bitmap bmp, Image left, Image right)
+	private static void DrawBitmapHalfAndHalf(Graphics g, Image bmp, Image left, Image right)
 	{
-		int f = bmp.Width / 2;
+		var f = bmp.Width / 2;
+		
 		int w, h;
 		Rectangle rt;
 
@@ -803,9 +788,9 @@ public partial class ReadForm : Form
 			case Types.Controls.Select:
 				PageSelect();
 				break;
-
+			
 			default:
-				break;
+				throw new ArgumentOutOfRangeException(nameof(ctrl), ctrl, null);
 		}
 	}
 

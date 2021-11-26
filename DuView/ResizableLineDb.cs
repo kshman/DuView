@@ -42,7 +42,7 @@ internal class ResizableLineDb : LineStringDb<int>
 		}
 	}
 
-	internal class IntValueConverter : Du.Data.Generic.IStringConverter<int>
+	private class IntValueConverter : Du.Data.Generic.IStringConverter<int>
 	{
 		public int StringConvert(string? s)
 		{
