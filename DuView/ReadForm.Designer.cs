@@ -128,7 +128,7 @@
 			this.PageInfo.Name = "PageInfo";
 			this.PageInfo.Size = new System.Drawing.Size(149, 15);
 			this.PageInfo.TabIndex = 4;
-			this.PageInfo.Text = "DuView";
+			this.PageInfo.Text = "0";
 			this.PageInfo.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			this.PageInfo.Visible = false;
 			this.PageInfo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
@@ -145,7 +145,7 @@
 			this.TitleLabel.Name = "TitleLabel";
 			this.TitleLabel.Size = new System.Drawing.Size(627, 36);
 			this.TitleLabel.TabIndex = 3;
-			this.TitleLabel.Text = "DuView";
+			this.TitleLabel.Text = "0";
 			this.TitleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
 			this.TitleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
 			this.TitleLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseUp);
@@ -194,7 +194,7 @@
 			this.ViewMenuItem.Image = global::DuView.Properties.Resources.viewmode_pitwidth;
 			this.ViewMenuItem.Name = "ViewMenuItem";
 			this.ViewMenuItem.Size = new System.Drawing.Size(75, 20);
-			this.ViewMenuItem.Text = "보기(&V)";
+			this.ViewMenuItem.Text = "1100";
 			// 
 			// ViewZoomMenuItem
 			// 
@@ -202,7 +202,7 @@
 			this.ViewZoomMenuItem.Name = "ViewZoomMenuItem";
 			this.ViewZoomMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D0)));
 			this.ViewZoomMenuItem.Size = new System.Drawing.Size(209, 22);
-			this.ViewZoomMenuItem.Text = "늘려보기(&Z)";
+			this.ViewZoomMenuItem.Text = "1101";
 			this.ViewZoomMenuItem.Click += new System.EventHandler(this.ViewZoomMenuItem_Click);
 			// 
 			// ViewQualityMenuItem
@@ -219,7 +219,7 @@
 			this.ViewQualityMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewQualityMenuItem.Name = "ViewQualityMenuItem";
 			this.ViewQualityMenuItem.Size = new System.Drawing.Size(209, 22);
-			this.ViewQualityMenuItem.Text = "보기 품질";
+			this.ViewQualityMenuItem.Text = "1102";
 			// 
 			// VwqLowMenuItem
 			// 
@@ -227,7 +227,7 @@
 			this.VwqLowMenuItem.Name = "VwqLowMenuItem";
 			this.VwqLowMenuItem.Size = new System.Drawing.Size(194, 22);
 			this.VwqLowMenuItem.Tag = DuView.Types.ViewQuality.Low;
-			this.VwqLowMenuItem.Text = "낮음";
+			this.VwqLowMenuItem.Text = "2101";
 			this.VwqLowMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqDefaultMenuItem
@@ -237,7 +237,7 @@
 			this.VwqDefaultMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D5)));
 			this.VwqDefaultMenuItem.Size = new System.Drawing.Size(194, 22);
 			this.VwqDefaultMenuItem.Tag = DuView.Types.ViewQuality.Default;
-			this.VwqDefaultMenuItem.Text = "기본";
+			this.VwqDefaultMenuItem.Text = "2102";
 			this.VwqDefaultMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqBilinearMenuItem
@@ -246,7 +246,7 @@
 			this.VwqBilinearMenuItem.Name = "VwqBilinearMenuItem";
 			this.VwqBilinearMenuItem.Size = new System.Drawing.Size(194, 22);
 			this.VwqBilinearMenuItem.Tag = DuView.Types.ViewQuality.Bilinear;
-			this.VwqBilinearMenuItem.Text = "이중 선형";
+			this.VwqBilinearMenuItem.Text = "2103";
 			this.VwqBilinearMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqBicubicMenuItem
@@ -255,7 +255,7 @@
 			this.VwqBicubicMenuItem.Name = "VwqBicubicMenuItem";
 			this.VwqBicubicMenuItem.Size = new System.Drawing.Size(194, 22);
 			this.VwqBicubicMenuItem.Tag = DuView.Types.ViewQuality.Bicubic;
-			this.VwqBicubicMenuItem.Text = "이중 큐빅";
+			this.VwqBicubicMenuItem.Text = "2104";
 			this.VwqBicubicMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqHighMenuItem
@@ -264,7 +264,7 @@
 			this.VwqHighMenuItem.Name = "VwqHighMenuItem";
 			this.VwqHighMenuItem.Size = new System.Drawing.Size(194, 22);
 			this.VwqHighMenuItem.Tag = DuView.Types.ViewQuality.High;
-			this.VwqHighMenuItem.Text = "아주 높음";
+			this.VwqHighMenuItem.Text = "2105";
 			this.VwqHighMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// toolStripSeparator9
@@ -278,7 +278,7 @@
 			this.VwqHqBilinearMenuItem.Name = "VwqHqBilinearMenuItem";
 			this.VwqHqBilinearMenuItem.Size = new System.Drawing.Size(194, 22);
 			this.VwqHqBilinearMenuItem.Tag = DuView.Types.ViewQuality.HqBilinear;
-			this.VwqHqBilinearMenuItem.Text = "높은 품질의 이중 선형";
+			this.VwqHqBilinearMenuItem.Text = "2106";
 			this.VwqHqBilinearMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqHqBicubicMenuItem
@@ -287,7 +287,7 @@
 			this.VwqHqBicubicMenuItem.Name = "VwqHqBicubicMenuItem";
 			this.VwqHqBicubicMenuItem.Size = new System.Drawing.Size(194, 22);
 			this.VwqHqBicubicMenuItem.Tag = DuView.Types.ViewQuality.HqBicubic;
-			this.VwqHqBicubicMenuItem.Text = "높은 품질의 이중 큐빅";
+			this.VwqHqBicubicMenuItem.Text = "2107";
 			this.VwqHqBicubicMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// toolStripSeparator1
@@ -302,7 +302,7 @@
 			this.ViewFitMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
 			this.ViewFitMenuItem.Size = new System.Drawing.Size(209, 22);
 			this.ViewFitMenuItem.Tag = DuView.Types.ViewMode.FitWidth;
-			this.ViewFitMenuItem.Text = "가로 맞춤(&H)";
+			this.ViewFitMenuItem.Text = "1103";
 			this.ViewFitMenuItem.Click += new System.EventHandler(this.ViewModeMenuItem_Click);
 			// 
 			// ViewLeftRightMenuItem
@@ -312,7 +312,7 @@
 			this.ViewLeftRightMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
 			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(209, 22);
 			this.ViewLeftRightMenuItem.Tag = DuView.Types.ViewMode.LeftToRight;
-			this.ViewLeftRightMenuItem.Text = "왼쪽 → 오른쪽(&L)";
+			this.ViewLeftRightMenuItem.Text = "1105";
 			this.ViewLeftRightMenuItem.Click += new System.EventHandler(this.ViewModeMenuItem_Click);
 			// 
 			// ViewRightLeftMenuItem
@@ -322,7 +322,7 @@
 			this.ViewRightLeftMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D4)));
 			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(209, 22);
 			this.ViewRightLeftMenuItem.Tag = DuView.Types.ViewMode.RightToLeft;
-			this.ViewRightLeftMenuItem.Text = "오른쪽 → 왼쪽(&R)";
+			this.ViewRightLeftMenuItem.Text = "1106";
 			this.ViewRightLeftMenuItem.Click += new System.EventHandler(this.ViewModeMenuItem_Click);
 			// 
 			// PageMenuItem
@@ -334,7 +334,7 @@
 			this.PageMenuItem.ForeColor = System.Drawing.Color.White;
 			this.PageMenuItem.Name = "PageMenuItem";
 			this.PageMenuItem.Size = new System.Drawing.Size(70, 20);
-			this.PageMenuItem.Text = "페이지(&P)";
+			this.PageMenuItem.Text = "1200";
 			// 
 			// PageSelectMenuItem
 			// 
@@ -342,7 +342,7 @@
 			this.PageSelectMenuItem.Name = "PageSelectMenuItem";
 			this.PageSelectMenuItem.Size = new System.Drawing.Size(134, 22);
 			this.PageSelectMenuItem.Tag = DuView.Types.Controls.Select;
-			this.PageSelectMenuItem.Text = "선택(&P)";
+			this.PageSelectMenuItem.Text = "1201";
 			this.PageSelectMenuItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// toolStripSeparator13
@@ -356,7 +356,7 @@
 			this.PageAddFavMenuItem.Name = "PageAddFavMenuItem";
 			this.PageAddFavMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
 			this.PageAddFavMenuItem.Size = new System.Drawing.Size(134, 22);
-			this.PageAddFavMenuItem.Text = "추가(&A)";
+			this.PageAddFavMenuItem.Text = "1202";
 			// 
 			// FileMenuItem
 			// 
@@ -372,7 +372,7 @@
 			this.FileMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileMenuItem.Name = "FileMenuItem";
 			this.FileMenuItem.Size = new System.Drawing.Size(57, 20);
-			this.FileMenuItem.Text = "파일(&F)";
+			this.FileMenuItem.Text = "1300";
 			// 
 			// FileOpenMenuItem
 			// 
@@ -380,7 +380,7 @@
 			this.FileOpenMenuItem.Name = "FileOpenMenuItem";
 			this.FileOpenMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
 			this.FileOpenMenuItem.Size = new System.Drawing.Size(242, 22);
-			this.FileOpenMenuItem.Text = "열기(&O)";
+			this.FileOpenMenuItem.Text = "1301";
 			this.FileOpenMenuItem.Click += new System.EventHandler(this.FileOpenMenuItem_Click);
 			// 
 			// FileOpenLastMenuItem
@@ -390,7 +390,7 @@
 			this.FileOpenLastMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
 			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(242, 22);
-			this.FileOpenLastMenuItem.Text = "마지막 책 열기(&L)";
+			this.FileOpenLastMenuItem.Text = "1302";
 			this.FileOpenLastMenuItem.Click += new System.EventHandler(this.FileOpenLastMenuItem_Click);
 			// 
 			// FileCloseMenuItem
@@ -399,7 +399,7 @@
 			this.FileCloseMenuItem.Name = "FileCloseMenuItem";
 			this.FileCloseMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
 			this.FileCloseMenuItem.Size = new System.Drawing.Size(242, 22);
-			this.FileCloseMenuItem.Text = "닫기(&E)";
+			this.FileCloseMenuItem.Text = "1303";
 			this.FileCloseMenuItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
 			// 
 			// toolStripSeparator2
@@ -413,7 +413,7 @@
 			this.FileCopyImageMenuItem.Name = "FileCopyImageMenuItem";
 			this.FileCopyImageMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
 			this.FileCopyImageMenuItem.Size = new System.Drawing.Size(242, 22);
-			this.FileCopyImageMenuItem.Text = "이미지 복사(&C)";
+			this.FileCopyImageMenuItem.Text = "1304";
 			this.FileCopyImageMenuItem.Click += new System.EventHandler(this.FileCopyImageMenuItem_Click);
 			// 
 			// toolStripSeparator3
@@ -427,7 +427,7 @@
 			this.FileRefreshMenuItem.Name = "FileRefreshMenuItem";
 			this.FileRefreshMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
 			this.FileRefreshMenuItem.Size = new System.Drawing.Size(242, 22);
-			this.FileRefreshMenuItem.Text = "새로고침(&F)";
+			this.FileRefreshMenuItem.Text = "1305";
 			this.FileRefreshMenuItem.Click += new System.EventHandler(this.FileRefreshMenuItem_Click);
 			// 
 			// FileExitMenuItem
@@ -435,7 +435,7 @@
 			this.FileExitMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileExitMenuItem.Name = "FileExitMenuItem";
 			this.FileExitMenuItem.Size = new System.Drawing.Size(242, 22);
-			this.FileExitMenuItem.Text = "끝내기(&X)";
+			this.FileExitMenuItem.Text = "1306";
 			this.FileExitMenuItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
 			// MaxCacheMenuItem
@@ -443,12 +443,12 @@
 			this.MaxCacheMenuItem.ForeColor = System.Drawing.Color.White;
 			this.MaxCacheMenuItem.Name = "MaxCacheMenuItem";
 			this.MaxCacheMenuItem.Size = new System.Drawing.Size(43, 20);
-			this.MaxCacheMenuItem.Text = "캐시";
+			this.MaxCacheMenuItem.Text = "1800";
 			// 
 			// Notifier
 			// 
 			this.Notifier.Icon = ((System.Drawing.Icon)(resources.GetObject("Notifier.Icon")));
-			this.Notifier.Text = "두뷰";
+			this.Notifier.Text = "0";
 			this.Notifier.Visible = true;
 			// 
 			// BookCanvas
@@ -492,7 +492,7 @@
 			this.OpenPopupItem.ForeColor = System.Drawing.Color.White;
 			this.OpenPopupItem.Name = "OpenPopupItem";
 			this.OpenPopupItem.Size = new System.Drawing.Size(154, 22);
-			this.OpenPopupItem.Text = "열기(&O)";
+			this.OpenPopupItem.Text = "1301";
 			this.OpenPopupItem.Click += new System.EventHandler(this.FileOpenMenuItem_Click);
 			// 
 			// ClosePopupItem
@@ -500,7 +500,7 @@
 			this.ClosePopupItem.ForeColor = System.Drawing.Color.White;
 			this.ClosePopupItem.Name = "ClosePopupItem";
 			this.ClosePopupItem.Size = new System.Drawing.Size(154, 22);
-			this.ClosePopupItem.Text = "닫기(&E)";
+			this.ClosePopupItem.Text = "1303";
 			this.ClosePopupItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
 			// 
 			// toolStripSeparator4
@@ -524,7 +524,7 @@
 			this.ControlPopItem.ForeColor = System.Drawing.Color.White;
 			this.ControlPopItem.Name = "ControlPopItem";
 			this.ControlPopItem.Size = new System.Drawing.Size(154, 22);
-			this.ControlPopItem.Text = "보기 조작";
+			this.ControlPopItem.Text = "2200";
 			// 
 			// CtrlPrevPopupItem
 			// 
@@ -532,7 +532,7 @@
 			this.CtrlPrevPopupItem.Name = "CtrlPrevPopupItem";
 			this.CtrlPrevPopupItem.Size = new System.Drawing.Size(164, 22);
 			this.CtrlPrevPopupItem.Tag = DuView.Types.Controls.Previous;
-			this.CtrlPrevPopupItem.Text = "앞 페이지";
+			this.CtrlPrevPopupItem.Text = "2201";
 			this.CtrlPrevPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlNextPopupItem
@@ -541,7 +541,7 @@
 			this.CtrlNextPopupItem.Name = "CtrlNextPopupItem";
 			this.CtrlNextPopupItem.Size = new System.Drawing.Size(164, 22);
 			this.CtrlNextPopupItem.Tag = DuView.Types.Controls.Next;
-			this.CtrlNextPopupItem.Text = "뒷 페이지";
+			this.CtrlNextPopupItem.Text = "2202";
 			this.CtrlNextPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlHomePopupItem
@@ -550,7 +550,7 @@
 			this.CtrlHomePopupItem.Name = "CtrlHomePopupItem";
 			this.CtrlHomePopupItem.Size = new System.Drawing.Size(164, 22);
 			this.CtrlHomePopupItem.Tag = DuView.Types.Controls.First;
-			this.CtrlHomePopupItem.Text = "첫 페이지";
+			this.CtrlHomePopupItem.Text = "2203";
 			this.CtrlHomePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlEndPopupItem
@@ -559,7 +559,7 @@
 			this.CtrlEndPopupItem.Name = "CtrlEndPopupItem";
 			this.CtrlEndPopupItem.Size = new System.Drawing.Size(164, 22);
 			this.CtrlEndPopupItem.Tag = DuView.Types.Controls.Last;
-			this.CtrlEndPopupItem.Text = "마지막 페이지";
+			this.CtrlEndPopupItem.Text = "2204";
 			this.CtrlEndPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// toolStripSeparator11
@@ -573,7 +573,7 @@
 			this.CtrlPrev10PopupItem.Name = "CtrlPrev10PopupItem";
 			this.CtrlPrev10PopupItem.Size = new System.Drawing.Size(164, 22);
 			this.CtrlPrev10PopupItem.Tag = DuView.Types.Controls.SeekPrevious10;
-			this.CtrlPrev10PopupItem.Text = "10페이지 앞으로";
+			this.CtrlPrev10PopupItem.Text = "2205";
 			this.CtrlPrev10PopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlNext10PopupItem
@@ -582,7 +582,7 @@
 			this.CtrlNext10PopupItem.Name = "CtrlNext10PopupItem";
 			this.CtrlNext10PopupItem.Size = new System.Drawing.Size(164, 22);
 			this.CtrlNext10PopupItem.Tag = DuView.Types.Controls.SeekNext10;
-			this.CtrlNext10PopupItem.Text = "10페이지 뒤로";
+			this.CtrlNext10PopupItem.Text = "2206";
 			this.CtrlNext10PopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// toolStripSeparator12
@@ -596,7 +596,7 @@
 			this.CtrlPrevFilePopupItem.Name = "CtrlPrevFilePopupItem";
 			this.CtrlPrevFilePopupItem.Size = new System.Drawing.Size(164, 22);
 			this.CtrlPrevFilePopupItem.Tag = DuView.Types.Controls.ScanPrevious;
-			this.CtrlPrevFilePopupItem.Text = "앞 파일/폴더";
+			this.CtrlPrevFilePopupItem.Text = "2207";
 			this.CtrlPrevFilePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlNextFilePopupItem
@@ -605,7 +605,7 @@
 			this.CtrlNextFilePopupItem.Name = "CtrlNextFilePopupItem";
 			this.CtrlNextFilePopupItem.Size = new System.Drawing.Size(164, 22);
 			this.CtrlNextFilePopupItem.Tag = DuView.Types.Controls.ScanNext;
-			this.CtrlNextFilePopupItem.Text = "뒤 파일/폴더";
+			this.CtrlNextFilePopupItem.Text = "2208";
 			this.CtrlNextFilePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// PagesPopupItem
@@ -614,7 +614,7 @@
 			this.PagesPopupItem.Name = "PagesPopupItem";
 			this.PagesPopupItem.Size = new System.Drawing.Size(154, 22);
 			this.PagesPopupItem.Tag = DuView.Types.Controls.Select;
-			this.PagesPopupItem.Text = "페이지 목록";
+			this.PagesPopupItem.Text = "1201";
 			this.PagesPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// toolStripSeparator5
@@ -636,7 +636,7 @@
 			this.QualityPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityPopupItem.Name = "QualityPopupItem";
 			this.QualityPopupItem.Size = new System.Drawing.Size(154, 22);
-			this.QualityPopupItem.Text = "보기 품질";
+			this.QualityPopupItem.Text = "2100";
 			// 
 			// QualityLowPopupItem
 			// 
@@ -644,7 +644,7 @@
 			this.QualityLowPopupItem.Name = "QualityLowPopupItem";
 			this.QualityLowPopupItem.Size = new System.Drawing.Size(194, 22);
 			this.QualityLowPopupItem.Tag = DuView.Types.ViewQuality.Low;
-			this.QualityLowPopupItem.Text = "낮음";
+			this.QualityLowPopupItem.Text = "2101";
 			this.QualityLowPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityDefaultPopupItem
@@ -653,7 +653,7 @@
 			this.QualityDefaultPopupItem.Name = "QualityDefaultPopupItem";
 			this.QualityDefaultPopupItem.Size = new System.Drawing.Size(194, 22);
 			this.QualityDefaultPopupItem.Tag = DuView.Types.ViewQuality.Default;
-			this.QualityDefaultPopupItem.Text = "기본";
+			this.QualityDefaultPopupItem.Text = "2102";
 			this.QualityDefaultPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityBilinearPopupItem
@@ -662,7 +662,7 @@
 			this.QualityBilinearPopupItem.Name = "QualityBilinearPopupItem";
 			this.QualityBilinearPopupItem.Size = new System.Drawing.Size(194, 22);
 			this.QualityBilinearPopupItem.Tag = DuView.Types.ViewQuality.Bilinear;
-			this.QualityBilinearPopupItem.Text = "이중 선형";
+			this.QualityBilinearPopupItem.Text = "2103";
 			this.QualityBilinearPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityBicubicPopupItem
@@ -671,7 +671,7 @@
 			this.QualityBicubicPopupItem.Name = "QualityBicubicPopupItem";
 			this.QualityBicubicPopupItem.Size = new System.Drawing.Size(194, 22);
 			this.QualityBicubicPopupItem.Tag = DuView.Types.ViewQuality.Bicubic;
-			this.QualityBicubicPopupItem.Text = "이중 큐빅";
+			this.QualityBicubicPopupItem.Text = "2104";
 			this.QualityBicubicPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityHighPopupItem
@@ -680,7 +680,7 @@
 			this.QualityHighPopupItem.Name = "QualityHighPopupItem";
 			this.QualityHighPopupItem.Size = new System.Drawing.Size(194, 22);
 			this.QualityHighPopupItem.Tag = DuView.Types.ViewQuality.High;
-			this.QualityHighPopupItem.Text = "아주 높음";
+			this.QualityHighPopupItem.Text = "2105";
 			this.QualityHighPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// toolStripSeparator10
@@ -694,7 +694,7 @@
 			this.QualityHqBilinearPopupItem.Name = "QualityHqBilinearPopupItem";
 			this.QualityHqBilinearPopupItem.Size = new System.Drawing.Size(194, 22);
 			this.QualityHqBilinearPopupItem.Tag = DuView.Types.ViewQuality.HqBilinear;
-			this.QualityHqBilinearPopupItem.Text = "높은 품질의 이중 선형";
+			this.QualityHqBilinearPopupItem.Text = "2106";
 			this.QualityHqBilinearPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityHqBicubicPopupItem
@@ -703,7 +703,7 @@
 			this.QualityHqBicubicPopupItem.Name = "QualityHqBicubicPopupItem";
 			this.QualityHqBicubicPopupItem.Size = new System.Drawing.Size(194, 22);
 			this.QualityHqBicubicPopupItem.Tag = DuView.Types.ViewQuality.HqBicubic;
-			this.QualityHqBicubicPopupItem.Text = "높은 품질의 이중 큐빅";
+			this.QualityHqBicubicPopupItem.Text = "2107";
 			this.QualityHqBicubicPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// toolStripSeparator6
@@ -716,7 +716,7 @@
 			this.reservedToolStripMenuItem1.ForeColor = System.Drawing.Color.White;
 			this.reservedToolStripMenuItem1.Name = "reservedToolStripMenuItem1";
 			this.reservedToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
-			this.reservedToolStripMenuItem1.Text = "(기능없음)";
+			this.reservedToolStripMenuItem1.Text = "99";
 			// 
 			// toolStripSeparator7
 			// 
@@ -728,7 +728,7 @@
 			this.CopyImagePopupItem.ForeColor = System.Drawing.Color.White;
 			this.CopyImagePopupItem.Name = "CopyImagePopupItem";
 			this.CopyImagePopupItem.Size = new System.Drawing.Size(154, 22);
-			this.CopyImagePopupItem.Text = "이미지 복사(&C)";
+			this.CopyImagePopupItem.Text = "1304";
 			// 
 			// toolStripSeparator8
 			// 
@@ -740,7 +740,8 @@
 			this.ExitPopupItem.ForeColor = System.Drawing.Color.White;
 			this.ExitPopupItem.Name = "ExitPopupItem";
 			this.ExitPopupItem.Size = new System.Drawing.Size(154, 22);
-			this.ExitPopupItem.Text = "끝내기(&X)";
+			this.ExitPopupItem.Text = "1306";
+			this.ExitPopupItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
 			// ReadForm
 			// 
@@ -757,7 +758,7 @@
 			this.MainMenuStrip = this.MenuStrip;
 			this.MinimumSize = new System.Drawing.Size(250, 250);
 			this.Name = "ReadForm";
-			this.Text = "두뷰";
+			this.Text = "0";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReadForm_FormClosing);
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ReadForm_FormClosed);
 			this.Load += new System.EventHandler(this.ReadForm_Load);

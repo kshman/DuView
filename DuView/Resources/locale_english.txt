@@ -1,0 +1,55 @@
+﻿# English messages
+LANG=English
+
+0=DuView
+1=PuruLive
+2=https://github.com/kshman/DuView
+99=(reserved)
+
+# 보기(1100)
+1100=&View
+1101=&Zoom
+1102=Quality
+1103=Pit &width
+1104=Pit &height
+1105=&Left → Right
+1106=&Right → Left
+
+# 페이지(1200)
+1200=&Page
+1201=Select &page
+1202=&Add favority
+
+# 파일(1300)
+1300=&File
+1301=&Open
+1302=Open &last book
+1303=Clos&e
+1304=&Copy image
+1305=Re&fresh
+1306=E&xit
+
+# 기타(1800)
+1800=Cac&he
+
+# 품질(2100)
+2100=Quality
+2101=Low
+2102=Default
+2103=Bilinear
+2104=Bicubic
+2105=High
+2106=HQ Bilinear
+2107=HQ Bicubic
+
+# 쪽이동(2200)
+2200=Move page
+2201=Previous
+2202=Next
+2203=First
+2204=Last
+2205=10 pages prevous
+2206=10 pages next
+2207=Prevous archive or directory
+2208=Next archive or directory
+

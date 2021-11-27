@@ -6,6 +6,8 @@ internal static class Settings
 {
 	private const string c_keyname = @"PuruLive\DuView";
 
+	private static string s_locale = string.Empty;
+
 	private static int s_magnetic_dock_size = 10;
 
 	private static string s_last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
@@ -42,6 +44,8 @@ internal static class Settings
 						form.Size = rt.Size;
 					}
 				}
+
+				s_locale = rk.GetString("Locale", s_locale) ?? string.Empty;
 
 				s_magnetic_dock_size = rk.GetInt("MagneticDockSize", s_magnetic_dock_size);
 
@@ -83,6 +87,22 @@ internal static class Settings
 
 	//
 	public static string RecentlyPath => Path.Combine(StartupPath, "DuView.recently");
+
+	//
+	public static string Locale
+	{
+		get => s_locale;
+		set
+		{
+			if (value!= s_locale)
+			{
+				s_locale = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetString("Locale", value);
+			}
+		}
+	}
 
 	//
 	public static int MagneticDockSize
@@ -195,7 +215,7 @@ internal static class Settings
 			}
 		}
 	}
-	
+
 	//
 	public static int MaxRecently
 	{

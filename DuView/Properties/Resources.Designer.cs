@@ -71,6 +71,24 @@ namespace DuView.Properties {
         }
         
         /// <summary>
+        ///   과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string locale_english {
+            get {
+                return ResourceManager.GetString("locale_english", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   # 한국어 메시지과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string locale_korean {
+            get {
+                return ResourceManager.GetString("locale_korean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
         internal static System.Drawing.Bitmap ouch_noimg {

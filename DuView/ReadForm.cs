@@ -1,4 +1,6 @@
-﻿namespace DuView;
+﻿using Du.Globalization;
+
+namespace DuView;
 
 public partial class ReadForm : Form
 {
@@ -12,6 +14,7 @@ public partial class ReadForm : Form
 	private readonly BadakFormWorker _bfw;
 	private readonly PageSelectForm _select;
 
+	#region 만들기
 	public ReadForm(string filename)
 	{
 		InitializeComponent();
@@ -32,12 +35,94 @@ public partial class ReadForm : Form
 		_select = new PageSelectForm();
 	}
 
+	private void LocaleLocale(string locale, bool isinit = false)
+	{
+		if (isinit)
+		{
+			Locale.AddLocale("en", Properties.Resources.locale_english);
+			Locale.AddLocale("ko", Properties.Resources.locale_korean);
+		}
+
+		if (locale != Locale.CurrentLocale || isinit)
+		{
+			if (!Locale.HasLocale(locale))
+			{
+				var culture = Thread.CurrentThread.CurrentUICulture;
+				if (culture == null)
+					locale = "en";
+				else if (culture.Name.StartsWith("ko"))
+					locale = "ko";
+				else
+					locale = "en";
+			}
+
+			Locale.SetLocale(locale);
+		}
+
+		PageInfo.Text = Locale.Text(0);
+		TitleLabel.Text = Locale.Text(0);
+		ViewMenuItem.Text = Locale.Text(1100);
+		ViewZoomMenuItem.Text = Locale.Text(1101);
+		ViewQualityMenuItem.Text = Locale.Text(1102);
+		VwqLowMenuItem.Text = Locale.Text(2101);
+		VwqDefaultMenuItem.Text = Locale.Text(2102);
+		VwqBilinearMenuItem.Text = Locale.Text(2103);
+		VwqBicubicMenuItem.Text = Locale.Text(2104);
+		VwqHighMenuItem.Text = Locale.Text(2105);
+		VwqHqBilinearMenuItem.Text = Locale.Text(2106);
+		VwqHqBicubicMenuItem.Text = Locale.Text(2107);
+		ViewFitMenuItem.Text = Locale.Text(1103);
+		ViewLeftRightMenuItem.Text = Locale.Text(1105);
+		ViewRightLeftMenuItem.Text = Locale.Text(1106);
+		PageMenuItem.Text = Locale.Text(1200);
+		PageSelectMenuItem.Text = Locale.Text(1201);
+		PageAddFavMenuItem.Text = Locale.Text(1202);
+		FileMenuItem.Text = Locale.Text(1300);
+		FileOpenMenuItem.Text = Locale.Text(1301);
+		FileOpenLastMenuItem.Text = Locale.Text(1302);
+		FileCloseMenuItem.Text = Locale.Text(1303);
+		FileCopyImageMenuItem.Text = Locale.Text(1304);
+		FileRefreshMenuItem.Text = Locale.Text(1305);
+		FileExitMenuItem.Text = Locale.Text(1306);
+		MaxCacheMenuItem.Text = Locale.Text(1800);
+		Notifier.Text = Locale.Text(0);
+		OpenPopupItem.Text = Locale.Text(1301);
+		ClosePopupItem.Text = Locale.Text(1303);
+		ControlPopItem.Text = Locale.Text(2200);
+		CtrlPrevPopupItem.Text = Locale.Text(2201);
+		CtrlNextPopupItem.Text = Locale.Text(2202);
+		CtrlHomePopupItem.Text = Locale.Text(2203);
+		CtrlEndPopupItem.Text = Locale.Text(2204);
+		CtrlPrev10PopupItem.Text = Locale.Text(2205);
+		CtrlNext10PopupItem.Text = Locale.Text(2206);
+		CtrlPrevFilePopupItem.Text = Locale.Text(2207);
+		CtrlNextFilePopupItem.Text = Locale.Text(2208);
+		PagesPopupItem.Text = Locale.Text(1201);
+		QualityPopupItem.Text = Locale.Text(2100);
+		QualityLowPopupItem.Text = Locale.Text(2101);
+		QualityDefaultPopupItem.Text = Locale.Text(2102);
+		QualityBilinearPopupItem.Text = Locale.Text(2103);
+		QualityBicubicPopupItem.Text = Locale.Text(2104);
+		QualityHighPopupItem.Text = Locale.Text(2105);
+		QualityHqBilinearPopupItem.Text = Locale.Text(2106);
+		QualityHqBicubicPopupItem.Text = Locale.Text(2107);
+		reservedToolStripMenuItem1.Text = Locale.Text(99);
+		CopyImagePopupItem.Text = Locale.Text(1304);
+		ExitPopupItem.Text = Locale.Text(1306);
+		Text = Locale.Text(0);
+
+		Invalidate();
+	}
+	#endregion
+
 	#region 폼 명령
 	private void ReadForm_Load(object sender, EventArgs e)
 	{
 		Settings.WhenLoad(this);
 		ApplyUiSetting();
 		ResetFocus();
+
+		LocaleLocale(Settings.Locale, true);
 
 		//
 		if (!string.IsNullOrEmpty(_init_filename))
@@ -125,7 +210,7 @@ public partial class ReadForm : Form
 
 	private void ReadForm_DragDrop(object sender, DragEventArgs e)
 	{
-		if (e.Data?.GetData(DataFormats.FileDrop) is string[] {Length: > 0} filenames)
+		if (e.Data?.GetData(DataFormats.FileDrop) is string[] { Length: > 0 } filenames)
 		{
 			// 하나만 쓴다
 			OpenBook(filenames[0]);
@@ -165,6 +250,7 @@ public partial class ReadForm : Form
 			case Keys.Right:
 			case Keys.NumPad0:
 			case Keys.Decimal:
+			case Keys.Space:
 				PageControl(e.Shift ? Types.Controls.SeekPlusOne : Types.Controls.Next);
 				break;
 
@@ -240,7 +326,8 @@ public partial class ReadForm : Form
 
 			// 기능
 			case Keys.F:
-				_bfw.Maximize();
+				if (!e.Alt)	// ALT가 눌리면 ALT+F가 호출되야 하기 때문에
+					_bfw.Maximize();
 				break;
 		}
 	}
@@ -364,7 +451,7 @@ public partial class ReadForm : Form
 
 	private void ViewQualityMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem {Tag: { }} i)
+		if (sender is ToolStripMenuItem { Tag: { } } i)
 		{
 			var q = (Types.ViewQuality)i.Tag;
 			UpdateViewQuality(q);
@@ -373,7 +460,7 @@ public partial class ReadForm : Form
 
 	private void ViewModeMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem {Tag: { }} i)
+		if (sender is ToolStripMenuItem { Tag: { } } i)
 		{
 			var m = (Types.ViewMode)i.Tag;
 			UpdateViewMode(m);
@@ -407,7 +494,7 @@ public partial class ReadForm : Form
 	{
 		try
 		{
-			if (Book is {PageLeft: { }})
+			if (Book is { PageLeft: { } })
 			{
 				Clipboard.SetImage(Book.PageLeft);
 				Notifier.ShowBalloonTip(1000, "이미지 복사", "클립보드로 복사했습니다!", ToolTipIcon.Info);
@@ -427,7 +514,7 @@ public partial class ReadForm : Form
 
 	private void PageControlMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem {Tag: { }} i)
+		if (sender is ToolStripMenuItem { Tag: { } } i)
 		{
 			var c = (Types.Controls)i.Tag;
 			PageControl(c);
@@ -630,7 +717,7 @@ public partial class ReadForm : Form
 	private static void DrawBitmapHalfAndHalf(Graphics g, Image bmp, Image left, Image right)
 	{
 		var f = bmp.Width / 2;
-		
+
 		int w, h;
 		Rectangle rt;
 
@@ -671,8 +758,8 @@ public partial class ReadForm : Form
 			return;
 
 		// 본격 그리기
-		int w = BookCanvas.Width;
-		int h = BookCanvas.Height;
+		var w = BookCanvas.Width;
+		var h = BookCanvas.Height;
 
 		if (w == 0 || h == 0)
 		{
@@ -788,7 +875,7 @@ public partial class ReadForm : Form
 			case Types.Controls.Select:
 				PageSelect();
 				break;
-			
+
 			default:
 				throw new ArgumentOutOfRangeException(nameof(ctrl), ctrl, null);
 		}
