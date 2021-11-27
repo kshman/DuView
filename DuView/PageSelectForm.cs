@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace DuView;
+﻿namespace DuView;
 
 public partial class PageSelectForm : Form
 {
@@ -20,6 +18,17 @@ public partial class PageSelectForm : Form
 		};
 
 		ControlDu.DoubleBuffered(PageList, true);
+	}
+
+	public void LocaleLocale()
+	{
+		PageInfoLabel.Text = Locale.Text(2301);
+		PlFileNameColumn.Text = Locale.Text(2302);
+		PlDateColumn.Text = Locale.Text(2303);
+		PlSizeColumn.Text = Locale.Text(2304);
+		DoOkButton.Text = Locale.Text(97);
+		DoCancelButton.Text = Locale.Text(98);
+		Text = Locale.Text(2300);
 	}
 
 	private void PageSelectForm_Load(object sender, EventArgs e)
@@ -114,7 +123,7 @@ public partial class PageSelectForm : Form
 
 	public void SetBook(BookBase book)
 	{
-		PageInfoLabel.Text = $"전체 페이지: {book.TotalPage}";
+		PageInfoLabel.Text = $"{Locale.Text(2305)} {book.TotalPage}";
 
 		PageList.BeginUpdate();
 		PageList.Items.Clear();
@@ -126,7 +135,7 @@ public partial class PageSelectForm : Form
 			var li = new ListViewItem(new[]
 			{
 				e.Name ?? string.Empty,	// name이 널일리가 없는데 c#이 용서하지 않는다
-				e.DateTime.ToString(CultureInfo.InvariantCulture),
+				e.DateTime.ToString(System.Globalization.CultureInfo.InvariantCulture),
 				ToolBox.SizeToString(e.Size)
 			})
 			{
@@ -140,7 +149,7 @@ public partial class PageSelectForm : Form
 
 	public void ResetBook()
 	{
-		PageInfoLabel.Text = "책이 없어요";
+		PageInfoLabel.Text = Locale.Text(2306);
 
 		PageList.Items.Clear();
 	}

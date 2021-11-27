@@ -4,7 +4,7 @@ namespace DuView;
 
 public partial class ReadForm : Form
 {
-	private const string c_title = "두뷰";
+	private static string s_title = "DuView";
 
 	private BookBase? Book { get; set; }
 
@@ -45,6 +45,9 @@ public partial class ReadForm : Form
 
 		if (locale != Locale.CurrentLocale || isinit)
 		{
+#if DEBUG && true
+			locale = "en";
+#else
 			if (!Locale.HasLocale(locale))
 			{
 				var culture = Thread.CurrentThread.CurrentUICulture;
@@ -55,6 +58,7 @@ public partial class ReadForm : Form
 				else
 					locale = "en";
 			}
+#endif
 
 			Locale.SetLocale(locale);
 		}
@@ -84,6 +88,7 @@ public partial class ReadForm : Form
 		FileCopyImageMenuItem.Text = Locale.Text(1304);
 		FileRefreshMenuItem.Text = Locale.Text(1305);
 		FileExitMenuItem.Text = Locale.Text(1306);
+		FileDeleteMenuItem.Text = Locale.Text(1307);
 		MaxCacheMenuItem.Text = Locale.Text(1800);
 		Notifier.Text = Locale.Text(0);
 		OpenPopupItem.Text = Locale.Text(1301);
@@ -106,12 +111,14 @@ public partial class ReadForm : Form
 		QualityHighPopupItem.Text = Locale.Text(2105);
 		QualityHqBilinearPopupItem.Text = Locale.Text(2106);
 		QualityHqBicubicPopupItem.Text = Locale.Text(2107);
-		reservedToolStripMenuItem1.Text = Locale.Text(99);
+		DeletePopupItem.Text = Locale.Text(1307);
 		CopyImagePopupItem.Text = Locale.Text(1304);
 		ExitPopupItem.Text = Locale.Text(1306);
-		Text = Locale.Text(0);
+		s_title = Text = Locale.Text(0);
 
 		Invalidate();
+
+		_select.LocaleLocale();
 	}
 	#endregion
 
@@ -320,13 +327,9 @@ public partial class ReadForm : Form
 				OpenNextBook();
 				break;
 
-			case Keys.Delete:
-				DeleteBookOrItem();
-				break;
-
 			// 기능
 			case Keys.F:
-				if (!e.Alt)	// ALT가 눌리면 ALT+F가 호출되야 하기 때문에
+				if (!e.Alt) // ALT가 눌리면 ALT+F가 호출되야 하기 때문에
 					_bfw.Maximize();
 				break;
 		}
@@ -497,12 +500,12 @@ public partial class ReadForm : Form
 			if (Book is { PageLeft: { } })
 			{
 				Clipboard.SetImage(Book.PageLeft);
-				Notifier.ShowBalloonTip(1000, "이미지 복사", "클립보드로 복사했습니다!", ToolTipIcon.Info);
+				Notifier.ShowBalloonTip(1000, Locale.Text(101), Locale.Text(102), ToolTipIcon.Info);
 			}
 		}
 		catch
 		{
-			Notifier.ShowBalloonTip(1000, "이미지 복자", "클립보드에 넣을 수 없습니다", ToolTipIcon.Error);
+			Notifier.ShowBalloonTip(1000, Locale.Text(101), Locale.Text(102), ToolTipIcon.Error);
 		}
 	}
 
@@ -520,6 +523,11 @@ public partial class ReadForm : Form
 			PageControl(c);
 		}
 	}
+
+	private void FileDeleteMenuItem_Click(object sender, EventArgs e)
+	{
+		DeleteBookOrItem();
+	}
 	#endregion
 
 	#region 파일 처리
@@ -528,7 +536,7 @@ public partial class ReadForm : Form
 	{
 		if (Book != null)
 		{
-			Text = c_title;
+			Text = s_title;
 
 			Settings.SetRecentlyPage(Book);
 
@@ -548,8 +556,8 @@ public partial class ReadForm : Form
 	{
 		var dlg = new OpenFileDialog()
 		{
-			Title = "책이나 이미지를 고르세요",
-			Filter = "압축 파일|*.zip|모든 파일|*.*",
+			Title = Locale.Text(104),
+			Filter = Locale.Text(105),
 			InitialDirectory = Settings.LastFolder,
 		};
 
@@ -628,7 +636,7 @@ public partial class ReadForm : Form
 		if (bk == null)
 		{
 			// 아카이브가 뭔가 잘못됨
-			Notifier.ShowBalloonTip(1000, "책 열기", "열 수 없는 압축 파일입니다!", ToolTipIcon.Error);
+			Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(107), ToolTipIcon.Error);
 		}
 
 		return bk;
@@ -644,7 +652,7 @@ public partial class ReadForm : Form
 		if (bk == null)
 		{
 			// 아카이브가 뭔가 잘못됨
-			Notifier.ShowBalloonTip(1000, "책 열기", "디렉토리를 열 수 없어요!", ToolTipIcon.Error);
+			Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(108), ToolTipIcon.Error);
 		}
 
 		return bk;
@@ -659,7 +667,7 @@ public partial class ReadForm : Form
 		var filename = Book.FindNextFile(true);
 		if (filename == null)
 		{
-			Notifier.ShowBalloonTip(1000, "책 열기", "이전 책이 없어요", ToolTipIcon.Info);
+			Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(109), ToolTipIcon.Info);
 			return;
 		}
 
@@ -675,7 +683,7 @@ public partial class ReadForm : Form
 		var filename = Book.FindNextFile(false);
 		if (filename == null)
 		{
-			Notifier.ShowBalloonTip(1000, "책 열기", "다음 책이 없어요", ToolTipIcon.Info);
+			Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(110), ToolTipIcon.Info);
 			return;
 		}
 
@@ -685,7 +693,42 @@ public partial class ReadForm : Form
 	// 책을 지우거나 파일 지우기
 	private void DeleteBookOrItem()
 	{
+		if (Book == null)
+			return;
 
+		if (!Book.CanDeleteFile(out var reason))
+			return;
+
+		if (!string.IsNullOrEmpty(reason))
+		{
+			if (MessageBox.Show(this, reason, Locale.Text(114), MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+				return;
+		}
+
+		var nextfilename = Book.FindNextFile(false) ?? Book.FindNextFile(true) ?? null;
+
+		if (!Book.DeleteFile(out var closebook))
+		{
+			MessageBox.Show(this, Locale.Text(115), Locale.Text(114), MessageBoxButtons.OK, MessageBoxIcon.Error);
+			return;
+		}
+
+		if (closebook)
+		{
+			// 현재 책을 지우라는 뜻
+			Book.CurrentPage = 0;
+			CloseBook();
+
+			if (!string.IsNullOrEmpty(nextfilename))
+				OpenBook(nextfilename);
+		}
+		else
+		{
+			// 예컨데 거짓이면, 파일 단위로 안에서 처리해버렸기 때문이다
+			// 그러므로 다시 그림
+			Book.PrepareImages();
+			DrawBook();
+		}
 	}
 	#endregion
 
@@ -742,7 +785,7 @@ public partial class ReadForm : Form
 		if (Book == null)
 		{
 			PageInfo.Visible = false;
-			MaxCacheMenuItem.Text = "캐시";
+			MaxCacheMenuItem.Text = Locale.Text(1800);
 		}
 		else
 		{
@@ -763,7 +806,7 @@ public partial class ReadForm : Form
 
 		if (w == 0 || h == 0)
 		{
-			Notifier.ShowBalloonTip(1000, "View Book", "Image drawing error", ToolTipIcon.Error);
+			Notifier.ShowBalloonTip(1000, Locale.Text(111), Locale.Text(112), ToolTipIcon.Error);
 			return;
 		}
 

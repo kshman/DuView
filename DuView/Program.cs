@@ -1,5 +1,6 @@
 ﻿global using Du;
 global using Du.Data;
+global using Du.Globalization;
 global using Du.Platform;
 global using Du.WinForms;
 global using System;

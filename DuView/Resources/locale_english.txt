@@ -4,7 +4,27 @@ LANG=English
 0=DuView
 1=PuruLive
 2=https://github.com/kshman/DuView
+96=Do you want to continue?
+97=Ok
+98=Cancel
 99=(reserved)
+
+101=Copy image
+102=Copied to clipboard!
+103=Fail to copying image to clipboard!
+104=Select archive or image
+105=Archive|*.zip|All files|*.*
+106=Open book
+107=Cannot open archive file!
+108=Cannot acces directory!
+109=No previous book!
+110=No next book!
+111=View book
+112=Image drawing error!
+113=file is archive file 
+114=Delete book
+115=Fail to delete book
+116=is directory
 
 # 보기(1100)
 1100=&View
@@ -28,6 +48,7 @@ LANG=English
 1304=&Copy image
 1305=Re&fresh
 1306=E&xit
+1307=&Delete
 
 # 기타(1800)
 1800=Cac&he
@@ -52,4 +73,13 @@ LANG=English
 2206=10 pages next
 2207=Prevous archive or directory
 2208=Next archive or directory
+
+# 페이지선택폼(2300)
+2300=Page select
+2301=Page
+2302=Filename
+2303=Date
+2304=Length
+2305=Total:
+2306=No book found
 

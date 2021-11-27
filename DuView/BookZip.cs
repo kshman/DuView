@@ -144,9 +144,41 @@ internal class BookZip : BookBase
 	}
 
 	//
-	public override bool DeleteFile()
+	public override bool CanDeleteFile(out string? reason)
 	{
-		return false;
+		reason = $"\"{OnlyFileName}\" {Locale.Text(113)}{Environment.NewLine}{Locale.Text(96)}";
+		return true;
+	}
+
+	//
+	public override bool DeleteFile(out bool closebook)
+	{
+		closebook = true;
+
+		if (_zip != null)
+		{
+			_zip.Dispose();
+			_zip = null;
+		}
+
+		try
+		{
+			try
+			{
+				Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(FileName,
+				  Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+				  Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+			}
+			catch
+			{
+				File.Delete(FileName);
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	// end of class

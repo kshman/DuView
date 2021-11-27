@@ -49,9 +49,34 @@ internal class BookFolder : BookBase
 		}
 	}
 
-	public override bool DeleteFile()
+	public override bool CanDeleteFile(out string? reason)
 	{
-		throw new NotImplementedException();
+		reason = $"\"{OnlyFileName}\" {Locale.Text(116)}{Environment.NewLine}{Locale.Text(96)}";
+		return true;
+	}
+
+	public override bool DeleteFile(out bool closebook)
+	{
+		closebook = true;
+
+		try
+		{
+			try
+			{
+				Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(FileName,
+				  Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+				  Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+			}
+			catch
+			{
+				Directory.Delete(FileName, true);
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	public override IEnumerable<Types.BookEntryInfo> GetEntriesInfo()

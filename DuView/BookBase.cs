@@ -28,8 +28,8 @@ public abstract class BookBase : IDisposable
 	protected abstract Stream? OpenStream(object entry);
 	protected abstract string? GetEntryName(object entry);
 	public abstract IEnumerable<Types.BookEntryInfo> GetEntriesInfo();
-	public virtual bool CanDeleteFile(out string reason) { reason = string.Empty; return true; }
-	public abstract bool DeleteFile();
+	public virtual bool CanDeleteFile(out string? reason) { reason = string.Empty; return true; }
+	public abstract bool DeleteFile(out bool closebook);
 
 	//
 	protected void SetFileName(FileInfo fi)
