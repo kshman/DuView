@@ -4,6 +4,7 @@ LANG=한국말
 0=두뷰
 1=PuruLive
 2=https://github.com/kshman/DuView
+95=메뉴
 96=계속하시겠습니까?
 97=선택
 98=취소

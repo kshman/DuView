@@ -6,8 +6,9 @@ internal static class Settings
 {
 	private const string c_keyname = @"PuruLive\DuView";
 
-	private static string s_locale = string.Empty;
+	private static string s_language = string.Empty;
 
+	private static Rectangle s_bound = new Rectangle(0, 0, 800, 480);
 	private static int s_magnetic_dock_size = 10;
 
 	private static string s_last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
@@ -22,7 +23,7 @@ internal static class Settings
 
 	private static ResizableLineDb? s_recently;
 
-	public static void WhenLoad(Form form)
+	public static void WhenStart()
 	{
 		using (var rk = new RegKey(c_keyname))
 		{
@@ -34,18 +35,15 @@ internal static class Settings
 					var ss = v.Split(',');
 					if (ss.Length == 4)
 					{
-						var rt = new Rectangle(
+						s_bound = new Rectangle(
 							int.Parse(ss[0]),
 							int.Parse(ss[1]),
 							int.Parse(ss[2]),
 							int.Parse(ss[3]));
-
-						form.Location = rt.Location;
-						form.Size = rt.Size;
 					}
 				}
 
-				s_locale = rk.GetString("Locale", s_locale) ?? string.Empty;
+				s_language = rk.GetString("Language", s_language) ?? string.Empty;
 
 				s_magnetic_dock_size = rk.GetInt("MagneticDockSize", s_magnetic_dock_size);
 
@@ -70,15 +68,58 @@ internal static class Settings
 		s_recently = File.Exists(rfn) ? ResizableLineDb.FromFile(rfn) : ResizableLineDb.New();
 	}
 
+	private static bool s_init_locale = false;
+
+	//
+	public static void InitLocale()
+	{
+		if (!s_init_locale)
+		{
+			Locale.AddLocale("en", Properties.Resources.locale_english);
+			Locale.AddLocale("ko", Properties.Resources.locale_korean);
+			Locale.SetDefaultLocale();
+
+			SetLocale(s_language);
+
+			s_init_locale = true;
+		}
+	}
+
+	//
+	private static void SetLocale(string locale)
+	{
+		if (!Locale.HasLocale(locale))
+		{
+			var culture = Thread.CurrentThread.CurrentUICulture;
+
+			if (culture == null)
+				locale = "en";
+			else if (culture.Name.StartsWith("ko"))
+				locale = "ko";
+			else
+				locale = "en";
+		}
+
+		if (locale != Locale.CurrentLocale)
+			Locale.SetLocale(locale);
+	}
+
+	//
+	public static void WhenMainLoad(Form form)
+	{
+		form.Location = s_bound.Location;
+		form.Size = s_bound.Size;
+	}
+
 	//
 	public static void KeepLocationSize(FormWindowState state, Point location, Size size)
 	{
 		if (state == FormWindowState.Normal)
 		{
-			var rt = new Rectangle(location, size);
+			s_bound = new Rectangle(location, size);
 
 			using var rk = new RegKey(c_keyname, true);
-			rk.SetString("Window", $"{rt.X},{rt.Y},{rt.Width},{rt.Height}");
+			rk.SetString("Window", $"{s_bound.X},{s_bound.Y},{s_bound.Width},{s_bound.Height}");
 		}
 	}
 
@@ -89,17 +130,32 @@ internal static class Settings
 	public static string RecentlyPath => Path.Combine(StartupPath, "DuView.recently");
 
 	//
-	public static string Locale
+	public static string Language
 	{
-		get => s_locale;
+		get => s_language;
 		set
 		{
-			if (value!= s_locale)
+			if (value != s_language)
 			{
-				s_locale = value;
+				s_language = value;
+
+				if (!Locale.HasLocale(value))
+				{
+					var culture = Thread.CurrentThread.CurrentUICulture;
+
+					if (culture == null)
+						s_language = "en";
+					else if (culture.Name.StartsWith("ko"))
+						s_language = "ko";
+					else
+						s_language = "en";
+				}
+
+				if (s_language != Locale.CurrentLocale)
+					Locale.SetLocale(s_language);
 
 				using var rk = new RegKey(c_keyname, true);
-				rk.SetString("Locale", value);
+				rk.SetString("Language", value);
 			}
 		}
 	}

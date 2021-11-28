@@ -22,17 +22,20 @@ namespace DuView
 			if (HasProductProcess(filename))
 				return;
 
+			Settings.WhenStart();
+			Settings.InitLocale();
+
 			ApplicationConfiguration.Initialize();
 			Application.Run(new ReadForm(filename));
 		}
 
-		static bool HasProductProcess(string? filename)
+		static bool HasProductProcess(string filename)
 		{
 			var prcs = System.Diagnostics.Process.GetProcessesByName(Application.ProductName);
 
-			if (prcs.Length == 1)
+			if (prcs.Length < 2)
 				return false;
-			else if (prcs.Length == 2)
+			else
 			{
 				var p = prcs[0].Id == Environment.ProcessId ? prcs[1] : prcs[0];
 				IntPtr h = p.MainWindowHandle;

@@ -34,102 +34,14 @@ public partial class ReadForm : Form
 		};
 		_select = new PageSelectForm();
 	}
-
-	private void LocaleLocale(string locale, bool isinit = false)
-	{
-		if (isinit)
-		{
-			Locale.AddLocale("en", Properties.Resources.locale_english);
-			Locale.AddLocale("ko", Properties.Resources.locale_korean);
-		}
-
-		if (locale != Locale.CurrentLocale || isinit)
-		{
-#if DEBUG && true
-			locale = "en";
-#else
-			if (!Locale.HasLocale(locale))
-			{
-				var culture = Thread.CurrentThread.CurrentUICulture;
-				if (culture == null)
-					locale = "en";
-				else if (culture.Name.StartsWith("ko"))
-					locale = "ko";
-				else
-					locale = "en";
-			}
-#endif
-
-			Locale.SetLocale(locale);
-		}
-
-		PageInfo.Text = Locale.Text(0);
-		TitleLabel.Text = Locale.Text(0);
-		ViewMenuItem.Text = Locale.Text(1100);
-		ViewZoomMenuItem.Text = Locale.Text(1101);
-		ViewQualityMenuItem.Text = Locale.Text(1102);
-		VwqLowMenuItem.Text = Locale.Text(2101);
-		VwqDefaultMenuItem.Text = Locale.Text(2102);
-		VwqBilinearMenuItem.Text = Locale.Text(2103);
-		VwqBicubicMenuItem.Text = Locale.Text(2104);
-		VwqHighMenuItem.Text = Locale.Text(2105);
-		VwqHqBilinearMenuItem.Text = Locale.Text(2106);
-		VwqHqBicubicMenuItem.Text = Locale.Text(2107);
-		ViewFitMenuItem.Text = Locale.Text(1103);
-		ViewLeftRightMenuItem.Text = Locale.Text(1105);
-		ViewRightLeftMenuItem.Text = Locale.Text(1106);
-		PageMenuItem.Text = Locale.Text(1200);
-		PageSelectMenuItem.Text = Locale.Text(1201);
-		PageAddFavMenuItem.Text = Locale.Text(1202);
-		FileMenuItem.Text = Locale.Text(1300);
-		FileOpenMenuItem.Text = Locale.Text(1301);
-		FileOpenLastMenuItem.Text = Locale.Text(1302);
-		FileCloseMenuItem.Text = Locale.Text(1303);
-		FileCopyImageMenuItem.Text = Locale.Text(1304);
-		FileRefreshMenuItem.Text = Locale.Text(1305);
-		FileExitMenuItem.Text = Locale.Text(1306);
-		FileDeleteMenuItem.Text = Locale.Text(1307);
-		MaxCacheMenuItem.Text = Locale.Text(1800);
-		Notifier.Text = Locale.Text(0);
-		OpenPopupItem.Text = Locale.Text(1301);
-		ClosePopupItem.Text = Locale.Text(1303);
-		ControlPopItem.Text = Locale.Text(2200);
-		CtrlPrevPopupItem.Text = Locale.Text(2201);
-		CtrlNextPopupItem.Text = Locale.Text(2202);
-		CtrlHomePopupItem.Text = Locale.Text(2203);
-		CtrlEndPopupItem.Text = Locale.Text(2204);
-		CtrlPrev10PopupItem.Text = Locale.Text(2205);
-		CtrlNext10PopupItem.Text = Locale.Text(2206);
-		CtrlPrevFilePopupItem.Text = Locale.Text(2207);
-		CtrlNextFilePopupItem.Text = Locale.Text(2208);
-		PagesPopupItem.Text = Locale.Text(1201);
-		QualityPopupItem.Text = Locale.Text(2100);
-		QualityLowPopupItem.Text = Locale.Text(2101);
-		QualityDefaultPopupItem.Text = Locale.Text(2102);
-		QualityBilinearPopupItem.Text = Locale.Text(2103);
-		QualityBicubicPopupItem.Text = Locale.Text(2104);
-		QualityHighPopupItem.Text = Locale.Text(2105);
-		QualityHqBilinearPopupItem.Text = Locale.Text(2106);
-		QualityHqBicubicPopupItem.Text = Locale.Text(2107);
-		DeletePopupItem.Text = Locale.Text(1307);
-		CopyImagePopupItem.Text = Locale.Text(1304);
-		ExitPopupItem.Text = Locale.Text(1306);
-		s_title = Text = Locale.Text(0);
-
-		Invalidate();
-
-		_select.LocaleLocale();
-	}
 	#endregion
 
 	#region 폼 명령
 	private void ReadForm_Load(object sender, EventArgs e)
 	{
-		Settings.WhenLoad(this);
+		Settings.WhenMainLoad(this);
 		ApplyUiSetting();
 		ResetFocus();
-
-		LocaleLocale(Settings.Locale, true);
 
 		//
 		if (!string.IsNullOrEmpty(_init_filename))

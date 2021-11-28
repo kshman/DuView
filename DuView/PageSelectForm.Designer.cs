@@ -47,7 +47,7 @@
 			this.PageInfoLabel.Name = "PageInfoLabel";
 			this.PageInfoLabel.Size = new System.Drawing.Size(76, 30);
 			this.PageInfoLabel.TabIndex = 1;
-			this.PageInfoLabel.Text = "2301";
+			this.PageInfoLabel.Text = Locale.Text(2301);
 			this.PageInfoLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseDown);
 			this.PageInfoLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseMove);
 			this.PageInfoLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseUp);
@@ -78,17 +78,17 @@
 			// 
 			// PlFileNameColumn
 			// 
-			this.PlFileNameColumn.Text = "2302";
+			this.PlFileNameColumn.Text = Locale.Text(2302);
 			this.PlFileNameColumn.Width = 76;
 			// 
 			// PlDateColumn
 			// 
-			this.PlDateColumn.Text = "2303";
+			this.PlDateColumn.Text = Locale.Text(2303);
 			this.PlDateColumn.Width = 150;
 			// 
 			// PlSizeColumn
 			// 
-			this.PlSizeColumn.Text = "2304";
+			this.PlSizeColumn.Text = Locale.Text(2304);
 			this.PlSizeColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.PlSizeColumn.Width = 75;
 			// 
@@ -103,7 +103,7 @@
 			this.DoOkButton.Name = "DoOkButton";
 			this.DoOkButton.Size = new System.Drawing.Size(220, 45);
 			this.DoOkButton.TabIndex = 3;
-			this.DoOkButton.Text = "97";
+			this.DoOkButton.Text = Locale.Text(97);
 			this.DoOkButton.UseVisualStyleBackColor = true;
 			this.DoOkButton.Click += new System.EventHandler(this.DoOkButton_Click);
 			// 
@@ -117,7 +117,7 @@
 			this.DoCancelButton.Name = "DoCancelButton";
 			this.DoCancelButton.Size = new System.Drawing.Size(69, 45);
 			this.DoCancelButton.TabIndex = 4;
-			this.DoCancelButton.Text = "98";
+			this.DoCancelButton.Text = Locale.Text(98);
 			this.DoCancelButton.UseVisualStyleBackColor = true;
 			// 
 			// SystemButton
@@ -155,7 +155,7 @@
 			this.MinimizeBox = false;
 			this.Name = "PageSelectForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "2300";
+			this.Text = Locale.Text(2300);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PageSelectForm_FormClosing);
 			this.Load += new System.EventHandler(this.PageSelectForm_Load);
 			this.Shown += new System.EventHandler(this.PageSelectForm_Shown);

@@ -4,6 +4,7 @@ LANG=English
 0=DuView
 1=PuruLive
 2=https://github.com/kshman/DuView
+95=Menu
 96=Do you want to continue?
 97=Ok
 98=Cancel

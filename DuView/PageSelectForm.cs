@@ -20,17 +20,6 @@ public partial class PageSelectForm : Form
 		ControlDu.DoubleBuffered(PageList, true);
 	}
 
-	public void LocaleLocale()
-	{
-		PageInfoLabel.Text = Locale.Text(2301);
-		PlFileNameColumn.Text = Locale.Text(2302);
-		PlDateColumn.Text = Locale.Text(2303);
-		PlSizeColumn.Text = Locale.Text(2304);
-		DoOkButton.Text = Locale.Text(97);
-		DoCancelButton.Text = Locale.Text(98);
-		Text = Locale.Text(2300);
-	}
-
 	private void PageSelectForm_Load(object sender, EventArgs e)
 	{
 
