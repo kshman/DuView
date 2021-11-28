@@ -4,8 +4,6 @@ namespace DuView;
 
 public partial class ReadForm : Form
 {
-	private static string s_title = "DuView";
-
 	private BookBase? Book { get; set; }
 
 	private Bitmap? _bmp;
@@ -13,6 +11,8 @@ public partial class ReadForm : Form
 
 	private readonly BadakFormWorker _bfw;
 	private readonly PageSelectForm _select;
+
+	private Rectangle[] _click_bound = new Rectangle[2];
 
 	#region 만들기
 	public ReadForm(string filename)
@@ -118,6 +118,12 @@ public partial class ReadForm : Form
 
 	private void ReadForm_ClientSizeChanged(object sender, EventArgs e)
 	{
+		var rt = BookCanvas.ClientRectangle;
+		var w4 = rt.Width / 4;
+
+		_click_bound[0] = new Rectangle(rt.Left, rt.Top, w4, rt.Height);
+		_click_bound[1] = new Rectangle(rt.Right - w4, rt.Top, w4, rt.Height);
+
 		DrawBook();
 	}
 
@@ -160,15 +166,12 @@ public partial class ReadForm : Form
 				PageControl(Types.Controls.SeekPlusOne);
 				break;
 
-			case Keys.Up:
 			case Keys.Left:
 				PageControl(e.Shift ? Types.Controls.SeekMinusOne : Types.Controls.Previous);
 				break;
 
-			case Keys.Down:
 			case Keys.Right:
 			case Keys.NumPad0:
-			case Keys.Decimal:
 			case Keys.Space:
 				PageControl(e.Shift ? Types.Controls.SeekPlusOne : Types.Controls.Next);
 				break;
@@ -181,10 +184,12 @@ public partial class ReadForm : Form
 				PageControl(Types.Controls.Last);
 				break;
 
+			case Keys.Up:
 			case Keys.PageUp:
 				PageControl(Types.Controls.SeekPrevious10);
 				break;
 
+			case Keys.Down:
 			case Keys.PageDown:
 			case Keys.Back:
 				PageControl(Types.Controls.SeekNext10);
@@ -268,13 +273,38 @@ public partial class ReadForm : Form
 	#region 캔바스 명령
 	private void BookCanvas_MouseDown(object sender, MouseEventArgs e)
 	{
+		if (Book != null)
+		{
+			if (_click_bound[0].Contains(e.Location))
+			{
+				PageControl(Types.Controls.Previous);
+				return;
+			}
+			else if (_click_bound[1].Contains(e.Location))
+			{
+				BookCanvas.Cursor = Cursors.PanEast;
+				PageControl(Types.Controls.Next);
+			}
+		}
+
 		if (_bfw.BodyAsTitle)
 			_bfw.DragOnDown(e);
 		else
 		{
-			// 최대화만 쓰자
+			// 마우스 두번 눌림 
 			if (e.Clicks == 2)
-				_bfw.Maximize();
+			{
+				if (Book != null)
+				{
+					// 책이 있음 최대화
+					_bfw.Maximize();
+				}
+				else
+				{
+					// 책이 없으면 책 열기
+					OpenDialogForBook();
+				}
+			}
 		}
 	}
 
@@ -286,6 +316,16 @@ public partial class ReadForm : Form
 
 	private void BookCanvas_MouseMove(object sender, MouseEventArgs e)
 	{
+		if (Book != null)
+		{
+			if (_click_bound[0].Contains(e.Location))
+				BookCanvas.Cursor = Cursors.PanWest;
+			else if (_click_bound[1].Contains(e.Location))
+				BookCanvas.Cursor = Cursors.PanEast;
+			else
+				BookCanvas.Cursor = Cursors.Default;
+		}
+
 		if (_bfw.BodyAsTitle)
 			_bfw.DragOnMove(e);
 	}
@@ -448,7 +488,7 @@ public partial class ReadForm : Form
 	{
 		if (Book != null)
 		{
-			Text = s_title;
+			Text = Locale.Text(0);
 
 			Settings.SetRecentlyPage(Book);
 
