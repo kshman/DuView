@@ -157,10 +157,12 @@ public partial class ReadForm : Form
 				break;
 
 			// 페이지
+			case Keys.Up:
 			case Keys.Oemcomma:
 				PageControl(Types.Controls.SeekMinusOne);
 				break;
 
+			case Keys.Down:
 			case Keys.OemPeriod:
 			case Keys.OemQuestion:
 				PageControl(Types.Controls.SeekPlusOne);
@@ -184,12 +186,10 @@ public partial class ReadForm : Form
 				PageControl(Types.Controls.Last);
 				break;
 
-			case Keys.Up:
 			case Keys.PageUp:
 				PageControl(Types.Controls.SeekPrevious10);
 				break;
 
-			case Keys.Down:
 			case Keys.PageDown:
 			case Keys.Back:
 				PageControl(Types.Controls.SeekNext10);
