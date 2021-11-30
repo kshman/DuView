@@ -139,8 +139,8 @@
 			// 
 			// TitleLabel
 			// 
-			this.TitleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.TitleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.TitleLabel.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.TitleLabel.ForeColor = System.Drawing.Color.White;
 			this.TitleLabel.Location = new System.Drawing.Point(11, 33);
@@ -173,10 +173,10 @@
 			// 
 			this.MenuStrip.Dock = System.Windows.Forms.DockStyle.None;
 			this.MenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.ViewMenuItem,
-			this.PageMenuItem,
-			this.FileMenuItem,
-			this.MaxCacheMenuItem});
+            this.ViewMenuItem,
+            this.PageMenuItem,
+            this.FileMenuItem,
+            this.MaxCacheMenuItem});
 			this.MenuStrip.Location = new System.Drawing.Point(3, 3);
 			this.MenuStrip.Name = "MenuStrip";
 			this.MenuStrip.Size = new System.Drawing.Size(212, 24);
@@ -186,12 +186,12 @@
 			// ViewMenuItem
 			// 
 			this.ViewMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.ViewZoomMenuItem,
-			this.ViewQualityMenuItem,
-			this.toolStripSeparator1,
-			this.ViewFitMenuItem,
-			this.ViewLeftRightMenuItem,
-			this.ViewRightLeftMenuItem});
+            this.ViewZoomMenuItem,
+            this.ViewQualityMenuItem,
+            this.toolStripSeparator1,
+            this.ViewFitMenuItem,
+            this.ViewLeftRightMenuItem,
+            this.ViewRightLeftMenuItem});
 			this.ViewMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewMenuItem.Image = global::DuView.Properties.Resources.viewmode_pitwidth;
 			this.ViewMenuItem.Name = "ViewMenuItem";
@@ -210,14 +210,14 @@
 			// ViewQualityMenuItem
 			// 
 			this.ViewQualityMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.VwqLowMenuItem,
-			this.VwqDefaultMenuItem,
-			this.VwqBilinearMenuItem,
-			this.VwqBicubicMenuItem,
-			this.VwqHighMenuItem,
-			this.toolStripSeparator9,
-			this.VwqHqBilinearMenuItem,
-			this.VwqHqBicubicMenuItem});
+            this.VwqLowMenuItem,
+            this.VwqDefaultMenuItem,
+            this.VwqBilinearMenuItem,
+            this.VwqBicubicMenuItem,
+            this.VwqHighMenuItem,
+            this.toolStripSeparator9,
+            this.VwqHqBilinearMenuItem,
+            this.VwqHqBicubicMenuItem});
 			this.ViewQualityMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewQualityMenuItem.Name = "ViewQualityMenuItem";
 			this.ViewQualityMenuItem.Size = new System.Drawing.Size(143, 22);
@@ -330,9 +330,9 @@
 			// PageMenuItem
 			// 
 			this.PageMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.PageSelectMenuItem,
-			this.toolStripSeparator13,
-			this.PageAddFavMenuItem});
+            this.PageSelectMenuItem,
+            this.toolStripSeparator13,
+            this.PageAddFavMenuItem});
 			this.PageMenuItem.ForeColor = System.Drawing.Color.White;
 			this.PageMenuItem.Name = "PageMenuItem";
 			this.PageMenuItem.Size = new System.Drawing.Size(47, 20);
@@ -363,16 +363,16 @@
 			// FileMenuItem
 			// 
 			this.FileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.FileOpenMenuItem,
-			this.FileOpenLastMenuItem,
-			this.FileCloseMenuItem,
-			this.toolStripSeparator2,
-			this.FileCopyImageMenuItem,
-			this.toolStripSeparator3,
-			this.FileDeleteMenuItem,
-			this.toolStripSeparator14,
-			this.FileRefreshMenuItem,
-			this.FileExitMenuItem});
+            this.FileOpenMenuItem,
+            this.FileOpenLastMenuItem,
+            this.FileCloseMenuItem,
+            this.toolStripSeparator2,
+            this.FileCopyImageMenuItem,
+            this.toolStripSeparator3,
+            this.FileDeleteMenuItem,
+            this.toolStripSeparator14,
+            this.FileRefreshMenuItem,
+            this.FileExitMenuItem});
 			this.FileMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileMenuItem.Name = "FileMenuItem";
 			this.FileMenuItem.Size = new System.Drawing.Size(47, 20);
@@ -391,8 +391,8 @@
 			// 
 			this.FileOpenLastMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOpenLastMenuItem.Name = "FileOpenLastMenuItem";
-			this.FileOpenLastMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
-			| System.Windows.Forms.Keys.Z)));
+			this.FileOpenLastMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Z)));
 			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.FileOpenLastMenuItem.Text = Du.Globalization.Locale.Text(1302);
 			this.FileOpenLastMenuItem.Click += new System.EventHandler(this.FileOpenLastMenuItem_Click);
@@ -471,9 +471,9 @@
 			// 
 			// BookCanvas
 			// 
-			this.BookCanvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-			| System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.BookCanvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.BookCanvas.ContextMenuStrip = this.ContextPopup;
 			this.BookCanvas.Location = new System.Drawing.Point(6, 72);
 			this.BookCanvas.Margin = new System.Windows.Forms.Padding(0);
@@ -489,19 +489,19 @@
 			// ContextPopup
 			// 
 			this.ContextPopup.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.OpenPopupItem,
-			this.ClosePopupItem,
-			this.toolStripSeparator4,
-			this.ControlPopItem,
-			this.PagesPopupItem,
-			this.toolStripSeparator5,
-			this.QualityPopupItem,
-			this.toolStripSeparator6,
-			this.DeletePopupItem,
-			this.toolStripSeparator7,
-			this.CopyImagePopupItem,
-			this.toolStripSeparator8,
-			this.ExitPopupItem});
+            this.OpenPopupItem,
+            this.ClosePopupItem,
+            this.toolStripSeparator4,
+            this.ControlPopItem,
+            this.PagesPopupItem,
+            this.toolStripSeparator5,
+            this.QualityPopupItem,
+            this.toolStripSeparator6,
+            this.DeletePopupItem,
+            this.toolStripSeparator7,
+            this.CopyImagePopupItem,
+            this.toolStripSeparator8,
+            this.ExitPopupItem});
 			this.ContextPopup.Name = "ContextPopup";
 			this.ContextPopup.Size = new System.Drawing.Size(181, 232);
 			// 
@@ -529,16 +529,16 @@
 			// ControlPopItem
 			// 
 			this.ControlPopItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.CtrlPrevPopupItem,
-			this.CtrlNextPopupItem,
-			this.CtrlHomePopupItem,
-			this.CtrlEndPopupItem,
-			this.toolStripSeparator11,
-			this.CtrlPrev10PopupItem,
-			this.CtrlNext10PopupItem,
-			this.toolStripSeparator12,
-			this.CtrlPrevFilePopupItem,
-			this.CtrlNextFilePopupItem});
+            this.CtrlPrevPopupItem,
+            this.CtrlNextPopupItem,
+            this.CtrlHomePopupItem,
+            this.CtrlEndPopupItem,
+            this.toolStripSeparator11,
+            this.CtrlPrev10PopupItem,
+            this.CtrlNext10PopupItem,
+            this.toolStripSeparator12,
+            this.CtrlPrevFilePopupItem,
+            this.CtrlNextFilePopupItem});
 			this.ControlPopItem.ForeColor = System.Drawing.Color.White;
 			this.ControlPopItem.Name = "ControlPopItem";
 			this.ControlPopItem.Size = new System.Drawing.Size(180, 22);
@@ -643,14 +643,14 @@
 			// QualityPopupItem
 			// 
 			this.QualityPopupItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.QualityLowPopupItem,
-			this.QualityDefaultPopupItem,
-			this.QualityBilinearPopupItem,
-			this.QualityBicubicPopupItem,
-			this.QualityHighPopupItem,
-			this.toolStripSeparator10,
-			this.QualityHqBilinearPopupItem,
-			this.QualityHqBicubicPopupItem});
+            this.QualityLowPopupItem,
+            this.QualityDefaultPopupItem,
+            this.QualityBilinearPopupItem,
+            this.QualityBicubicPopupItem,
+            this.QualityHighPopupItem,
+            this.toolStripSeparator10,
+            this.QualityHqBilinearPopupItem,
+            this.QualityHqBicubicPopupItem});
 			this.QualityPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityPopupItem.Name = "QualityPopupItem";
 			this.QualityPopupItem.Size = new System.Drawing.Size(180, 22);

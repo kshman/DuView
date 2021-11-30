@@ -56,8 +56,8 @@ internal static class Settings
 					s_last_filename = v;
 
 				s_view_zoom = rk.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
-				s_view_mode = (Types.ViewMode)rk.GetInt("ViewMode", (int)s_view_mode);
-				s_view_quality = (Types.ViewQuality)rk.GetInt("ViewQuality", (int)s_view_quality);
+				s_view_mode = (Types.ViewMode) rk.GetInt("ViewMode", (int) s_view_mode);
+				s_view_quality = (Types.ViewQuality) rk.GetInt("ViewQuality", (int) s_view_quality);
 
 				s_max_cache_size = rk.GetLong("MaxCacheSize", s_max_cache_size);
 				s_max_recently = rk.GetInt("MaxRecently", s_max_recently);
@@ -68,7 +68,7 @@ internal static class Settings
 		s_recently = File.Exists(rfn) ? ResizableLineDb.FromFile(rfn) : ResizableLineDb.New();
 	}
 
-	private static bool s_init_locale = false;
+	private static bool s_init_locale;
 
 	//
 	public static void InitLocale()
@@ -91,13 +91,7 @@ internal static class Settings
 		if (!Locale.HasLocale(locale))
 		{
 			var culture = Thread.CurrentThread.CurrentUICulture;
-
-			if (culture == null)
-				locale = "en";
-			else if (culture.Name.StartsWith("ko"))
-				locale = "ko";
-			else
-				locale = "en";
+			locale = ToolBox.GetKnownCultureLocale(culture);
 		}
 
 		if (locale != Locale.CurrentLocale)
@@ -142,13 +136,7 @@ internal static class Settings
 				if (!Locale.HasLocale(value))
 				{
 					var culture = Thread.CurrentThread.CurrentUICulture;
-
-					if (culture == null)
-						s_language = "en";
-					else if (culture.Name.StartsWith("ko"))
-						s_language = "ko";
-					else
-						s_language = "en";
+					s_language = ToolBox.GetKnownCultureLocale(culture);
 				}
 
 				if (s_language != Locale.CurrentLocale)
@@ -235,7 +223,7 @@ internal static class Settings
 				s_view_mode = value;
 
 				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("ViewMode", (int)value);
+				rk.SetInt("ViewMode", (int) value);
 			}
 		}
 	}
@@ -251,7 +239,7 @@ internal static class Settings
 				s_view_quality = value;
 
 				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("ViewQuality", (int)value);
+				rk.SetInt("ViewQuality", (int) value);
 			}
 		}
 	}
@@ -331,7 +319,7 @@ internal static class Settings
 		if (s_recently != null)
 		{
 			var rfn = RecentlyPath;
-			s_recently.Save(rfn, Encoding.UTF8, new string[]
+			s_recently.Save(rfn, Encoding.UTF8, new[]
 			{
 				"DuView recently files list",
 				$"Created: {DateTime.Now}"
@@ -339,4 +327,3 @@ internal static class Settings
 		}
 	}
 }
-

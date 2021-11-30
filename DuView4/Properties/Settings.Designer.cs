@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DuView4.Properties
+namespace DuView.Properties
 {
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute(

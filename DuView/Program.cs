@@ -29,7 +29,7 @@ namespace DuView
 			Application.Run(new ReadForm(filename));
 		}
 
-		static bool HasProductProcess(string filename)
+		private static bool HasProductProcess(string filename)
 		{
 			var prcs = System.Diagnostics.Process.GetProcessesByName(Application.ProductName);
 
@@ -38,7 +38,7 @@ namespace DuView
 			else
 			{
 				var p = prcs[0].Id == Environment.ProcessId ? prcs[1] : prcs[0];
-				IntPtr h = p.MainWindowHandle;
+				var h = p.MainWindowHandle;
 
 				FormDu.ShowIfIconic(h);
 				FormDu.SetForeground(h);

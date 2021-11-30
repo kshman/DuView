@@ -1,6 +1,4 @@
-﻿using Du.Globalization;
-
-namespace DuView;
+﻿namespace DuView;
 
 public partial class ReadForm : Form
 {
@@ -12,7 +10,7 @@ public partial class ReadForm : Form
 	private readonly BadakFormWorker _bfw;
 	private readonly PageSelectForm _select;
 
-	private Rectangle[] _click_bound = new Rectangle[2];
+	private readonly Rectangle[] _click_bound = new Rectangle[2];
 
 	#region 만들기
 	public ReadForm(string filename)
@@ -713,12 +711,9 @@ public partial class ReadForm : Form
 	{
 		var f = bmp.Width / 2;
 
-		int w, h;
-		Rectangle rt;
-
 		// 왼쪽
-		(w, h) = ToolBox.CalcDestSize(Settings.ViewZoom, f, bmp.Height, left.Width, left.Height);
-		rt = ToolBox.CalcDestRect(f, bmp.Height, w, h, HorizontalAlignment.Right);
+		var (w, h) = ToolBox.CalcDestSize(Settings.ViewZoom, f, bmp.Height, left.Width, left.Height);
+		var rt = ToolBox.CalcDestRect(f, bmp.Height, w, h, HorizontalAlignment.Right);
 
 		g.DrawImage(left, rt, 0, 0, left.Width, left.Height, GraphicsUnit.Pixel);
 

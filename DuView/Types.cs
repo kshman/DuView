@@ -3,7 +3,7 @@
 public static class Types
 {
 	// 보기 모드
-	public enum ViewMode : int
+	public enum ViewMode
 	{
 		FitWidth = 0,
 		FitHeight = 1,
@@ -12,7 +12,7 @@ public static class Types
 	}
 
 	// 보기 품질
-	public enum ViewQuality : int
+	public enum ViewQuality
 	{
 		Invalid,
 		Default,
