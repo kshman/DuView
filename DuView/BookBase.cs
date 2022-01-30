@@ -72,7 +72,7 @@ public abstract class BookBase : IDisposable
 
 		var size = img.Width * img.Height * bpp;
 
-		if ((CacheSize + size) > Settings.MaxCacheSize && _cache.Count > 0)
+		if ((CacheSize + size) > Settings.MaxActualPageCache && _cache.Count > 0)
 		{
 			var first = _cache.ElementAt(0);
 			var fsize = first.Value.Width * first.Value.Height * bpp;
@@ -277,3 +277,5 @@ public abstract class BookBase : IDisposable
 	}
 }
 
+// 하면 좋은거
+// 메타데이터: https://docs.microsoft.com/ko-kr/dotnet/desktop/winforms/advanced/how-to-read-image-metadata?view=netframeworkdesktop-4.8

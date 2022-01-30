@@ -9,6 +9,7 @@ public partial class ReadForm : Form
 
 	private readonly BadakFormWorker _bfw;
 	private readonly PageSelectForm _select;
+	private readonly OptionForm _option;
 
 	private readonly Rectangle[] _click_bound = new Rectangle[2];
 
@@ -31,6 +32,7 @@ public partial class ReadForm : Form
 			MoveTopToMaximize = false,
 		};
 		_select = new PageSelectForm();
+		_option = new OptionForm();
 	}
 	#endregion
 
@@ -85,8 +87,11 @@ public partial class ReadForm : Form
 		}
 		else
 		{
-			// 윈도우포스
-			FormDu.MagneticDockForm(ref m, this, Settings.MagneticDockSize);
+			if (Settings.GeneralUseMagnetic)
+			{
+				// 윈도우포스
+				FormDu.MagneticDockForm(ref m, this, Settings.MagneticDockSize);
+			}
 
 			// 후....
 			base.WndProc(ref m);
@@ -146,7 +151,8 @@ public partial class ReadForm : Form
 		{
 			// 끝
 			case Keys.Escape:
-				Close();
+				if (Settings.GeneralEscExit)
+					Close();
 				break;
 
 			case Keys.W:
@@ -271,17 +277,18 @@ public partial class ReadForm : Form
 	#region 캔바스 명령
 	private void BookCanvas_MouseDown(object sender, MouseEventArgs e)
 	{
-		if (Book != null)
+		if (Settings.MouseUseClickPage && Book != null)
 		{
 			if (_click_bound[0].Contains(e.Location))
 			{
 				PageControl(Types.Controls.Previous);
 				return;
 			}
-			else if (_click_bound[1].Contains(e.Location))
+
+			if (_click_bound[1].Contains(e.Location))
 			{
-				BookCanvas.Cursor = Cursors.PanEast;
 				PageControl(Types.Controls.Next);
+				return;
 			}
 		}
 
@@ -295,7 +302,8 @@ public partial class ReadForm : Form
 				if (Book != null)
 				{
 					// 책이 있음 최대화
-					_bfw.Maximize();
+					if (Settings.MouseUseDoubleClickState)
+						_bfw.Maximize();
 				}
 				else
 				{
@@ -314,7 +322,7 @@ public partial class ReadForm : Form
 
 	private void BookCanvas_MouseMove(object sender, MouseEventArgs e)
 	{
-		if (Book != null)
+		if (Settings.MouseUseClickPage && Book != null)
 		{
 			if (_click_bound[0].Contains(e.Location))
 				BookCanvas.Cursor = Cursors.PanWest;
@@ -348,6 +356,8 @@ public partial class ReadForm : Form
 		UpdateViewZoom(Settings.ViewZoom);
 		UpdateViewMode(Settings.ViewMode);
 		UpdateViewQuality(Settings.ViewQuality);
+
+		TopMost = Settings.GeneralAlwaysTop;
 	}
 
 	private void UpdateViewZoom(bool zoom, bool redraw = true)
@@ -450,17 +460,27 @@ public partial class ReadForm : Form
 			if (Book is { PageLeft: { } })
 			{
 				Clipboard.SetImage(Book.PageLeft);
-				Notifier.ShowBalloonTip(1000, Locale.Text(101), Locale.Text(102), ToolTipIcon.Info);
+				ShowNotification(101, 102);
 			}
 		}
 		catch
 		{
-			Notifier.ShowBalloonTip(1000, Locale.Text(101), Locale.Text(102), ToolTipIcon.Error);
+			ShowNotification(101, 102, ToolTipIcon.Error);
 		}
 	}
 
 	private void FileRefreshMenuItem_Click(object sender, EventArgs e)
 	{
+		Book?.PrepareImages();
+		DrawBook();
+	}
+
+	private void FileOptionMenuItem_Click(object sender, EventArgs e)
+	{
+		TopMost = false;
+		_option.ShowDialog(this, 0);
+		TopMost = Settings.GeneralAlwaysTop;
+
 		Book?.PrepareImages();
 		DrawBook();
 	}
@@ -586,7 +606,7 @@ public partial class ReadForm : Form
 		if (bk == null)
 		{
 			// 아카이브가 뭔가 잘못됨
-			Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(107), ToolTipIcon.Error);
+			ShowNotification(106, 107, ToolTipIcon.Error);
 		}
 
 		return bk;
@@ -602,7 +622,7 @@ public partial class ReadForm : Form
 		if (bk == null)
 		{
 			// 아카이브가 뭔가 잘못됨
-			Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(108), ToolTipIcon.Error);
+			ShowNotification(106, 108, ToolTipIcon.Error);
 		}
 
 		return bk;
@@ -617,7 +637,7 @@ public partial class ReadForm : Form
 		var filename = Book.FindNextFile(true);
 		if (filename == null)
 		{
-			Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(109), ToolTipIcon.Info);
+			ShowNotification(106, 109);
 			return;
 		}
 
@@ -633,7 +653,7 @@ public partial class ReadForm : Form
 		var filename = Book.FindNextFile(false);
 		if (filename == null)
 		{
-			Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(110), ToolTipIcon.Info);
+			ShowNotification(106, 110);
 			return;
 		}
 
@@ -649,7 +669,7 @@ public partial class ReadForm : Form
 		if (!Book.CanDeleteFile(out var reason))
 			return;
 
-		if (!string.IsNullOrEmpty(reason))
+		if (!string.IsNullOrEmpty(reason) && Settings.GeneralConfirmDelete)
 		{
 			if (MessageBox.Show(this, reason, Locale.Text(114), MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
 				return;
@@ -753,7 +773,7 @@ public partial class ReadForm : Form
 
 		if (w == 0 || h == 0)
 		{
-			Notifier.ShowBalloonTip(1000, Locale.Text(111), Locale.Text(112), ToolTipIcon.Error);
+			ShowNotification(111, 112, ToolTipIcon.Error);
 			return;
 		}
 
@@ -925,5 +945,22 @@ public partial class ReadForm : Form
 		}
 	}
 	#endregion
+
+	#region 도움
+	private void ShowNotification(string title, string mesg, ToolTipIcon icon = ToolTipIcon.Info, int timeout = 1000)
+	{
+		if (Settings.GeneralUseWinNotify)
+			Notifier.ShowBalloonTip(timeout, title, mesg, icon);
+		else
+		{
+			// 어... 어떡하지
+		}
+	}
+
+	private void ShowNotification(int title, int mesg, ToolTipIcon icon = ToolTipIcon.Info, int timeout = 1000)
+	{
+		ShowNotification(Locale.Text(title), Locale.Text(mesg), icon, timeout);
+	}
+	#endregion // 도움
 }
 

@@ -4,6 +4,7 @@ LANG=English
 0=DuView
 1=PuruLive
 2=https://github.com/kshman/DuView
+94=Close
 95=Menu
 96=Do you want to continue?
 97=Ok
@@ -50,6 +51,7 @@ LANG=English
 1305=Re&fresh
 1306=E&xit
 1307=&Delete
+1308=Op&tion
 
 # 기타(1800)
 1800=Cac&he
@@ -84,3 +86,22 @@ LANG=English
 2305=Total:
 2306=No book found
 
+# 옵션폼(2400)
+2400=Option
+2401=General
+2402=View
+2403=Keyboard/Mouse
+2404=Controller
+2405=Security
+2410=No items here
+2420=Run only one instance
+2421=ESC key to exit
+2422=Use Windows® notification
+2423=Use magnetic window
+2424=Use confirm when delete file
+2425=Always on top
+2426=Use update notification 
+2427=Cache size
+2428=MB
+2440=Use double click to maximize/minimize
+2441=Use click to changing prev/next page

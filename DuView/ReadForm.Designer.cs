@@ -64,6 +64,7 @@
 			this.FileDeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
 			this.FileRefreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.FileOptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.MaxCacheMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Notifier = new System.Windows.Forms.NotifyIcon(this.components);
@@ -100,6 +101,7 @@
 			this.CopyImagePopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
 			this.ExitPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.OptionPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.TopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.BookCanvas)).BeginInit();
@@ -372,7 +374,8 @@
             this.FileDeleteMenuItem,
             this.toolStripSeparator14,
             this.FileRefreshMenuItem,
-            this.FileExitMenuItem});
+			this.FileOptionMenuItem,
+			this.FileExitMenuItem});
 			this.FileMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileMenuItem.Name = "FileMenuItem";
 			this.FileMenuItem.Size = new System.Drawing.Size(47, 20);
@@ -443,10 +446,19 @@
 			// 
 			this.FileRefreshMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileRefreshMenuItem.Name = "FileRefreshMenuItem";
-			this.FileRefreshMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
+			this.FileRefreshMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
 			this.FileRefreshMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.FileRefreshMenuItem.Text = Locale.Text(1305);
 			this.FileRefreshMenuItem.Click += new System.EventHandler(this.FileRefreshMenuItem_Click);
+			// 
+			// FileOptionMenuItem
+			// 
+			this.FileOptionMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileOptionMenuItem.Name = "FileOptionMenuItem";
+			this.FileOptionMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
+			this.FileOptionMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileOptionMenuItem.Text = Locale.Text(1308);
+			this.FileOptionMenuItem.Click += new System.EventHandler(this.FileOptionMenuItem_Click);
 			// 
 			// FileExitMenuItem
 			// 
@@ -501,7 +513,8 @@
             this.toolStripSeparator7,
             this.CopyImagePopupItem,
             this.toolStripSeparator8,
-            this.ExitPopupItem});
+			this.OptionPopupItem,
+			this.ExitPopupItem});
 			this.ContextPopup.Name = "ContextPopup";
 			this.ContextPopup.Size = new System.Drawing.Size(181, 232);
 			// 
@@ -762,6 +775,14 @@
 			this.ExitPopupItem.Text = Locale.Text(1306);
 			this.ExitPopupItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
+			// OptionPopupItem
+			// 
+			this.OptionPopupItem.ForeColor = System.Drawing.Color.White;
+			this.OptionPopupItem.Name = "OptionPopupItem";
+			this.OptionPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.OptionPopupItem.Text = Locale.Text(1308);
+			this.OptionPopupItem.Click += new System.EventHandler(this.FileOptionMenuItem_Click);
+			// 
 			// ReadForm
 			// 
 			this.AllowDrop = true;
@@ -834,7 +855,9 @@
 		private ToolStripMenuItem CopyImagePopupItem;
 		private ToolStripSeparator toolStripSeparator8;
 		private ToolStripMenuItem ExitPopupItem;
+		private ToolStripMenuItem OptionPopupItem;
 		private ToolStripMenuItem FileRefreshMenuItem;
+		private ToolStripMenuItem FileOptionMenuItem;
 		private ToolStripMenuItem ViewQualityMenuItem;
 		private ToolStripMenuItem VwqLowMenuItem;
 		private ToolStripMenuItem VwqDefaultMenuItem;

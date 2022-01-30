@@ -41,7 +41,7 @@
 			// PageInfoLabel
 			// 
 			this.PageInfoLabel.AutoSize = true;
-			this.PageInfoLabel.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.PageInfoLabel.Font = new System.Drawing.Font("Malgun Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.PageInfoLabel.ForeColor = System.Drawing.Color.White;
 			this.PageInfoLabel.Location = new System.Drawing.Point(4, 4);
 			this.PageInfoLabel.Name = "PageInfoLabel";

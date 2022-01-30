@@ -8,22 +8,50 @@ internal static class Settings
 
 	private static string s_language = string.Empty;
 
-	private static Rectangle s_bound = new Rectangle(0, 0, 800, 480);
+	// 값
+	private static Rectangle s_bound = new(0, 0, 800, 480);
 	private static int s_magnetic_dock_size = 10;
 
+	// -- 최근
 	private static string s_last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 	private static string s_last_filename = string.Empty;
 
+	private static ResizableLineDb? s_recently;
+	private static int s_max_recently = 1000;
+
+	// -- 뷰
 	private static bool s_view_zoom = true;
 	private static Types.ViewMode s_view_mode = Types.ViewMode.FitWidth;
 	private static Types.ViewQuality s_view_quality = Types.ViewQuality.Default;
 
-	private static long s_max_cache_size = 230 * 1048576; // 쉽게해서 230메가
-	private static int s_max_recently = 1000;
+	// -- 캐시
+	private static int s_max_page_cache = 230; // 1048576곱해야함
 
-	private static ResizableLineDb? s_recently;
+	// -- 기본
+	private static bool s_run_only_once_instance = true;
+	private static bool s_esc_to_exit = true;
+	private static bool s_use_windows_notification = true;
+	private static bool s_use_magnetic_window=false;
+	private static bool s_confirm_when_delete_file = true;
+	private static bool s_always_on_top = false;
+	private static bool s_use_update_notification = true;
 
-	public static void WhenStart()
+	// -- 마우스
+	private static bool s_use_doubleclick_state = false;
+	private static bool s_use_click_page = false;
+
+	// 시작할 때 앞
+	public static void WhenBeforeStart()
+	{
+		using var rk = new RegKey(c_keyname);
+		if (rk.IsOpen)
+		{
+			s_run_only_once_instance = rk.GetBool("GeneralRunOnce", s_run_only_once_instance);
+		}
+	}
+
+	// 시작할 때 뒤
+	public static void WhenAfterStart()
 	{
 		using (var rk = new RegKey(c_keyname))
 		{
@@ -43,10 +71,12 @@ internal static class Settings
 					}
 				}
 
+				//
 				s_language = rk.GetString("Language", s_language) ?? string.Empty;
 
 				s_magnetic_dock_size = rk.GetInt("MagneticDockSize", s_magnetic_dock_size);
 
+				//
 				v = rk.GetDecodingString("LastFolder");
 				if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
 					s_last_folder = v;
@@ -55,12 +85,27 @@ internal static class Settings
 				if (!string.IsNullOrEmpty(v) && File.Exists(v))
 					s_last_filename = v;
 
+				s_max_recently = rk.GetInt("MaxRecently", s_max_recently);
+
+				//
 				s_view_zoom = rk.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
 				s_view_mode = (Types.ViewMode) rk.GetInt("ViewMode", (int) s_view_mode);
 				s_view_quality = (Types.ViewQuality) rk.GetInt("ViewQuality", (int) s_view_quality);
 
-				s_max_cache_size = rk.GetLong("MaxCacheSize", s_max_cache_size);
-				s_max_recently = rk.GetInt("MaxRecently", s_max_recently);
+				//
+				s_max_page_cache = rk.GetInt("MaxPageCache", s_max_page_cache);
+
+				//
+				s_esc_to_exit = rk.GetBool("GeneralEscExit", s_esc_to_exit);
+				s_use_magnetic_window = rk.GetBool("GeneralUseMagnetic", s_use_magnetic_window);
+				s_use_windows_notification = rk.GetBool("GeneralUseWinNotify", s_use_windows_notification);
+				s_confirm_when_delete_file = rk.GetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
+				s_always_on_top = rk.GetBool("GeneralAlwaysTop", s_always_on_top);
+				s_use_update_notification = rk.GetBool("GeneralUpdateNotify", s_use_update_notification);
+
+				//
+				s_use_doubleclick_state = rk.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
+				s_use_click_page = rk.GetBool("MouseUseClickPage", s_use_click_page);
 			}
 		}
 
@@ -245,17 +290,23 @@ internal static class Settings
 	}
 
 	//
-	public static long MaxCacheSize
+	public static long MaxActualPageCache
 	{
-		get => s_max_cache_size;
+		get => s_max_page_cache * 1048576L;
+	}
+
+	//
+	public static int MaxPageCache
+	{
+		get => s_max_page_cache;
 		set
 		{
-			if (value != s_max_cache_size)
+			if (value != s_max_page_cache)
 			{
-				s_max_cache_size = value;
+				s_max_page_cache = value;
 
 				using var rk = new RegKey(c_keyname, true);
-				rk.SetLong("MaxCacheSize", value);
+				rk.SetInt("MaxPageCache", value);
 			}
 		}
 	}
@@ -326,4 +377,152 @@ internal static class Settings
 			});
 		}
 	}
+
+	#region 기본
+	//
+	public static bool GeneralRunOnce 
+	{
+		get => s_run_only_once_instance;
+		set
+		{
+			if (value != s_run_only_once_instance)
+			{
+				s_run_only_once_instance = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("GeneralRunOnce", s_run_only_once_instance);
+			}
+		}
+	}
+
+	//
+	public static bool GeneralEscExit
+	{
+		get => s_esc_to_exit;
+		set
+		{
+			if (value != s_esc_to_exit)
+			{
+				s_esc_to_exit = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("GeneralEscExit", s_esc_to_exit);
+			}
+		}
+	}
+
+	//
+	public static bool GeneralUseMagnetic
+	{
+		get => s_use_magnetic_window;
+		set
+		{
+			if (value != s_use_magnetic_window)
+			{
+				s_use_magnetic_window = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("GeneralUseMagnetic", s_use_magnetic_window);
+			}
+		}
+	}
+
+	//
+	public static bool GeneralUseWinNotify
+	{
+		get => s_use_windows_notification;
+		set
+		{
+			if (value != s_use_windows_notification)
+			{
+				s_use_windows_notification = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("GeneralUseWinNotify", s_use_windows_notification);
+			}
+		}
+	}
+
+	//
+	public static bool GeneralConfirmDelete
+	{
+		get => s_confirm_when_delete_file;
+		set
+		{
+			if (value != s_confirm_when_delete_file)
+			{
+				s_confirm_when_delete_file = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
+			}
+		}
+	}
+
+	//
+	public static bool GeneralAlwaysTop
+	{
+		get => s_always_on_top;
+		set
+		{
+			if (value != s_always_on_top)
+			{
+				s_always_on_top = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("GeneralAlwaysTop", s_always_on_top);
+			}
+		}
+	}
+
+	//
+	public static bool GeneralUpdateNotify
+	{
+		get => s_use_update_notification;
+		set
+		{
+			if (value != s_use_update_notification)
+			{
+				s_use_update_notification = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("GeneralUpdateNotify", s_use_update_notification);
+			}
+		}
+	}
+	#endregion // 기본
+
+	#region 마우스
+	//
+	public static bool MouseUseDoubleClickState
+	{
+		get => s_use_doubleclick_state;
+		set
+		{
+			if (value != s_use_doubleclick_state)
+			{
+				s_use_doubleclick_state = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("MouseUseDoubleClick", s_use_doubleclick_state);
+			}
+		}
+	}
+
+	//
+	public static bool MouseUseClickPage
+	{
+		get => s_use_click_page;
+		set
+		{
+			if (value != s_use_click_page)
+			{
+				s_use_click_page = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("MouseUseClickPage", s_use_click_page);
+			}
+		}
+	}
+	#endregion // 마우스
 }

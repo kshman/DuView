@@ -19,10 +19,12 @@ namespace DuView
 			var args = Environment.GetCommandLineArgs();
 			var filename = args.Length > 1 ? args[1] : string.Empty;
 
-			if (HasProductProcess(filename))
+			Settings.WhenBeforeStart();
+
+			if (Settings.GeneralRunOnce && HasProductProcess(filename))
 				return;
 
-			Settings.WhenStart();
+			Settings.WhenAfterStart();
 			Settings.InitLocale();
 
 			ApplicationConfiguration.Initialize();
