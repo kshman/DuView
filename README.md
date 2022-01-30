@@ -1,3 +1,8 @@
+# DuView
+DuView has English UI resources. But, no English manual yet. Sorry 😭
+
+Anyway this application is for reading a zipped book or stored images in folder as book. Only used WinForm of .NET(6). You can use freely whole sources as your wish.
+
 
 
 # 두뷰(DuView)
