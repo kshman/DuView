@@ -13,6 +13,8 @@ public partial class ReadForm : Form
 
 	private readonly Rectangle[] _click_bound = new Rectangle[2];
 
+	private System.Windows.Forms.Timer _notify_timer;
+
 	#region 만들기
 	public ReadForm(string filename)
 	{
@@ -33,6 +35,9 @@ public partial class ReadForm : Form
 		};
 		_select = new PageSelectForm();
 		_option = new OptionForm();
+
+		_notify_timer = new() { Interval = 5000 };
+		_notify_timer.Tick += NotifyTimerTick;
 	}
 	#endregion
 
@@ -465,14 +470,26 @@ public partial class ReadForm : Form
 		}
 		catch
 		{
-			ShowNotification(101, 102, ToolTipIcon.Error);
+			ShowNotification(101, 102, true);
 		}
 	}
 
 	private void FileRefreshMenuItem_Click(object sender, EventArgs e)
 	{
+#if DEBUG
+		if (Book!=null)
+		{
+			Book.PrepareImages();
+			DrawBook();
+		}
+		else
+		{
+			ShowNotification("타이틀 안씀", "이 것은 알림 메시지 테스트!");
+		}
+#else
 		Book?.PrepareImages();
 		DrawBook();
+#endif
 	}
 
 	private void FileOptionMenuItem_Click(object sender, EventArgs e)
@@ -498,9 +515,9 @@ public partial class ReadForm : Form
 	{
 		DeleteBookOrItem();
 	}
-	#endregion
+#endregion
 
-	#region 파일 처리
+#region 파일 처리
 	// 책 닫기
 	private void CloseBook()
 	{
@@ -606,7 +623,7 @@ public partial class ReadForm : Form
 		if (bk == null)
 		{
 			// 아카이브가 뭔가 잘못됨
-			ShowNotification(106, 107, ToolTipIcon.Error);
+			ShowNotification(106, 107, true);
 		}
 
 		return bk;
@@ -622,7 +639,7 @@ public partial class ReadForm : Form
 		if (bk == null)
 		{
 			// 아카이브가 뭔가 잘못됨
-			ShowNotification(106, 108, ToolTipIcon.Error);
+			ShowNotification(106, 108, true);
 		}
 
 		return bk;
@@ -700,9 +717,9 @@ public partial class ReadForm : Form
 			DrawBook();
 		}
 	}
-	#endregion
+#endregion
 
-	#region 그리기
+#region 그리기
 	// 로고 그리기
 	private static void DrawLogo(Graphics g, int w, int h)
 	{
@@ -773,7 +790,7 @@ public partial class ReadForm : Form
 
 		if (w == 0 || h == 0)
 		{
-			ShowNotification(111, 112, ToolTipIcon.Error);
+			ShowNotification(111, 112, true);
 			return;
 		}
 
@@ -831,9 +848,9 @@ public partial class ReadForm : Form
 
 		BookCanvas.Image = _bmp;
 	}
-	#endregion
+#endregion
 
-	#region 책 조작
+#region 책 조작
 	// 조작하기
 	private void PageControl(Types.Controls ctrl)
 	{
@@ -944,23 +961,48 @@ public partial class ReadForm : Form
 			DrawBook();
 		}
 	}
-	#endregion
+#endregion
 
-	#region 도움
-	private void ShowNotification(string title, string mesg, ToolTipIcon icon = ToolTipIcon.Info, int timeout = 1000)
+#region 도움
+	private void ShowNotification(string title, string mesg, bool iserror = false, int timeout = 2000)
 	{
 		if (Settings.GeneralUseWinNotify)
-			Notifier.ShowBalloonTip(timeout, title, mesg, icon);
+			Notifier.ShowBalloonTip(timeout, title, mesg, iserror ? ToolTipIcon.Error : ToolTipIcon.Info);
 		else
 		{
-			// 어... 어떡하지
+			if (!NotifyLabel.Visible)
+			{
+				// 보이게 함
+				NotifyLabel.Location = new Point(NotifyLabel.Location.X, (BookCanvas.Height - NotifyLabel.Height) / 2);
+
+				NotifyLabel.Text = mesg;
+				ControlDu.EffectFadeIn(NotifyLabel);
+
+				_notify_timer.Interval = timeout;
+				_notify_timer.Start();
+			}
+			else
+			{
+				// 있는거 메시지 바꿈
+				NotifyLabel.Text = mesg;
+
+				_notify_timer.Stop();
+				_notify_timer.Interval = timeout;
+				_notify_timer.Start();
+			}
 		}
 	}
 
-	private void ShowNotification(int title, int mesg, ToolTipIcon icon = ToolTipIcon.Info, int timeout = 1000)
+	private void ShowNotification(int title, int mesg, bool iserror = false, int timeout = 2000)
 	{
-		ShowNotification(Locale.Text(title), Locale.Text(mesg), icon, timeout);
+		ShowNotification(Locale.Text(title), Locale.Text(mesg), iserror, timeout);
 	}
-	#endregion // 도움
+
+	private void NotifyTimerTick(object? sender, EventArgs e)
+	{
+		_notify_timer.Stop();
+		ControlDu.EffectFadeOut(NotifyLabel);
+	}
+#endregion // 도움
 }
 
