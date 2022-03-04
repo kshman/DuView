@@ -40,6 +40,9 @@ internal static class Settings
 	private static bool s_use_doubleclick_state = false;
 	private static bool s_use_click_page = false;
 
+	// -- 기타
+	private static string s_external_run = string.Empty;
+
 	// 시작할 때 앞
 	public static void WhenBeforeStart()
 	{
@@ -106,6 +109,9 @@ internal static class Settings
 				//
 				s_use_doubleclick_state = rk.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
 				s_use_click_page = rk.GetBool("MouseUseClickPage", s_use_click_page);
+
+				//
+				s_external_run = rk.GetString("ExternalRun") ?? s_external_run;
 			}
 		}
 
@@ -525,4 +531,21 @@ internal static class Settings
 		}
 	}
 	#endregion // 마우스
+
+	#region 기타
+	public static string ExternalRun
+	{
+		get => s_external_run;
+		set
+		{
+			if (!value.Equals(s_external_run))
+			{
+				s_external_run = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetString("ExternalRun", s_external_run);
+			}
+		}
+	}
+	#endregion // 기타
 }

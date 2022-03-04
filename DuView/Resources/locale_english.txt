@@ -27,6 +27,11 @@ LANG=English
 114=Delete book
 115=Fail to delete book
 116=is directory
+117=Cannot open book
+118=Browse
+119=Execute file|*.exe
+120=Selecte acceptable file
+121=No external run or file not found
 
 # 보기(1100)
 1100=&View
@@ -52,6 +57,7 @@ LANG=English
 1306=E&xit
 1307=&Delete
 1308=Op&tion
+1309=Open &with external
 
 # 기타(1800)
 1800=Cac&he
@@ -103,5 +109,8 @@ LANG=English
 2426=Use update notification 
 2427=Cache size
 2428=MB
+2429=External run
 2440=Use double click to maximize/minimize
 2441=Use click to changing prev/next page
+
+

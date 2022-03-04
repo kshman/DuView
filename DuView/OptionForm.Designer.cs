@@ -47,12 +47,15 @@
 			this.ViewPage = new System.Windows.Forms.TabPage();
 			this.label2 = new System.Windows.Forms.Label();
 			this.KmPage = new System.Windows.Forms.TabPage();
+			this.UseClickToPageCheck = new System.Windows.Forms.CheckBox();
+			this.UseDoubleClickStateCheck = new System.Windows.Forms.CheckBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.PadPage = new System.Windows.Forms.TabPage();
 			this.label4 = new System.Windows.Forms.Label();
 			this.SecurityPage = new System.Windows.Forms.TabPage();
-			this.UseDoubleClickStateCheck = new System.Windows.Forms.CheckBox();
-			this.UseClickToPageCheck = new System.Windows.Forms.CheckBox();
+			this.ExternalRunLabel = new System.Windows.Forms.Label();
+			this.ExternalRunText = new System.Windows.Forms.TextBox();
+			this.ExternalRunButton = new System.Windows.Forms.Button();
 			this.OptionTab.SuspendLayout();
 			this.GeneralPage.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CacheSizeValue)).BeginInit();
@@ -81,7 +84,7 @@
 			this.DoOkButton.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.DoOkButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.DoOkButton.ForeColor = System.Drawing.Color.White;
-			this.DoOkButton.Location = new System.Drawing.Point(412, 563);
+			this.DoOkButton.Location = new System.Drawing.Point(419, 560);
 			this.DoOkButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.DoOkButton.Name = "DoOkButton";
 			this.DoOkButton.Size = new System.Drawing.Size(204, 34);
@@ -95,7 +98,7 @@
 			this.SystemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.SystemButton.BackColor = System.Drawing.Color.Transparent;
 			this.SystemButton.Form = null;
-			this.SystemButton.Location = new System.Drawing.Point(482, 2);
+			this.SystemButton.Location = new System.Drawing.Point(489, 2);
 			this.SystemButton.Margin = new System.Windows.Forms.Padding(0);
 			this.SystemButton.MaximumSize = new System.Drawing.Size(150, 30);
 			this.SystemButton.MinimumSize = new System.Drawing.Size(150, 30);
@@ -121,12 +124,15 @@
 			this.OptionTab.Margin = new System.Windows.Forms.Padding(4);
 			this.OptionTab.Name = "OptionTab";
 			this.OptionTab.SelectedIndex = 0;
-			this.OptionTab.Size = new System.Drawing.Size(602, 507);
+			this.OptionTab.Size = new System.Drawing.Size(609, 504);
 			this.OptionTab.TabIndex = 6;
 			// 
 			// GeneralPage
 			// 
 			this.GeneralPage.AutoScroll = true;
+			this.GeneralPage.Controls.Add(this.ExternalRunButton);
+			this.GeneralPage.Controls.Add(this.ExternalRunText);
+			this.GeneralPage.Controls.Add(this.ExternalRunLabel);
 			this.GeneralPage.Controls.Add(this.CacheSizeValue);
 			this.GeneralPage.Controls.Add(this.label1);
 			this.GeneralPage.Controls.Add(this.CacheMeasureLabel);
@@ -142,7 +148,7 @@
 			this.GeneralPage.Margin = new System.Windows.Forms.Padding(4);
 			this.GeneralPage.Name = "GeneralPage";
 			this.GeneralPage.Padding = new System.Windows.Forms.Padding(4);
-			this.GeneralPage.Size = new System.Drawing.Size(594, 474);
+			this.GeneralPage.Size = new System.Drawing.Size(601, 471);
 			this.GeneralPage.TabIndex = 0;
 			this.GeneralPage.Text = Locale.Text(2401);
 			this.GeneralPage.UseVisualStyleBackColor = true;
@@ -158,7 +164,7 @@
 			0,
 			0});
 			this.CacheSizeValue.Name = "CacheSizeValue";
-			this.CacheSizeValue.Size = new System.Drawing.Size(180, 27);
+			this.CacheSizeValue.Size = new System.Drawing.Size(187, 27);
 			this.CacheSizeValue.TabIndex = 11;
 			this.CacheSizeValue.ThousandsSeparator = true;
 			// 
@@ -166,7 +172,7 @@
 			// 
 			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(426, 90);
+			this.label1.Location = new System.Drawing.Point(433, 90);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(80, 20);
 			this.label1.TabIndex = 10;
@@ -176,7 +182,7 @@
 			// 
 			this.CacheMeasureLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.CacheMeasureLabel.AutoSize = true;
-			this.CacheMeasureLabel.Location = new System.Drawing.Point(515, 66);
+			this.CacheMeasureLabel.Location = new System.Drawing.Point(522, 66);
 			this.CacheMeasureLabel.Name = "CacheMeasureLabel";
 			this.CacheMeasureLabel.Size = new System.Drawing.Size(51, 20);
 			this.CacheMeasureLabel.TabIndex = 9;
@@ -272,11 +278,11 @@
 			// 
 			this.ViewPage.AutoScroll = true;
 			this.ViewPage.Controls.Add(this.label2);
-			this.ViewPage.Location = new System.Drawing.Point(4, 29);
+			this.ViewPage.Location = new System.Drawing.Point(4, 24);
 			this.ViewPage.Margin = new System.Windows.Forms.Padding(4);
 			this.ViewPage.Name = "ViewPage";
 			this.ViewPage.Padding = new System.Windows.Forms.Padding(4);
-			this.ViewPage.Size = new System.Drawing.Size(594, 474);
+			this.ViewPage.Size = new System.Drawing.Size(594, 479);
 			this.ViewPage.TabIndex = 1;
 			this.ViewPage.Text = Locale.Text(2402);
 			this.ViewPage.UseVisualStyleBackColor = true;
@@ -296,13 +302,35 @@
 			this.KmPage.Controls.Add(this.UseClickToPageCheck);
 			this.KmPage.Controls.Add(this.UseDoubleClickStateCheck);
 			this.KmPage.Controls.Add(this.label3);
-			this.KmPage.Location = new System.Drawing.Point(4, 29);
+			this.KmPage.Location = new System.Drawing.Point(4, 24);
 			this.KmPage.Margin = new System.Windows.Forms.Padding(4);
 			this.KmPage.Name = "KmPage";
-			this.KmPage.Size = new System.Drawing.Size(594, 474);
+			this.KmPage.Size = new System.Drawing.Size(594, 479);
 			this.KmPage.TabIndex = 2;
 			this.KmPage.Text = Locale.Text(2403);
 			this.KmPage.UseVisualStyleBackColor = true;
+			// 
+			// UseClickToPageCheck
+			// 
+			this.UseClickToPageCheck.AutoSize = true;
+			this.UseClickToPageCheck.Location = new System.Drawing.Point(17, 60);
+			this.UseClickToPageCheck.Name = "UseClickToPageCheck";
+			this.UseClickToPageCheck.Size = new System.Drawing.Size(70, 24);
+			this.UseClickToPageCheck.TabIndex = 3;
+			this.UseClickToPageCheck.Text = Locale.Text(2441);
+			this.UseClickToPageCheck.UseVisualStyleBackColor = true;
+			this.UseClickToPageCheck.CheckedChanged += new System.EventHandler(this.UseClickToPageCheck_CheckedChanged);
+			// 
+			// UseDoubleClickStateCheck
+			// 
+			this.UseDoubleClickStateCheck.AutoSize = true;
+			this.UseDoubleClickStateCheck.Location = new System.Drawing.Point(17, 17);
+			this.UseDoubleClickStateCheck.Name = "UseDoubleClickStateCheck";
+			this.UseDoubleClickStateCheck.Size = new System.Drawing.Size(70, 24);
+			this.UseDoubleClickStateCheck.TabIndex = 2;
+			this.UseDoubleClickStateCheck.Text = Locale.Text(2440);
+			this.UseDoubleClickStateCheck.UseVisualStyleBackColor = true;
+			this.UseDoubleClickStateCheck.CheckedChanged += new System.EventHandler(this.UseDoubleClickStateCheck_CheckedChanged);
 			// 
 			// label3
 			// 
@@ -337,35 +365,41 @@
 			// SecurityPage
 			// 
 			this.SecurityPage.AutoScroll = true;
-			this.SecurityPage.Location = new System.Drawing.Point(4, 24);
+			this.SecurityPage.Location = new System.Drawing.Point(4, 29);
 			this.SecurityPage.Margin = new System.Windows.Forms.Padding(4);
 			this.SecurityPage.Name = "SecurityPage";
-			this.SecurityPage.Size = new System.Drawing.Size(594, 479);
+			this.SecurityPage.Size = new System.Drawing.Size(594, 474);
 			this.SecurityPage.TabIndex = 3;
 			this.SecurityPage.Text = Locale.Text(2405);
 			this.SecurityPage.UseVisualStyleBackColor = true;
 			// 
-			// UseDoubleClickStateCheck
+			// ExternalRunLabel
 			// 
-			this.UseDoubleClickStateCheck.AutoSize = true;
-			this.UseDoubleClickStateCheck.Location = new System.Drawing.Point(17, 17);
-			this.UseDoubleClickStateCheck.Name = "UseDoubleClickStateCheck";
-			this.UseDoubleClickStateCheck.Size = new System.Drawing.Size(70, 24);
-			this.UseDoubleClickStateCheck.TabIndex = 2;
-			this.UseDoubleClickStateCheck.Text = Locale.Text(2440);
-			this.UseDoubleClickStateCheck.UseVisualStyleBackColor = true;
-			this.UseDoubleClickStateCheck.CheckedChanged += new System.EventHandler(this.UseDoubleClickStateCheck_CheckedChanged);
+			this.ExternalRunLabel.AutoSize = true;
+			this.ExternalRunLabel.Location = new System.Drawing.Point(299, 146);
+			this.ExternalRunLabel.Name = "ExternalRunLabel";
+			this.ExternalRunLabel.Size = new System.Drawing.Size(51, 20);
+			this.ExternalRunLabel.TabIndex = 12;
+			this.ExternalRunLabel.Text = Locale.Text(2429);
 			// 
-			// UseClickToPageCheck
+			// ExternalRunText
 			// 
-			this.UseClickToPageCheck.AutoSize = true;
-			this.UseClickToPageCheck.Location = new System.Drawing.Point(17, 60);
-			this.UseClickToPageCheck.Name = "UseClickToPageCheck";
-			this.UseClickToPageCheck.Size = new System.Drawing.Size(70, 24);
-			this.UseClickToPageCheck.TabIndex = 3;
-			this.UseClickToPageCheck.Text = Locale.Text(2441);
-			this.UseClickToPageCheck.UseVisualStyleBackColor = true;
-			this.UseClickToPageCheck.CheckedChanged += new System.EventHandler(this.UseClickToPageCheck_CheckedChanged);
+			this.ExternalRunText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.ExternalRunText.Location = new System.Drawing.Point(320, 169);
+			this.ExternalRunText.Name = "ExternalRunText";
+			this.ExternalRunText.Size = new System.Drawing.Size(274, 27);
+			this.ExternalRunText.TabIndex = 13;
+			// 
+			// ExternalRunButton
+			// 
+			this.ExternalRunButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.ExternalRunButton.Location = new System.Drawing.Point(502, 202);
+			this.ExternalRunButton.Name = "ExternalRunButton";
+			this.ExternalRunButton.Size = new System.Drawing.Size(92, 28);
+			this.ExternalRunButton.TabIndex = 14;
+			this.ExternalRunButton.Text = Locale.Text(118);
+			this.ExternalRunButton.UseVisualStyleBackColor = true;
+			this.ExternalRunButton.Click += new System.EventHandler(this.ExternalRunButton_Click);
 			// 
 			// OptionForm
 			// 
@@ -374,17 +408,18 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
 			this.CancelButton = this.DoOkButton;
-			this.ClientSize = new System.Drawing.Size(633, 603);
+			this.ClientSize = new System.Drawing.Size(640, 600);
 			this.ControlBox = false;
 			this.Controls.Add(this.OptionTab);
 			this.Controls.Add(this.SystemButton);
 			this.Controls.Add(this.DoOkButton);
 			this.Controls.Add(this.TitleLabel);
-			this.Font = new System.Drawing.Font("맑은 고딕", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.Font = new System.Drawing.Font("Malgun Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
+			this.MinimumSize = new System.Drawing.Size(600, 300);
 			this.Name = "OptionForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = Locale.Text(2400);
@@ -436,5 +471,8 @@
 		private NumericUpDown CacheSizeValue;
 		private CheckBox UseClickToPageCheck;
 		private CheckBox UseDoubleClickStateCheck;
+		private Button ExternalRunButton;
+		private TextBox ExternalRunText;
+		private Label ExternalRunLabel;
 	}
 }

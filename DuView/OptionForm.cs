@@ -29,6 +29,9 @@ public partial class OptionForm : Form
 	{
 		// 일반
 		Settings.MaxPageCache = (int)CacheSizeValue.Value;
+
+		if (ExternalRunText.TextLength > 0)
+			Settings.ExternalRun = ExternalRunText.Text;
 	}
 
 	private void OptionForm_MouseDown(object sender, MouseEventArgs e)
@@ -70,6 +73,7 @@ public partial class OptionForm : Form
 		UpdateNotifyCheck.Checked = Settings.GeneralUpdateNotify;
 
 		CacheSizeValue.Value = Settings.MaxPageCache;
+		ExternalRunText.Text = Settings.ExternalRun;
 	}
 
 	private void DoOkButton_Click(object sender, EventArgs e)
@@ -131,5 +135,18 @@ public partial class OptionForm : Form
 	private void UseClickToPageCheck_CheckedChanged(object sender, EventArgs e)
 	{
 		Settings.MouseUseClickPage = UseClickToPageCheck.Checked;
+	}
+
+	private void ExternalRunButton_Click(object sender, EventArgs e)
+	{
+		var dlg = new OpenFileDialog()
+		{
+			Title = Locale.Text(120),
+			Filter = Locale.Text(119),
+			InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+		};
+
+		if (dlg.ShowDialog() == DialogResult.OK)
+			ExternalRunText.Text = dlg.FileName;
 	}
 }

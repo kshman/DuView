@@ -15,6 +15,9 @@ public partial class ReadForm : Form
 
 	private System.Windows.Forms.Timer _notify_timer;
 
+	private string? _exrun_filename;
+	private FormWindowState _exrun_windowstate;
+
 	#region 만들기
 	public ReadForm(string filename)
 	{
@@ -453,6 +456,43 @@ public partial class ReadForm : Form
 		OpenBook(Settings.LastFileName);
 	}
 
+	private void FileOpenExternalMenuItem_Click(object sender, EventArgs e)
+	{
+		if (string.IsNullOrEmpty(Settings.ExternalRun) || !File.Exists(Settings.ExternalRun))
+		{
+			ShowNotification(2429, 121);
+			return;
+		}
+
+		if (Book != null)
+		{
+			_exrun_filename = Book.FileName;
+			_exrun_windowstate = WindowState;
+
+			WindowState = FormWindowState.Minimized;
+			CloseBook();
+
+			var ps = new System.Diagnostics.Process();
+			ps.StartInfo.FileName = Settings.ExternalRun;
+			ps.StartInfo.Arguments = _exrun_filename;
+			ps.StartInfo.UseShellExecute = false;
+			ps.StartInfo.CreateNoWindow = true;
+			ps.EnableRaisingEvents = true;
+			ps.Exited += (s, e) => ExternalRun_Exited();
+			ps.Start();
+		}
+	}
+
+	private void ExternalRun_Exited()
+	{
+		Invoke(new Action(() =>
+		{
+			if (!string.IsNullOrEmpty(_exrun_filename))
+				OpenBook(_exrun_filename);
+			WindowState = _exrun_windowstate;
+		}));
+	}
+
 	private void FileCloseMenuItem_Click(object sender, EventArgs e)
 	{
 		CloseBook();
@@ -477,7 +517,7 @@ public partial class ReadForm : Form
 	private void FileRefreshMenuItem_Click(object sender, EventArgs e)
 	{
 #if DEBUG
-		if (Book!=null)
+		if (Book != null)
 		{
 			Book.PrepareImages();
 			DrawBook();
@@ -515,9 +555,9 @@ public partial class ReadForm : Form
 	{
 		DeleteBookOrItem();
 	}
-#endregion
+	#endregion
 
-#region 파일 처리
+	#region 파일 처리
 	// 책 닫기
 	private void CloseBook()
 	{
@@ -604,6 +644,11 @@ public partial class ReadForm : Form
 			DrawBook();
 
 			_select.SetBook(bk);
+		}
+		else
+		{
+			// 책없나
+			ShowNotification(106, 117, true);
 		}
 
 		ResetFocus();
@@ -717,9 +762,9 @@ public partial class ReadForm : Form
 			DrawBook();
 		}
 	}
-#endregion
+	#endregion
 
-#region 그리기
+	#region 그리기
 	// 로고 그리기
 	private static void DrawLogo(Graphics g, int w, int h)
 	{
@@ -848,9 +893,9 @@ public partial class ReadForm : Form
 
 		BookCanvas.Image = _bmp;
 	}
-#endregion
+	#endregion
 
-#region 책 조작
+	#region 책 조작
 	// 조작하기
 	private void PageControl(Types.Controls ctrl)
 	{
@@ -961,9 +1006,9 @@ public partial class ReadForm : Form
 			DrawBook();
 		}
 	}
-#endregion
+	#endregion
 
-#region 도움
+	#region 도움
 	private void ShowNotification(string title, string mesg, bool iserror = false, int timeout = 2000)
 	{
 		if (Settings.GeneralUseWinNotify)
@@ -1003,6 +1048,6 @@ public partial class ReadForm : Form
 		_notify_timer.Stop();
 		ControlDu.EffectFadeOut(NotifyLabel);
 	}
-#endregion // 도움
+	#endregion // 도움
 }
 
