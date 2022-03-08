@@ -12,12 +12,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\locale_english.txt" />
+    <None Remove="Resources\locale_korean.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="purutu.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\DuLib\DuLib.WinForms\DuLib.WinForms.csproj" />
     <ProjectReference Include="..\..\DuLib\DuLib.Zero\DuLib.Zero.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\locale_english.txt" />
+    <Resource Include="Resources\locale_korean.txt" />
   </ItemGroup>
 
   <ItemGroup>

@@ -47,6 +47,13 @@ public static class Types
 	}
 
 	//
+	public enum BookDirection
+	{
+		Previous,
+		Next,
+	}
+
+	//
 	public record BookEntryInfo
 	{
 		public string? Name { get; init; }

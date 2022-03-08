@@ -14,10 +14,10 @@ LANG=English
 101=Copy image
 102=Copied to clipboard!
 103=Fail to copying image to clipboard!
-104=Select archive or image
+104=Select an archive or image
 105=Archive|*.zip|All files|*.*
 106=Open book
-107=Cannot open archive file!
+107=Cannot open the archive file!
 108=Cannot acces directory!
 109=No previous book!
 110=No next book!
@@ -30,8 +30,13 @@ LANG=English
 117=Cannot open book
 118=Browse
 119=Execute file|*.exe
-120=Selecte acceptable file
+120=Select acceptable file
 121=No external run or file not found
+122=Rename book
+123=Fail to rename book!
+124=Destination already exist!
+125=Require restart for apply locale
+126=System default
 
 # 보기(1100)
 1100=&View
@@ -58,6 +63,7 @@ LANG=English
 1307=&Delete
 1308=Op&tion
 1309=Open &with external
+1310=Re&name
 
 # 기타(1800)
 1800=Cac&he
@@ -83,14 +89,22 @@ LANG=English
 2207=Prevous archive or directory
 2208=Next archive or directory
 
-# 페이지선택폼(2300)
-2300=Page select
-2301=Page
-2302=Filename
-2303=Date
-2304=Length
-2305=Total:
-2306=No book found
+# 페이지선택폼(2220)
+2220=Page select
+2221=Page
+2222=Filename
+2223=Date
+2224=Length
+2225=Total:
+2226=No book found
+
+# 이름바꾸기(2240)
+2240=Rename book
+2241=Current:
+2242=Rename:
+2243=Rename after:
+2244=Open next
+2245=Open again
 
 # 옵션폼(2400)
 2400=Option
@@ -99,6 +113,7 @@ LANG=English
 2403=Keyboard/Mouse
 2404=Controller
 2405=Security
+2406=Locale
 2410=No items here
 2420=Run only one instance
 2421=ESC key to exit
@@ -110,7 +125,7 @@ LANG=English
 2427=Cache size
 2428=MB
 2429=External run
+2430=Reload book after external exit
 2440=Use double click to maximize/minimize
 2441=Use click to changing prev/next page
-
 

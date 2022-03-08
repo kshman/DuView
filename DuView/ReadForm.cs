@@ -18,6 +18,8 @@ public partial class ReadForm : Form
 	private string? _exrun_filename;
 	private FormWindowState _exrun_windowstate;
 
+	private Types.BookDirection _book_direction = Types.BookDirection.Next;
+
 	#region 만들기
 	public ReadForm(string filename)
 	{
@@ -458,44 +460,17 @@ public partial class ReadForm : Form
 
 	private void FileOpenExternalMenuItem_Click(object sender, EventArgs e)
 	{
-		if (string.IsNullOrEmpty(Settings.ExternalRun) || !File.Exists(Settings.ExternalRun))
-		{
-			ShowNotification(2429, 121);
-			return;
-		}
-
-		if (Book != null)
-		{
-			_exrun_filename = Book.FileName;
-			_exrun_windowstate = WindowState;
-
-			WindowState = FormWindowState.Minimized;
-			CloseBook();
-
-			var ps = new System.Diagnostics.Process();
-			ps.StartInfo.FileName = Settings.ExternalRun;
-			ps.StartInfo.Arguments = _exrun_filename;
-			ps.StartInfo.UseShellExecute = false;
-			ps.StartInfo.CreateNoWindow = true;
-			ps.EnableRaisingEvents = true;
-			ps.Exited += (s, e) => ExternalRun_Exited();
-			ps.Start();
-		}
-	}
-
-	private void ExternalRun_Exited()
-	{
-		Invoke(new Action(() =>
-		{
-			if (!string.IsNullOrEmpty(_exrun_filename))
-				OpenBook(_exrun_filename);
-			WindowState = _exrun_windowstate;
-		}));
+		OpenExternalRun();
 	}
 
 	private void FileCloseMenuItem_Click(object sender, EventArgs e)
 	{
 		CloseBook();
+	}
+
+	private void FileRenameMenuItem_Click(object sender, EventArgs e)
+	{
+		RenameBook();
 	}
 
 	private void FileCopyImageMenuItem_Click(object sender, EventArgs e)
@@ -696,13 +671,14 @@ public partial class ReadForm : Form
 		if (Book == null)
 			return;
 
-		var filename = Book.FindNextFile(true);
+		var filename = Book.FindNextFile(Types.BookDirection.Previous);
 		if (filename == null)
 		{
 			ShowNotification(106, 109);
 			return;
 		}
 
+		_book_direction = Types.BookDirection.Previous;
 		OpenBook(filename);
 	}
 
@@ -712,13 +688,14 @@ public partial class ReadForm : Form
 		if (Book == null)
 			return;
 
-		var filename = Book.FindNextFile(false);
+		var filename = Book.FindNextFile(Types.BookDirection.Next);
 		if (filename == null)
 		{
 			ShowNotification(106, 110);
 			return;
 		}
 
+		_book_direction = Types.BookDirection.Next;
 		OpenBook(filename);
 	}
 
@@ -737,11 +714,11 @@ public partial class ReadForm : Form
 				return;
 		}
 
-		var nextfilename = Book.FindNextFile(false) ?? Book.FindNextFile(true) ?? null;
+		var nextfilename = Book.FindNextFileAny(_book_direction);
 
 		if (!Book.DeleteFile(out var closebook))
 		{
-			MessageBox.Show(this, Locale.Text(115), Locale.Text(114), MessageBoxButtons.OK, MessageBoxIcon.Error);
+			ShowNotification(114, 115, true, 3000);
 			return;
 		}
 
@@ -761,6 +738,72 @@ public partial class ReadForm : Form
 			Book.PrepareImages();
 			DrawBook();
 		}
+	}
+
+	private void OpenExternalRun()
+	{
+		if (string.IsNullOrEmpty(Settings.ExternalRun) || !File.Exists(Settings.ExternalRun))
+		{
+			ShowNotification(2429, 121);
+			return;
+		}
+
+		if (Book != null)
+		{
+			_exrun_filename = Book.FileName;
+			_exrun_windowstate = WindowState;
+
+			WindowState = FormWindowState.Minimized;
+			CloseBook();
+
+			var ps = new System.Diagnostics.Process();
+			ps.StartInfo.FileName = Settings.ExternalRun;
+			ps.StartInfo.Arguments = _exrun_filename;
+			ps.StartInfo.UseShellExecute = false;
+			ps.StartInfo.CreateNoWindow = true;
+			ps.EnableRaisingEvents = true;
+			ps.Exited += (s, e) => ExternalRun_Exited();
+			ps.Start();
+		}
+	}
+
+	private void ExternalRun_Exited()
+	{
+		Invoke(new Action(() =>
+		{
+			if (Settings.ReloadAfterExternal && !string.IsNullOrEmpty(_exrun_filename))
+				OpenBook(_exrun_filename);
+			WindowState = _exrun_windowstate;
+		}));
+	}
+
+	private void RenameBook()
+	{
+		if (Book == null)
+			return;
+
+		var dlg = new RenameForm();
+		if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+			return;
+
+		var filename = dlg.Filename;
+		if (Book.OnlyFileName.Equals(filename))
+			return;
+
+		// 설정에 다음 파일을 열면 다음 파일을 아니면 바뀐 이름 책을 열게함
+		var nextfilename = Settings.RenameOpenNext ? Book.FindNextFileAny(_book_direction) : null;
+
+		// 시작
+		if (!Book.RenameFile(filename, out var fullpath))
+		{
+			ShowNotification(122, 123, true, 3000);
+			return;
+		}
+
+		Book.CurrentPage = 0;
+		CloseBook();
+
+		OpenBook(nextfilename ?? fullpath);
 	}
 	#endregion
 

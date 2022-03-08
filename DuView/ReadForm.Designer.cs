@@ -57,6 +57,7 @@
 			this.FileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileOpenMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileOpenLastMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.FileOpenExternalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.FileCopyImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -103,7 +104,8 @@
 			this.OptionPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ExitPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.NotifyLabel = new System.Windows.Forms.Label();
-			this.FileOpenExternalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.FileRenameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.RenamePopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.TopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.BookCanvas)).BeginInit();
@@ -183,7 +185,7 @@
 			this.MaxCacheMenuItem});
 			this.MenuStrip.Location = new System.Drawing.Point(3, 3);
 			this.MenuStrip.Name = "MenuStrip";
-			this.MenuStrip.Size = new System.Drawing.Size(348, 24);
+			this.MenuStrip.Size = new System.Drawing.Size(228, 24);
 			this.MenuStrip.TabIndex = 1;
 			this.MenuStrip.Text = Locale.Text(95);
 			// 
@@ -372,6 +374,7 @@
 			this.FileOpenExternalMenuItem,
 			this.FileCloseMenuItem,
 			this.toolStripSeparator2,
+			this.FileRenameMenuItem,
 			this.FileCopyImageMenuItem,
 			this.toolStripSeparator3,
 			this.FileDeleteMenuItem,
@@ -402,6 +405,15 @@
 			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.FileOpenLastMenuItem.Text = Locale.Text(1302);
 			this.FileOpenLastMenuItem.Click += new System.EventHandler(this.FileOpenLastMenuItem_Click);
+			// 
+			// FileOpenExternalMenuItem
+			// 
+			this.FileOpenExternalMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileOpenExternalMenuItem.Name = "FileOpenExternalMenuItem";
+			this.FileOpenExternalMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F11;
+			this.FileOpenExternalMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileOpenExternalMenuItem.Text = Locale.Text(1309);
+			this.FileOpenExternalMenuItem.Click += new System.EventHandler(this.FileOpenExternalMenuItem_Click);
 			// 
 			// FileCloseMenuItem
 			// 
@@ -505,6 +517,7 @@
 			// 
 			this.ContextPopup.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.OpenPopupItem,
+			this.RenamePopupItem,
 			this.ClosePopupItem,
 			this.toolStripSeparator4,
 			this.ControlPopItem,
@@ -519,13 +532,13 @@
 			this.OptionPopupItem,
 			this.ExitPopupItem});
 			this.ContextPopup.Name = "ContextPopup";
-			this.ContextPopup.Size = new System.Drawing.Size(107, 232);
+			this.ContextPopup.Size = new System.Drawing.Size(107, 254);
 			// 
 			// OpenPopupItem
 			// 
 			this.OpenPopupItem.ForeColor = System.Drawing.Color.White;
 			this.OpenPopupItem.Name = "OpenPopupItem";
-			this.OpenPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.OpenPopupItem.Size = new System.Drawing.Size(180, 22);
 			this.OpenPopupItem.Text = Locale.Text(1301);
 			this.OpenPopupItem.Click += new System.EventHandler(this.FileOpenMenuItem_Click);
 			// 
@@ -533,14 +546,14 @@
 			// 
 			this.ClosePopupItem.ForeColor = System.Drawing.Color.White;
 			this.ClosePopupItem.Name = "ClosePopupItem";
-			this.ClosePopupItem.Size = new System.Drawing.Size(106, 22);
+			this.ClosePopupItem.Size = new System.Drawing.Size(180, 22);
 			this.ClosePopupItem.Text = Locale.Text(1303);
 			this.ClosePopupItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(103, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
 			// 
 			// ControlPopItem
 			// 
@@ -557,7 +570,7 @@
 			this.CtrlNextFilePopupItem});
 			this.ControlPopItem.ForeColor = System.Drawing.Color.White;
 			this.ControlPopItem.Name = "ControlPopItem";
-			this.ControlPopItem.Size = new System.Drawing.Size(106, 22);
+			this.ControlPopItem.Size = new System.Drawing.Size(180, 22);
 			this.ControlPopItem.Text = Locale.Text(2200);
 			// 
 			// CtrlPrevPopupItem
@@ -646,7 +659,7 @@
 			// 
 			this.PagesPopupItem.ForeColor = System.Drawing.Color.White;
 			this.PagesPopupItem.Name = "PagesPopupItem";
-			this.PagesPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.PagesPopupItem.Size = new System.Drawing.Size(180, 22);
 			this.PagesPopupItem.Tag = DuView.Types.Controls.Select;
 			this.PagesPopupItem.Text = Locale.Text(1201);
 			this.PagesPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
@@ -654,7 +667,7 @@
 			// toolStripSeparator5
 			// 
 			this.toolStripSeparator5.Name = "toolStripSeparator5";
-			this.toolStripSeparator5.Size = new System.Drawing.Size(103, 6);
+			this.toolStripSeparator5.Size = new System.Drawing.Size(177, 6);
 			// 
 			// QualityPopupItem
 			// 
@@ -669,7 +682,7 @@
 			this.QualityHqBicubicPopupItem});
 			this.QualityPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityPopupItem.Name = "QualityPopupItem";
-			this.QualityPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.QualityPopupItem.Size = new System.Drawing.Size(180, 22);
 			this.QualityPopupItem.Text = Locale.Text(2100);
 			// 
 			// QualityLowPopupItem
@@ -743,38 +756,38 @@
 			// toolStripSeparator6
 			// 
 			this.toolStripSeparator6.Name = "toolStripSeparator6";
-			this.toolStripSeparator6.Size = new System.Drawing.Size(103, 6);
+			this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
 			// 
 			// DeletePopupItem
 			// 
 			this.DeletePopupItem.ForeColor = System.Drawing.Color.White;
 			this.DeletePopupItem.Name = "DeletePopupItem";
-			this.DeletePopupItem.Size = new System.Drawing.Size(106, 22);
+			this.DeletePopupItem.Size = new System.Drawing.Size(180, 22);
 			this.DeletePopupItem.Text = Locale.Text(1307);
 			this.DeletePopupItem.Click += new System.EventHandler(this.FileDeleteMenuItem_Click);
 			// 
 			// toolStripSeparator7
 			// 
 			this.toolStripSeparator7.Name = "toolStripSeparator7";
-			this.toolStripSeparator7.Size = new System.Drawing.Size(103, 6);
+			this.toolStripSeparator7.Size = new System.Drawing.Size(177, 6);
 			// 
 			// CopyImagePopupItem
 			// 
 			this.CopyImagePopupItem.ForeColor = System.Drawing.Color.White;
 			this.CopyImagePopupItem.Name = "CopyImagePopupItem";
-			this.CopyImagePopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CopyImagePopupItem.Size = new System.Drawing.Size(180, 22);
 			this.CopyImagePopupItem.Text = Locale.Text(1304);
 			// 
 			// toolStripSeparator8
 			// 
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(103, 6);
+			this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
 			// 
 			// OptionPopupItem
 			// 
 			this.OptionPopupItem.ForeColor = System.Drawing.Color.White;
 			this.OptionPopupItem.Name = "OptionPopupItem";
-			this.OptionPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.OptionPopupItem.Size = new System.Drawing.Size(180, 22);
 			this.OptionPopupItem.Text = Locale.Text(1308);
 			this.OptionPopupItem.Click += new System.EventHandler(this.FileOptionMenuItem_Click);
 			// 
@@ -782,7 +795,7 @@
 			// 
 			this.ExitPopupItem.ForeColor = System.Drawing.Color.White;
 			this.ExitPopupItem.Name = "ExitPopupItem";
-			this.ExitPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.ExitPopupItem.Size = new System.Drawing.Size(180, 22);
 			this.ExitPopupItem.Text = Locale.Text(1306);
 			this.ExitPopupItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
@@ -802,15 +815,22 @@
 			this.NotifyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.NotifyLabel.Visible = false;
 			// 
-			// FileOpenExternalMenuItem
+			// FileRenameMenuItem
 			// 
-			this.FileOpenExternalMenuItem.ForeColor = System.Drawing.Color.White;
-			this.FileOpenExternalMenuItem.Name = "FileOpenExternalMenuItem";
-			this.FileOpenExternalMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
-			| System.Windows.Forms.Keys.X)));
-			this.FileOpenExternalMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileOpenExternalMenuItem.Text = Locale.Text(1309);
-			this.FileOpenExternalMenuItem.Click += new System.EventHandler(this.FileOpenExternalMenuItem_Click);
+			this.FileRenameMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileRenameMenuItem.Name = "FileRenameMenuItem";
+			this.FileRenameMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+			this.FileRenameMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileRenameMenuItem.Text = Locale.Text(1310);
+			this.FileRenameMenuItem.Click += new System.EventHandler(this.FileRenameMenuItem_Click);
+			// 
+			// RenamePopupItem
+			// 
+			this.RenamePopupItem.ForeColor = System.Drawing.Color.White;
+			this.RenamePopupItem.Name = "RenamePopupItem";
+			this.RenamePopupItem.Size = new System.Drawing.Size(106, 22);
+			this.RenamePopupItem.Text = Locale.Text(1309);
+			this.RenamePopupItem.Click += new System.EventHandler(this.FileOpenExternalMenuItem_Click);
 			// 
 			// ReadForm
 			// 
@@ -923,5 +943,7 @@
 		private ToolStripSeparator toolStripSeparator14;
 		private Label NotifyLabel;
 		private ToolStripMenuItem FileOpenExternalMenuItem;
+		private ToolStripMenuItem FileRenameMenuItem;
+		private ToolStripMenuItem RenamePopupItem;
 	}
 }

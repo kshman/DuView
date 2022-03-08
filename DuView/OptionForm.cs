@@ -3,6 +3,7 @@
 public partial class OptionForm : Form
 {
 	private readonly BadakFormWorker _bfw;
+	private IEnumerable<string> _locales = Locale.GetLocaleList();
 
 	public OptionForm()
 	{
@@ -22,7 +23,9 @@ public partial class OptionForm : Form
 
 	private void OptionForm_Load(object sender, EventArgs e)
 	{
-
+		LocalesList.Items.Add(Locale.Text(126));
+		foreach (var l in _locales)
+			LocalesList.Items.Add(l);
 	}
 
 	private void OptionForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -71,9 +74,13 @@ public partial class OptionForm : Form
 		ConfirmDeleteCheck.Checked = Settings.GeneralConfirmDelete;
 		AlwayTopCheck.Checked = Settings.GeneralAlwaysTop;
 		UpdateNotifyCheck.Checked = Settings.GeneralUpdateNotify;
-
 		CacheSizeValue.Value = Settings.MaxPageCache;
 		ExternalRunText.Text = Settings.ExternalRun;
+		ReloadExternalExitCheck.Checked = Settings.ReloadAfterExternal;
+
+		// 로캘
+		var lcl = _locales.ToList().IndexOf(Settings.Language) + 1;
+		LocalesList.SelectedIndex = lcl;
 	}
 
 	private void DoOkButton_Click(object sender, EventArgs e)
@@ -125,17 +132,6 @@ public partial class OptionForm : Form
 	{
 		Settings.GeneralUpdateNotify = UpdateNotifyCheck.Checked;
 	}
-	#endregion // 기본
-
-	private void UseDoubleClickStateCheck_CheckedChanged(object sender, EventArgs e)
-	{
-		Settings.MouseUseDoubleClickState = UseDoubleClickStateCheck.Checked;
-	}
-
-	private void UseClickToPageCheck_CheckedChanged(object sender, EventArgs e)
-	{
-		Settings.MouseUseClickPage = UseClickToPageCheck.Checked;
-	}
 
 	private void ExternalRunButton_Click(object sender, EventArgs e)
 	{
@@ -148,5 +144,32 @@ public partial class OptionForm : Form
 
 		if (dlg.ShowDialog() == DialogResult.OK)
 			ExternalRunText.Text = dlg.FileName;
+	}
+
+	private void ReloadExternalExitCheck_CheckedChanged(object sender, EventArgs e)
+	{
+		Settings.ReloadAfterExternal = ReloadExternalExitCheck.Checked;
+	}
+	#endregion // 기본
+
+	private void UseDoubleClickStateCheck_CheckedChanged(object sender, EventArgs e)
+	{
+		Settings.MouseUseDoubleClickState = UseDoubleClickStateCheck.Checked;
+	}
+
+	private void UseClickToPageCheck_CheckedChanged(object sender, EventArgs e)
+	{
+		Settings.MouseUseClickPage = UseClickToPageCheck.Checked;
+	}
+
+	private void LocalesList_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		if (LocalesList.SelectedIndex == 0)
+			Settings.Language = string.Empty;
+		else
+		{
+			if (LocalesList.SelectedItem is string s)
+				Settings.Language = s;
+		}
 	}
 }

@@ -1,7 +1,8 @@
+
 # DuView
 DuView has English UI resources. But, no English manual yet. Sorry 😭
 
-Anyway this application is for reading a zipped book or stored images in folder as book. Only used WinForm of .NET(6). You can use freely whole sources as your wish.
+This application is for reading a zipped book or stored images in folder as a book. Only used .NET6 WinForm. You can use freely whole resources as your wish.
 
 
 
@@ -15,22 +16,13 @@ Anyway this application is for reading a zipped book or stored images in folder 
 
 게다가, 꿀뷰3는 논오픈소스고, 다른 프리웨어/오픈소스 뷰어는 윈도우에서 한번 컴파일 하려면 진짜... 짜증납니다... 솔루션 파일 하나로 msdev로 빌드할 수 있는 그런 환경이 필요해서... 만들었습니다.
 
-# 2022년 2월
-우리우리 설날이 공교롭게도 2월 1일이네요. 아무튼. FFXIV 판데모니엄 레이드까지 끝내고 드뎌 조금 건드렸습니다. 그렇다고 그동안 게임만 한건 아니구요. 일도 했습니다. 쿨럭
+이미지 형식은 윈폼에서 지원하는 거는 다 될겁니다. GIF는 현재 해볼라고 노력중이고, WEBP는 윈폼에서 지원하지 않아서 안됩니다.
 
-암튼 옵션창을 시작으로 시간날때 기능 추가 할까 합니다. 정말, 파일이름 바꾸기 기능이 절실하더라구요. 옵션 대충 끝나면 만들어야지
-
-# 2022년 1월까지 지원 내역
-
-이미지 형식은 윈폼에서 지원하는 거는 다 될겁니다. 테스트를 못해봐서 확답을 못할 뿐.
-
-*사용 키가 자주 바뀝니다만, 이건 피드백도 있고.. 그러합니다. 언젠간 픽스하겠져... 😭*
-
-## 로캘
+## 지원 로캘
 * 한국말
 * English
 
-## 형식
+## 지원 파일 형식
 * 디렉터리
 * 압축파일
 	* ZIP
@@ -58,9 +50,12 @@ Anyway this application is for reading a zipped book or stored images in folder 
 |[|이름순 정렬로 앞 책|Browser Back|
 |]|이름순 정렬 뒷 책|Browser Forward|
 |DEL|열려 있는 파일 삭제||
+|F2|열려 있는 파일 이름 바꾸기||
+|F11|외부 프로그램으로 열어보기||
+|F12|설정||
 |ESC|끝내기||
 
-***한장 앞뒤로**(↑↓)와 **앞뒤 페이지로**(←→)의 차이점은 앞뒤 페이지는 양쪽 볼때 두장씩 넘기지만 한장 앞뒤로는 무시하고 무조건 한장씩만 넘어갑니다. 가끔 페이지 숫자가 뒤틀린 책이 있어 있는 기능입니다*
+***한장 앞뒤로**(↑↓)와 **앞뒤 페이지로**(←→)의 차이점은 두쪽을 나란히 볼 때 동작이 다른데, 앞뒤 페이지는 두쪽을 함께 넘기고 한장 앞뒤로는 무조건 한쪽만 넘어갑니다. 가끔 페이지 숫자가 뒤틀린 책이 있어 있는 기능입니다*
 
 
 ## 설정

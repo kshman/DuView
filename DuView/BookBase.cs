@@ -30,6 +30,7 @@ public abstract class BookBase : IDisposable
 	public abstract IEnumerable<Types.BookEntryInfo> GetEntriesInfo();
 	public virtual bool CanDeleteFile(out string? reason) { reason = string.Empty; return true; }
 	public abstract bool DeleteFile(out bool closebook);
+	public abstract bool RenameFile(string newfilename, out string fullpath);
 
 	//
 	protected void SetFileName(FileInfo fi)
@@ -136,7 +137,7 @@ public abstract class BookBase : IDisposable
 			else
 			{
 				Image? right = null;
-				
+
 				if (left.Width > left.Height)
 				{
 					// 폭이 넓으면 1장만
@@ -193,13 +194,13 @@ public abstract class BookBase : IDisposable
 				if (CurrentPage + 1 < TotalPage)
 					CurrentPage++;
 				break;
-			
+
 			case Types.ViewMode.LeftToRight:
 			case Types.ViewMode.RightToLeft:
 				if (CurrentPage + 2 < TotalPage)
 					CurrentPage += 2;
 				break;
-			
+
 			default:
 				throw new ArgumentOutOfRangeException();
 		}
@@ -225,12 +226,12 @@ public abstract class BookBase : IDisposable
 			case Types.ViewMode.FitHeight:
 				CurrentPage--;
 				break;
-			
+
 			case Types.ViewMode.LeftToRight:
 			case Types.ViewMode.RightToLeft:
 				CurrentPage -= 2;
 				break;
-			
+
 			default:
 				throw new ArgumentOutOfRangeException();
 		}
@@ -249,22 +250,47 @@ public abstract class BookBase : IDisposable
 #if true
 		// 하... Math.Clamp 는 Net6 전용이네
 		CurrentPage = Math.Clamp(page, 0, TotalPage - 1);
-#else		
+#else
 		if (page < 0)
 			CurrentPage = 0;
 		else if (page >= TotalPage)
 			CurrentPage = TotalPage - 1;
 		else
 			CurrentPage = page;
-#endif		
+#endif
 
 		return prev != CurrentPage;
 	}
 
 	//
-	public virtual string? FindNextFile(bool no_i_want_prev_file)
+	public virtual string? FindNextFile(Types.BookDirection direction)
 	{
 		return null;
+	}
+
+	//
+	public string? FindNextFileAny(Types.BookDirection first_direction)
+	{
+		string? filename;
+
+		if (first_direction == Types.BookDirection.Next)
+		{
+			filename =
+			  FindNextFile(Types.BookDirection.Next) ??
+			  FindNextFile(Types.BookDirection.Previous) ??
+			  null;
+		}
+		else if (first_direction == Types.BookDirection.Previous)
+		{
+			filename =
+			  FindNextFile(Types.BookDirection.Previous) ??
+			  FindNextFile(Types.BookDirection.Next) ??
+			  null;
+		}
+		else
+			filename = null;
+
+		return filename;
 	}
 
 	//

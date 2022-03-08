@@ -138,7 +138,7 @@ public partial class PageSelectForm : Form
 
 	public void ResetBook()
 	{
-		PageInfoLabel.Text = Locale.Text(2306);
+		PageInfoLabel.Text = Locale.Text(2226);
 
 		PageList.Items.Clear();
 	}

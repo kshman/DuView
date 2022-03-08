@@ -33,6 +33,10 @@
 			this.SystemButton = new Du.WinForms.BadakSystemButton();
 			this.OptionTab = new System.Windows.Forms.TabControl();
 			this.GeneralPage = new System.Windows.Forms.TabPage();
+			this.ReloadExternalExitCheck = new System.Windows.Forms.CheckBox();
+			this.ExternalRunButton = new System.Windows.Forms.Button();
+			this.ExternalRunText = new System.Windows.Forms.TextBox();
+			this.ExternalRunLabel = new System.Windows.Forms.Label();
 			this.CacheSizeValue = new System.Windows.Forms.NumericUpDown();
 			this.label1 = new System.Windows.Forms.Label();
 			this.CacheMeasureLabel = new System.Windows.Forms.Label();
@@ -53,15 +57,16 @@
 			this.PadPage = new System.Windows.Forms.TabPage();
 			this.label4 = new System.Windows.Forms.Label();
 			this.SecurityPage = new System.Windows.Forms.TabPage();
-			this.ExternalRunLabel = new System.Windows.Forms.Label();
-			this.ExternalRunText = new System.Windows.Forms.TextBox();
-			this.ExternalRunButton = new System.Windows.Forms.Button();
+			this.LocalePage = new System.Windows.Forms.TabPage();
+			this.LocalesList = new System.Windows.Forms.ListBox();
+			this.LocaleToRestartLabel = new System.Windows.Forms.Label();
 			this.OptionTab.SuspendLayout();
 			this.GeneralPage.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CacheSizeValue)).BeginInit();
 			this.ViewPage.SuspendLayout();
 			this.KmPage.SuspendLayout();
 			this.PadPage.SuspendLayout();
+			this.LocalePage.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TitleLabel
@@ -120,6 +125,7 @@
 			this.OptionTab.Controls.Add(this.KmPage);
 			this.OptionTab.Controls.Add(this.PadPage);
 			this.OptionTab.Controls.Add(this.SecurityPage);
+			this.OptionTab.Controls.Add(this.LocalePage);
 			this.OptionTab.Location = new System.Drawing.Point(15, 47);
 			this.OptionTab.Margin = new System.Windows.Forms.Padding(4);
 			this.OptionTab.Name = "OptionTab";
@@ -130,6 +136,7 @@
 			// GeneralPage
 			// 
 			this.GeneralPage.AutoScroll = true;
+			this.GeneralPage.Controls.Add(this.ReloadExternalExitCheck);
 			this.GeneralPage.Controls.Add(this.ExternalRunButton);
 			this.GeneralPage.Controls.Add(this.ExternalRunText);
 			this.GeneralPage.Controls.Add(this.ExternalRunLabel);
@@ -152,6 +159,46 @@
 			this.GeneralPage.TabIndex = 0;
 			this.GeneralPage.Text = Locale.Text(2401);
 			this.GeneralPage.UseVisualStyleBackColor = true;
+			// 
+			// ReloadExternalExitCheck
+			// 
+			this.ReloadExternalExitCheck.AutoSize = true;
+			this.ReloadExternalExitCheck.Location = new System.Drawing.Point(320, 232);
+			this.ReloadExternalExitCheck.Name = "ReloadExternalExitCheck";
+			this.ReloadExternalExitCheck.Size = new System.Drawing.Size(70, 24);
+			this.ReloadExternalExitCheck.TabIndex = 15;
+			this.ReloadExternalExitCheck.Text = Locale.Text(2430);
+			this.ReloadExternalExitCheck.UseVisualStyleBackColor = true;
+			this.ReloadExternalExitCheck.CheckedChanged += new System.EventHandler(this.ReloadExternalExitCheck_CheckedChanged);
+			// 
+			// ExternalRunButton
+			// 
+			this.ExternalRunButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.ExternalRunButton.Location = new System.Drawing.Point(502, 202);
+			this.ExternalRunButton.Name = "ExternalRunButton";
+			this.ExternalRunButton.Size = new System.Drawing.Size(92, 28);
+			this.ExternalRunButton.TabIndex = 14;
+			this.ExternalRunButton.Text = Locale.Text(118);
+			this.ExternalRunButton.UseVisualStyleBackColor = true;
+			this.ExternalRunButton.Click += new System.EventHandler(this.ExternalRunButton_Click);
+			// 
+			// ExternalRunText
+			// 
+			this.ExternalRunText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.ExternalRunText.Location = new System.Drawing.Point(320, 169);
+			this.ExternalRunText.Name = "ExternalRunText";
+			this.ExternalRunText.Size = new System.Drawing.Size(274, 27);
+			this.ExternalRunText.TabIndex = 13;
+			// 
+			// ExternalRunLabel
+			// 
+			this.ExternalRunLabel.AutoSize = true;
+			this.ExternalRunLabel.Location = new System.Drawing.Point(299, 146);
+			this.ExternalRunLabel.Name = "ExternalRunLabel";
+			this.ExternalRunLabel.Size = new System.Drawing.Size(51, 20);
+			this.ExternalRunLabel.TabIndex = 12;
+			this.ExternalRunLabel.Text = Locale.Text(2429);
 			// 
 			// CacheSizeValue
 			// 
@@ -278,11 +325,11 @@
 			// 
 			this.ViewPage.AutoScroll = true;
 			this.ViewPage.Controls.Add(this.label2);
-			this.ViewPage.Location = new System.Drawing.Point(4, 24);
+			this.ViewPage.Location = new System.Drawing.Point(4, 29);
 			this.ViewPage.Margin = new System.Windows.Forms.Padding(4);
 			this.ViewPage.Name = "ViewPage";
 			this.ViewPage.Padding = new System.Windows.Forms.Padding(4);
-			this.ViewPage.Size = new System.Drawing.Size(594, 479);
+			this.ViewPage.Size = new System.Drawing.Size(601, 471);
 			this.ViewPage.TabIndex = 1;
 			this.ViewPage.Text = Locale.Text(2402);
 			this.ViewPage.UseVisualStyleBackColor = true;
@@ -302,10 +349,10 @@
 			this.KmPage.Controls.Add(this.UseClickToPageCheck);
 			this.KmPage.Controls.Add(this.UseDoubleClickStateCheck);
 			this.KmPage.Controls.Add(this.label3);
-			this.KmPage.Location = new System.Drawing.Point(4, 24);
+			this.KmPage.Location = new System.Drawing.Point(4, 29);
 			this.KmPage.Margin = new System.Windows.Forms.Padding(4);
 			this.KmPage.Name = "KmPage";
-			this.KmPage.Size = new System.Drawing.Size(594, 479);
+			this.KmPage.Size = new System.Drawing.Size(601, 471);
 			this.KmPage.TabIndex = 2;
 			this.KmPage.Text = Locale.Text(2403);
 			this.KmPage.UseVisualStyleBackColor = true;
@@ -345,10 +392,10 @@
 			// 
 			this.PadPage.AutoScroll = true;
 			this.PadPage.Controls.Add(this.label4);
-			this.PadPage.Location = new System.Drawing.Point(4, 24);
+			this.PadPage.Location = new System.Drawing.Point(4, 29);
 			this.PadPage.Margin = new System.Windows.Forms.Padding(4);
 			this.PadPage.Name = "PadPage";
-			this.PadPage.Size = new System.Drawing.Size(594, 479);
+			this.PadPage.Size = new System.Drawing.Size(601, 471);
 			this.PadPage.TabIndex = 4;
 			this.PadPage.Text = Locale.Text(2404);
 			this.PadPage.UseVisualStyleBackColor = true;
@@ -368,38 +415,43 @@
 			this.SecurityPage.Location = new System.Drawing.Point(4, 29);
 			this.SecurityPage.Margin = new System.Windows.Forms.Padding(4);
 			this.SecurityPage.Name = "SecurityPage";
-			this.SecurityPage.Size = new System.Drawing.Size(594, 474);
+			this.SecurityPage.Size = new System.Drawing.Size(601, 471);
 			this.SecurityPage.TabIndex = 3;
 			this.SecurityPage.Text = Locale.Text(2405);
 			this.SecurityPage.UseVisualStyleBackColor = true;
 			// 
-			// ExternalRunLabel
+			// LocalePage
 			// 
-			this.ExternalRunLabel.AutoSize = true;
-			this.ExternalRunLabel.Location = new System.Drawing.Point(299, 146);
-			this.ExternalRunLabel.Name = "ExternalRunLabel";
-			this.ExternalRunLabel.Size = new System.Drawing.Size(51, 20);
-			this.ExternalRunLabel.TabIndex = 12;
-			this.ExternalRunLabel.Text = Locale.Text(2429);
+			this.LocalePage.Controls.Add(this.LocaleToRestartLabel);
+			this.LocalePage.Controls.Add(this.LocalesList);
+			this.LocalePage.Location = new System.Drawing.Point(4, 29);
+			this.LocalePage.Name = "LocalePage";
+			this.LocalePage.Size = new System.Drawing.Size(601, 471);
+			this.LocalePage.TabIndex = 5;
+			this.LocalePage.Text = Locale.Text(2406);
+			this.LocalePage.UseVisualStyleBackColor = true;
 			// 
-			// ExternalRunText
+			// LocalesList
 			// 
-			this.ExternalRunText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.ExternalRunText.Location = new System.Drawing.Point(320, 169);
-			this.ExternalRunText.Name = "ExternalRunText";
-			this.ExternalRunText.Size = new System.Drawing.Size(274, 27);
-			this.ExternalRunText.TabIndex = 13;
+			this.LocalesList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)));
+			this.LocalesList.FormattingEnabled = true;
+			this.LocalesList.ItemHeight = 20;
+			this.LocalesList.Location = new System.Drawing.Point(3, 3);
+			this.LocalesList.Name = "LocalesList";
+			this.LocalesList.Size = new System.Drawing.Size(170, 464);
+			this.LocalesList.TabIndex = 0;
+			this.LocalesList.SelectedIndexChanged += new System.EventHandler(this.LocalesList_SelectedIndexChanged);
 			// 
-			// ExternalRunButton
+			// LocaleToRestartLabel
 			// 
-			this.ExternalRunButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.ExternalRunButton.Location = new System.Drawing.Point(502, 202);
-			this.ExternalRunButton.Name = "ExternalRunButton";
-			this.ExternalRunButton.Size = new System.Drawing.Size(92, 28);
-			this.ExternalRunButton.TabIndex = 14;
-			this.ExternalRunButton.Text = Locale.Text(118);
-			this.ExternalRunButton.UseVisualStyleBackColor = true;
-			this.ExternalRunButton.Click += new System.EventHandler(this.ExternalRunButton_Click);
+			this.LocaleToRestartLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.LocaleToRestartLabel.AutoSize = true;
+			this.LocaleToRestartLabel.Location = new System.Drawing.Point(179, 447);
+			this.LocaleToRestartLabel.Name = "LocaleToRestartLabel";
+			this.LocaleToRestartLabel.Size = new System.Drawing.Size(43, 20);
+			this.LocaleToRestartLabel.TabIndex = 1;
+			this.LocaleToRestartLabel.Text = Locale.Text(125);
 			// 
 			// OptionForm
 			// 
@@ -439,6 +491,8 @@
 			this.KmPage.PerformLayout();
 			this.PadPage.ResumeLayout(false);
 			this.PadPage.PerformLayout();
+			this.LocalePage.ResumeLayout(false);
+			this.LocalePage.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -474,5 +528,9 @@
 		private Button ExternalRunButton;
 		private TextBox ExternalRunText;
 		private Label ExternalRunLabel;
+		private CheckBox ReloadExternalExitCheck;
+		private TabPage LocalePage;
+		private Label LocaleToRestartLabel;
+		private ListBox LocalesList;
 	}
 }

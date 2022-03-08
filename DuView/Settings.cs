@@ -24,6 +24,9 @@ internal static class Settings
 	private static Types.ViewMode s_view_mode = Types.ViewMode.FitWidth;
 	private static Types.ViewQuality s_view_quality = Types.ViewQuality.Default;
 
+	// -- 이름바꾸기
+	private static bool s_rename_open_next = true;
+
 	// -- 캐시
 	private static int s_max_page_cache = 230; // 1048576곱해야함
 
@@ -31,17 +34,18 @@ internal static class Settings
 	private static bool s_run_only_once_instance = true;
 	private static bool s_esc_to_exit = true;
 	private static bool s_use_windows_notification = true;
-	private static bool s_use_magnetic_window=false;
+	private static bool s_use_magnetic_window = false;
 	private static bool s_confirm_when_delete_file = true;
 	private static bool s_always_on_top = false;
 	private static bool s_use_update_notification = true;
+	private static string s_external_run = string.Empty;
+	private static bool s_reload_after_external = true;
 
 	// -- 마우스
 	private static bool s_use_doubleclick_state = false;
 	private static bool s_use_click_page = false;
 
 	// -- 기타
-	private static string s_external_run = string.Empty;
 
 	// 시작할 때 앞
 	public static void WhenBeforeStart()
@@ -92,8 +96,11 @@ internal static class Settings
 
 				//
 				s_view_zoom = rk.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
-				s_view_mode = (Types.ViewMode) rk.GetInt("ViewMode", (int) s_view_mode);
-				s_view_quality = (Types.ViewQuality) rk.GetInt("ViewQuality", (int) s_view_quality);
+				s_view_mode = (Types.ViewMode)rk.GetInt("ViewMode", (int)s_view_mode);
+				s_view_quality = (Types.ViewQuality)rk.GetInt("ViewQuality", (int)s_view_quality);
+
+				//
+				s_rename_open_next = rk.GetBool("RenameOpenNext", s_rename_open_next);
 
 				//
 				s_max_page_cache = rk.GetInt("MaxPageCache", s_max_page_cache);
@@ -105,13 +112,12 @@ internal static class Settings
 				s_confirm_when_delete_file = rk.GetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
 				s_always_on_top = rk.GetBool("GeneralAlwaysTop", s_always_on_top);
 				s_use_update_notification = rk.GetBool("GeneralUpdateNotify", s_use_update_notification);
+				s_external_run = rk.GetString("ExternalRun") ?? s_external_run;
+				s_reload_after_external = rk.GetBool("ReloadAfterExternalExit", s_reload_after_external);
 
 				//
 				s_use_doubleclick_state = rk.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
 				s_use_click_page = rk.GetBool("MouseUseClickPage", s_use_click_page);
-
-				//
-				s_external_run = rk.GetString("ExternalRun") ?? s_external_run;
 			}
 		}
 
@@ -188,13 +194,21 @@ internal static class Settings
 				{
 					var culture = Thread.CurrentThread.CurrentUICulture;
 					s_language = ToolBox.GetKnownCultureLocale(culture);
+
+					if (s_language != Locale.CurrentLocale)
+						Locale.SetLocale(s_language);
+
+					using var rk = new RegKey(c_keyname, true);
+					rk.DeleteValue("Language");
 				}
+				else
+				{
+					if (s_language != Locale.CurrentLocale)
+						Locale.SetLocale(s_language);
 
-				if (s_language != Locale.CurrentLocale)
-					Locale.SetLocale(s_language);
-
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetString("Language", value);
+					using var rk = new RegKey(c_keyname, true);
+					rk.SetString("Language", value);
+				}
 			}
 		}
 	}
@@ -274,7 +288,7 @@ internal static class Settings
 				s_view_mode = value;
 
 				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("ViewMode", (int) value);
+				rk.SetInt("ViewMode", (int)value);
 			}
 		}
 	}
@@ -290,7 +304,7 @@ internal static class Settings
 				s_view_quality = value;
 
 				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("ViewQuality", (int) value);
+				rk.SetInt("ViewQuality", (int)value);
 			}
 		}
 	}
@@ -384,9 +398,25 @@ internal static class Settings
 		}
 	}
 
+	//
+	public static bool RenameOpenNext
+	{
+		get => s_rename_open_next;
+		set
+		{
+			if (value != s_rename_open_next)
+			{
+				s_rename_open_next = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("RenameOpenNext", s_rename_open_next);
+			}
+		}
+	}
+
 	#region 기본
 	//
-	public static bool GeneralRunOnce 
+	public static bool GeneralRunOnce
 	{
 		get => s_run_only_once_instance;
 		set
@@ -496,6 +526,38 @@ internal static class Settings
 			}
 		}
 	}
+
+	//
+	public static string ExternalRun
+	{
+		get => s_external_run;
+		set
+		{
+			if (!value.Equals(s_external_run))
+			{
+				s_external_run = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetString("ExternalRun", s_external_run);
+			}
+		}
+	}
+
+	//
+	public static bool ReloadAfterExternal
+	{
+		get => s_reload_after_external;
+		set
+		{
+			if (value != s_reload_after_external)
+			{
+				s_reload_after_external = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("ReloadAfterExternalExit", s_reload_after_external);
+			}
+		}
+	}
 	#endregion // 기본
 
 	#region 마우스
@@ -533,19 +595,5 @@ internal static class Settings
 	#endregion // 마우스
 
 	#region 기타
-	public static string ExternalRun
-	{
-		get => s_external_run;
-		set
-		{
-			if (!value.Equals(s_external_run))
-			{
-				s_external_run = value;
-
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetString("ExternalRun", s_external_run);
-			}
-		}
-	}
 	#endregion // 기타
 }
