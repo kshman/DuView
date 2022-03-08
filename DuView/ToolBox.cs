@@ -13,9 +13,9 @@ public static class ToolBox
 
 		if (name.StartsWith("ko"))
 			locale = "ko";
-		else if (name.StartsWith("sh"))			// 세인트 헬러나
+		else if (name.StartsWith("sh"))         // 세인트 헬러나
 			locale = "sh";
-		else if (name.StartsWith("kim"))		// 이런 나라 없다
+		else if (name.StartsWith("kim"))        // 이런 나라 없다
 			locale = "kim";
 		else
 			locale = "en";
@@ -29,6 +29,26 @@ public static class ToolBox
 		return extension switch
 		{
 			".png" or ".jpg" or ".jpeg" or ".bmp" or ".tga" or ".gif" => true,
+			_ => false,
+		};
+	}
+
+	// 움직이나?
+	public static bool IsAnimatedImageFile(string filename, bool isextension = true)
+	{
+		string extension;
+
+		if (isextension)
+			extension = filename;
+		else
+		{
+			var n = filename.LastIndexOf('.');
+			extension = filename[n..];
+		}
+
+		return extension switch
+		{
+			".gif" => true,
 			_ => false,
 		};
 	}
@@ -73,17 +93,17 @@ public static class ToolBox
 		{
 			// 0.5 기가
 			case > giga:
-				v = size / (double) giga;
+				v = size / (double)giga;
 				return $"{v:0.0}GB";
 
 			// 0.5 메가
 			case > mega:
-				v = size / (double) mega;
+				v = size / (double)mega;
 				return $"{v:0.0}MB";
 
 			// 0.5 킬로
 			case > kilo:
-				v = size / (double) kilo;
+				v = size / (double)kilo;
 				return $"{v:0.0}KB";
 
 			default:
@@ -122,8 +142,8 @@ public static class ToolBox
 	//
 	public static (int w, int h) CalcDestSize(bool zoom, int dw, int dh, int sw, int sh)
 	{
-		var dstaspect = dw / (double) dh;
-		var srcaspect = sw / (double) sh;
+		var dstaspect = dw / (double)dh;
+		var srcaspect = sw / (double)sh;
 		int nw = dw, nh = dh;
 
 		if (zoom)
@@ -132,23 +152,23 @@ public static class ToolBox
 			{
 				// 세로로 긴 그림
 				if (dstaspect < srcaspect)
-					nh = (int) (dw / srcaspect);
+					nh = (int)(dw / srcaspect);
 				else
-					nw = (int) (dh * srcaspect);
+					nw = (int)(dh * srcaspect);
 			}
 			else
 			{
 				// 가로로 긴 그림
 				if (dstaspect > srcaspect)
-					nw = (int) (dh * srcaspect);
+					nw = (int)(dh * srcaspect);
 				else
-					nh = (int) (dw / srcaspect);
+					nh = (int)(dw / srcaspect);
 			}
 		}
 		else
 		{
 			// 가로로 맞춘다... 스크롤은 쌩깜
-			nh = (int) (dw / srcaspect);
+			nh = (int)(dw / srcaspect);
 		}
 
 		return (nw, nh);

@@ -138,22 +138,26 @@ public abstract class BookBase : IDisposable
 			{
 				Image? right = null;
 
-				if (left.Width > left.Height)
+				var entryname = left.Tag as string;
+				if (entryname == null || !ToolBox.IsAnimatedImageFile(entryname, false))
 				{
-					// 폭이 넓으면 1장만
-				}
-				else
-				{
-					if (CurrentPage + 1 < TotalPage)
+					if (left.Width > left.Height)
 					{
-						right = ReadPage(CurrentPage + 1);
-						if (right != null && right.Width > right.Height)
+						// 폭이 넓으면 1장만
+					}
+					else
+					{
+						if (CurrentPage + 1 < TotalPage)
 						{
-							// 다른쪽도 넓으면 1장만 나오게 함
-							right = null;
+							right = ReadPage(CurrentPage + 1);
+							if (right != null && right.Width > right.Height)
+							{
+								// 다른쪽도 넓으면 1장만 나오게 함
+								right = null;
+							}
 						}
 					}
-				}
+				}   // 엔트리 애니메이션 체크
 
 				if (mode == Types.ViewMode.LeftToRight)
 				{

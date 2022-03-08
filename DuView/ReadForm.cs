@@ -2,6 +2,8 @@
 
 public partial class ReadForm : Form
 {
+	private static ReadForm? _self;
+
 	private BookBase? Book { get; set; }
 
 	private Bitmap? _bmp;
@@ -23,6 +25,8 @@ public partial class ReadForm : Form
 	#region 만들기
 	public ReadForm(string filename)
 	{
+		_self = this;
+
 		InitializeComponent();
 
 		//
@@ -822,9 +826,24 @@ public partial class ReadForm : Form
 		}
 	}
 
+	private static void OnAnimateFrameChanged(object? sender, EventArgs e)
+	{
+		_self?.InternalAnimateFrame();
+	}
+
+	private void InternalAnimateFrame()
+	{
+
+	}
+
 	// 가로로 차게 이미지 그리기
 	private static void DrawBitmapFitWidth(Graphics g, Image bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
 	{
+		if (img.Tag is string entryname && ToolBox.IsAnimatedImageFile(entryname, false))
+		{
+			//ImageAnimator.Animate(img, OnAnimateFrameChanged);
+		}
+
 		(int nw, int nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
 		var rt = ToolBox.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
 

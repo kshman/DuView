@@ -58,8 +58,9 @@
 			this.label4 = new System.Windows.Forms.Label();
 			this.SecurityPage = new System.Windows.Forms.TabPage();
 			this.LocalePage = new System.Windows.Forms.TabPage();
-			this.LocalesList = new System.Windows.Forms.ListBox();
 			this.LocaleToRestartLabel = new System.Windows.Forms.Label();
+			this.LocalesList = new System.Windows.Forms.ListBox();
+			this.CreditScroll = new Du.WinForms.ScrollingBox();
 			this.OptionTab.SuspendLayout();
 			this.GeneralPage.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CacheSizeValue)).BeginInit();
@@ -325,11 +326,11 @@
 			// 
 			this.ViewPage.AutoScroll = true;
 			this.ViewPage.Controls.Add(this.label2);
-			this.ViewPage.Location = new System.Drawing.Point(4, 29);
+			this.ViewPage.Location = new System.Drawing.Point(4, 24);
 			this.ViewPage.Margin = new System.Windows.Forms.Padding(4);
 			this.ViewPage.Name = "ViewPage";
 			this.ViewPage.Padding = new System.Windows.Forms.Padding(4);
-			this.ViewPage.Size = new System.Drawing.Size(601, 471);
+			this.ViewPage.Size = new System.Drawing.Size(601, 476);
 			this.ViewPage.TabIndex = 1;
 			this.ViewPage.Text = Locale.Text(2402);
 			this.ViewPage.UseVisualStyleBackColor = true;
@@ -349,10 +350,10 @@
 			this.KmPage.Controls.Add(this.UseClickToPageCheck);
 			this.KmPage.Controls.Add(this.UseDoubleClickStateCheck);
 			this.KmPage.Controls.Add(this.label3);
-			this.KmPage.Location = new System.Drawing.Point(4, 29);
+			this.KmPage.Location = new System.Drawing.Point(4, 24);
 			this.KmPage.Margin = new System.Windows.Forms.Padding(4);
 			this.KmPage.Name = "KmPage";
-			this.KmPage.Size = new System.Drawing.Size(601, 471);
+			this.KmPage.Size = new System.Drawing.Size(601, 476);
 			this.KmPage.TabIndex = 2;
 			this.KmPage.Text = Locale.Text(2403);
 			this.KmPage.UseVisualStyleBackColor = true;
@@ -392,10 +393,10 @@
 			// 
 			this.PadPage.AutoScroll = true;
 			this.PadPage.Controls.Add(this.label4);
-			this.PadPage.Location = new System.Drawing.Point(4, 29);
+			this.PadPage.Location = new System.Drawing.Point(4, 24);
 			this.PadPage.Margin = new System.Windows.Forms.Padding(4);
 			this.PadPage.Name = "PadPage";
-			this.PadPage.Size = new System.Drawing.Size(601, 471);
+			this.PadPage.Size = new System.Drawing.Size(601, 476);
 			this.PadPage.TabIndex = 4;
 			this.PadPage.Text = Locale.Text(2404);
 			this.PadPage.UseVisualStyleBackColor = true;
@@ -412,16 +413,17 @@
 			// SecurityPage
 			// 
 			this.SecurityPage.AutoScroll = true;
-			this.SecurityPage.Location = new System.Drawing.Point(4, 29);
+			this.SecurityPage.Location = new System.Drawing.Point(4, 24);
 			this.SecurityPage.Margin = new System.Windows.Forms.Padding(4);
 			this.SecurityPage.Name = "SecurityPage";
-			this.SecurityPage.Size = new System.Drawing.Size(601, 471);
+			this.SecurityPage.Size = new System.Drawing.Size(601, 476);
 			this.SecurityPage.TabIndex = 3;
 			this.SecurityPage.Text = Locale.Text(2405);
 			this.SecurityPage.UseVisualStyleBackColor = true;
 			// 
 			// LocalePage
 			// 
+			this.LocalePage.Controls.Add(this.CreditScroll);
 			this.LocalePage.Controls.Add(this.LocaleToRestartLabel);
 			this.LocalePage.Controls.Add(this.LocalesList);
 			this.LocalePage.Location = new System.Drawing.Point(4, 29);
@@ -431,6 +433,16 @@
 			this.LocalePage.Text = Locale.Text(2406);
 			this.LocalePage.UseVisualStyleBackColor = true;
 			// 
+			// LocaleToRestartLabel
+			// 
+			this.LocaleToRestartLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.LocaleToRestartLabel.AutoSize = true;
+			this.LocaleToRestartLabel.Location = new System.Drawing.Point(179, 442);
+			this.LocaleToRestartLabel.Name = "LocaleToRestartLabel";
+			this.LocaleToRestartLabel.Size = new System.Drawing.Size(43, 20);
+			this.LocaleToRestartLabel.TabIndex = 1;
+			this.LocaleToRestartLabel.Text = Locale.Text(125);
+			// 
 			// LocalesList
 			// 
 			this.LocalesList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -439,19 +451,23 @@
 			this.LocalesList.ItemHeight = 20;
 			this.LocalesList.Location = new System.Drawing.Point(3, 3);
 			this.LocalesList.Name = "LocalesList";
-			this.LocalesList.Size = new System.Drawing.Size(170, 464);
+			this.LocalesList.Size = new System.Drawing.Size(170, 444);
 			this.LocalesList.TabIndex = 0;
 			this.LocalesList.SelectedIndexChanged += new System.EventHandler(this.LocalesList_SelectedIndexChanged);
 			// 
-			// LocaleToRestartLabel
+			// CreditScroll
 			// 
-			this.LocaleToRestartLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.LocaleToRestartLabel.AutoSize = true;
-			this.LocaleToRestartLabel.Location = new System.Drawing.Point(179, 447);
-			this.LocaleToRestartLabel.Name = "LocaleToRestartLabel";
-			this.LocaleToRestartLabel.Size = new System.Drawing.Size(43, 20);
-			this.LocaleToRestartLabel.TabIndex = 1;
-			this.LocaleToRestartLabel.Text = Locale.Text(125);
+			this.CreditScroll.Alignment = System.Drawing.StringAlignment.Center;
+			this.CreditScroll.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.CreditScroll.BackColor = System.Drawing.Color.Black;
+			this.CreditScroll.ForeColor = System.Drawing.Color.White;
+			this.CreditScroll.Location = new System.Drawing.Point(179, 3);
+			this.CreditScroll.Name = "CreditScroll";
+			this.CreditScroll.Padding = new System.Windows.Forms.Padding(10, 10, 0, 0);
+			this.CreditScroll.Size = new System.Drawing.Size(419, 436);
+			this.CreditScroll.TabIndex = 2;
 			// 
 			// OptionForm
 			// 
@@ -532,5 +548,6 @@
 		private TabPage LocalePage;
 		private Label LocaleToRestartLabel;
 		private ListBox LocalesList;
+		private ScrollingBox CreditScroll;
 	}
 }

@@ -5,6 +5,22 @@ public partial class OptionForm : Form
 	private readonly BadakFormWorker _bfw;
 	private IEnumerable<string> _locales = Locale.GetLocaleList();
 
+	private static readonly string[] Credits =
+	{
+		"DuView is a book viewer\n\n\n",
+		"서시\n윤동주\n\n",
+		"죽는 날까지 하늘을 우러러",
+		"한 점 부끄럼이 없기를,",
+		"잎새에 이는 바람에도",
+		"나는 괴로워했다.\n\n",
+		"별을 노래하는 마음으로",
+		"모든 죽어 가는 것을 사랑해야지",
+		"그리고 나한테 주어진 길을",
+		"걸어가야겠다.\n\n",
+		"오늘 밤에도 별이 바람에 스치운다.\n\n",
+		"\n\nSupported by kshman\n",
+	};
+
 	public OptionForm()
 	{
 		InitializeComponent();
@@ -19,6 +35,10 @@ public partial class OptionForm : Form
 		// 일단 안쓰는 탭 처리
 		((Control)ViewPage).Enabled = false;
 		((Control)PadPage).Enabled = false;
+
+		// 크레디트
+		foreach (var cs in Credits)
+			CreditScroll.Items.Add(cs);
 	}
 
 	private void OptionForm_Load(object sender, EventArgs e)
