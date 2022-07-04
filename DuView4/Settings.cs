@@ -50,6 +50,7 @@ namespace DuView
 		private static bool s_reload_after_external = true;
 		private static bool s_keep_book_direction = false;
 		private static string s_firefox_run = string.Empty;
+		private static bool s_extened_renamer = false;
 
 		// -- 마우스
 		private static bool s_use_doubleclick_state = false;
@@ -128,6 +129,7 @@ namespace DuView
 					s_reload_after_external = rk.GetBool("ReloadAfterExternalExit", s_reload_after_external);
 					s_keep_book_direction = rk.GetBool("KeepBookDirection", s_keep_book_direction);
 					s_firefox_run = rk.GetString("FirefoxRun") ?? s_firefox_run;
+					s_extened_renamer = rk.GetBool("ExtendedRenamer", s_extened_renamer);
 
 					//
 					s_use_doubleclick_state = rk.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
@@ -601,6 +603,22 @@ namespace DuView
 
 					using (var rk = new RegKey(c_keyname, true))
 						rk.SetString("FirefoxRun", s_firefox_run);
+				}
+			}
+		}
+
+		//
+		public static bool ExtendedRenamer
+		{
+			get => s_extened_renamer;
+			set
+			{
+				if (value!=s_extened_renamer)
+				{
+					s_extened_renamer = value;
+
+					using (var rk = new RegKey(c_keyname, true))
+						rk.SetBool("ExtendedRenamer", s_extened_renamer);
 				}
 			}
 		}

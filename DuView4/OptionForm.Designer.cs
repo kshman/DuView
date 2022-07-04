@@ -33,6 +33,7 @@
 			this.SystemButton = new Du.WinForms.BadakSystemButton();
 			this.OptionTab = new System.Windows.Forms.TabControl();
 			this.GeneralPage = new System.Windows.Forms.TabPage();
+			this.ExtendedRenamerCheck = new System.Windows.Forms.CheckBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.FirefoxRunButton = new System.Windows.Forms.Button();
 			this.FirefoxRunText = new System.Windows.Forms.TextBox();
@@ -143,6 +144,7 @@
 			// GeneralPage
 			// 
 			this.GeneralPage.AutoScroll = true;
+			this.GeneralPage.Controls.Add(this.ExtendedRenamerCheck);
 			this.GeneralPage.Controls.Add(this.groupBox1);
 			this.GeneralPage.Controls.Add(this.ExternalRunGroup);
 			this.GeneralPage.Controls.Add(this.CacheSizeGroup);
@@ -161,6 +163,17 @@
 			this.GeneralPage.TabIndex = 0;
 			this.GeneralPage.Text = Du.Globalization.Locale.Text(2401);
 			this.GeneralPage.UseVisualStyleBackColor = true;
+			// 
+			// ExtendedRenamerCheck
+			// 
+			this.ExtendedRenamerCheck.AutoSize = true;
+			this.ExtendedRenamerCheck.Location = new System.Drawing.Point(17, 316);
+			this.ExtendedRenamerCheck.Name = "ExtendedRenamerCheck";
+			this.ExtendedRenamerCheck.Size = new System.Drawing.Size(70, 24);
+			this.ExtendedRenamerCheck.TabIndex = 22;
+			this.ExtendedRenamerCheck.Text = Du.Globalization.Locale.Text(2442);
+			this.ExtendedRenamerCheck.UseVisualStyleBackColor = true;
+			this.ExtendedRenamerCheck.CheckedChanged += new System.EventHandler(this.ExtendedRenamerCheck_CheckedChanged);
 			// 
 			// groupBox1
 			// 
@@ -596,5 +609,6 @@
 		private System.Windows.Forms.TextBox FirefoxRunText;
 		private System.Windows.Forms.GroupBox ExternalRunGroup;
 		private System.Windows.Forms.GroupBox CacheSizeGroup;
+		private System.Windows.Forms.CheckBox ExtendedRenamerCheck;
 	}
 }

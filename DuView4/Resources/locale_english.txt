@@ -37,6 +37,7 @@ LANG=English
 124=Destination already exist!
 125=Require restart for apply locale
 126=System default
+127=Search
 
 # 보기(1100)
 1100=&View
@@ -105,6 +106,12 @@ LANG=English
 2243=Rename after:
 2244=Open next
 2245=Open again
+2246=Author
+2247=Title
+2248=Index
+2249=Additional
+2250=Rename & Next book
+2251=Rename & Reopen
 
 # 옵션폼(2400)
 2400=Option
@@ -129,4 +136,4 @@ LANG=English
 2431=Browser for search
 2440=Use double click to maximize/minimize
 2441=Use click to changing prev/next page
-
+2442=Use extended renamer

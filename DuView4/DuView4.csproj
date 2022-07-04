@@ -74,6 +74,12 @@
     <Compile Include="ReadForm.Designer.cs">
       <DependentUpon>ReadForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="RenameExForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RenameExForm.Designer.cs">
+      <DependentUpon>RenameExForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="RenameForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,6 +104,9 @@
     </Compile>
     <EmbeddedResource Include="ReadForm.resx">
       <DependentUpon>ReadForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RenameExForm.resx">
+      <DependentUpon>RenameExForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RenameForm.resx">
       <DependentUpon>RenameForm.cs</DependentUpon>

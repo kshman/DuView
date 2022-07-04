@@ -194,6 +194,11 @@ namespace DuView
 			if (dlg.ShowDialog() == DialogResult.OK)
 				FirefoxRunText.Text = dlg.FileName;
 		}
+
+		private void ExtendedRenamerCheck_CheckedChanged(object sender, EventArgs e)
+		{
+			Settings.ExtendedRenamer = ExtendedRenamerCheck.Checked;
+		}
 		#endregion // 기본
 
 		private void UseDoubleClickStateCheck_CheckedChanged(object sender, EventArgs e)

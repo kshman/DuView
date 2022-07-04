@@ -783,12 +783,26 @@ namespace DuView
 			if (Book == null)
 				return;
 
-			var dlg = new RenameForm();
-			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
-				return;
+			string filename = null;
 
-			var filename = dlg.Filename;
-			if (Book.OnlyFileName.Equals(filename))
+			if (Settings.ExtendedRenamer)
+			{
+				var dlg = new RenameExForm();
+				if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+					return;
+
+				filename = dlg.Filename;
+			}
+			else
+			{
+				var dlg = new RenameForm();
+				if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+					return;
+
+				filename = dlg.Filename;
+			}
+
+			if (string.IsNullOrEmpty(filename) || Book.OnlyFileName.Equals(filename))
 				return;
 
 			// 설정에 다음 파일을 열면 다음 파일을 아니면 바뀐 이름 책을 열게함
