@@ -1,6 +1,6 @@
 
 # DuView
-DuView has English UI resources. But, no English manual yet. Sorry 😭
+DuView has English UI resources. But, no English documents yet. Sorry 😭
 
 This application is for reading a zipped book or stored images in folder as a book. Only used .NET6 WinForm. You can use freely whole resources as your wish.
 
@@ -12,11 +12,9 @@ This application is for reading a zipped book or stored images in folder as a bo
 *두부*가 아닙니다.... **두뷰**입니다. 😭
 아니 뭐 *두부*라고 해도 괜찮습니다. 무슨 차이가 있겠슴요
 
-꿀뷰3라는 쩌는 뷰어가 있는데도 만들어 본 것은, 딴거 안쓰고 윈폼 기능만 사용해서 만들 수 있을까...해서 시작해봤습니다. 그리고, 꿀뷰3에서 자꾸 INS 키가 눌려서 쓸데없이 저장된 파일이 너무 많아, 이 기능이 없는 뷰어가 필요했습니다. 🤣
+오픈소스 뷰어가 없는거 같아 만들어 봤습니다. 별 기능은 없구요. 22년 5월부터 닷넷6 폼 디자이너 오류로 작업에 애로 사항이 많아 4.8로 다운플랫폼했습니다.
 
-게다가, 꿀뷰3는 논오픈소스고, 다른 프리웨어/오픈소스 뷰어는 윈도우에서 한번 컴파일 하려면 진짜... 짜증납니다... 솔루션 파일 하나로 msdev로 빌드할 수 있는 그런 환경이 필요해서... 만들었습니다.
-
-이미지 형식은 윈폼에서 지원하는 거는 다 될겁니다. GIF는 현재 해볼라고 노력중이고, WEBP는 윈폼에서 지원하지 않아서 안됩니다.
+아직 GIF는 안됩니다. 윈폼에 관련 기능은 있는거 같은데...... 😥
 
 ## 지원 로캘
 * 한국말
@@ -51,14 +49,16 @@ This application is for reading a zipped book or stored images in folder as a bo
 |]|이름순 정렬 뒷 책|Browser Forward|
 |DEL|열려 있는 파일 삭제||
 |F2|열려 있는 파일 이름 바꾸기||
-|F11|외부 프로그램으로 열어보기||
-|F12|설정||
+|F9|외부 프로그램으로 열어보기||
+|F11|설정||
 |ESC|끝내기||
 
 ***한장 앞뒤로**(↑↓)와 **앞뒤 페이지로**(←→)의 차이점은 두쪽을 나란히 볼 때 동작이 다른데, 앞뒤 페이지는 두쪽을 함께 넘기고 한장 앞뒤로는 무조건 한쪽만 넘어갑니다. 가끔 페이지 숫자가 뒤틀린 책이 있어 있는 기능입니다*
 
 
 ## 설정
+***설정 기능**이 **갱신**되었는데 문서에 **추가가 안돼 있습니다***
+
 설정 기능이 들어갔습니다. 아직 별건 없고, 그냥 응용프로그램에서 흔히 볼 수 있는 기능입니다. 마우스 쪽에 어떤 분들은 잘 안쓰는 클릭으로 페이지 변경 켬/끔을 넣어서 이건 쓸만하겠네요
 
 ![image](https://user-images.githubusercontent.com/7216647/151709401-facc531f-2f19-457c-a1f1-f8e5a681c976.png)
