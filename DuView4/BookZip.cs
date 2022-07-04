@@ -227,6 +227,40 @@ namespace DuView
 			}
 		}
 
+		public override bool MoveFile(string newfilename)
+		{
+			if (FileName.Equals(newfilename))
+				return false;
+
+			if (File.Exists(newfilename))
+				return false;
+
+			if (_zip!=null)
+			{
+				_zip.Dispose();
+				_zip = null;
+			}
+
+			try
+			{
+				try
+				{
+					Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(FileName, newfilename);
+				}
+				catch
+				{
+					var fi = new FileInfo(FileName);
+					fi.MoveTo(newfilename);
+				}
+
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		// end of class
 	}
 }

@@ -54,6 +54,12 @@
     <Compile Include="BookBase.cs" />
     <Compile Include="BookFolder.cs" />
     <Compile Include="BookZip.cs" />
+    <Compile Include="MoveForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MoveForm.Designer.cs">
+      <DependentUpon>MoveForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="OptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,6 +96,9 @@
     <Compile Include="Settings.cs" />
     <Compile Include="ToolBox.cs" />
     <Compile Include="Types.cs" />
+    <EmbeddedResource Include="MoveForm.resx">
+      <DependentUpon>MoveForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="OptionForm.resx">
       <DependentUpon>OptionForm.cs</DependentUpon>
     </EmbeddedResource>

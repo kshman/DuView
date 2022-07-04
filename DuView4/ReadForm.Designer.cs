@@ -61,6 +61,7 @@
 			this.FileCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.FileRenameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.FileMoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileCopyImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.FileDeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -186,7 +187,7 @@
 			this.MenuStrip.Location = new System.Drawing.Point(3, 3);
 			this.MenuStrip.Name = "MenuStrip";
 			this.MenuStrip.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-			this.MenuStrip.Size = new System.Drawing.Size(243, 24);
+			this.MenuStrip.Size = new System.Drawing.Size(363, 24);
 			this.MenuStrip.TabIndex = 1;
 			this.MenuStrip.Text = Du.Globalization.Locale.Text(95);
 			// 
@@ -376,6 +377,7 @@
 			this.FileCloseMenuItem,
 			this.toolStripSeparator2,
 			this.FileRenameMenuItem,
+			this.FileMoveMenuItem,
 			this.FileCopyImageMenuItem,
 			this.toolStripSeparator3,
 			this.FileDeleteMenuItem,
@@ -438,6 +440,15 @@
 			this.FileRenameMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.FileRenameMenuItem.Text = Du.Globalization.Locale.Text(1310);
 			this.FileRenameMenuItem.Click += new System.EventHandler(this.FileRenameMenuItem_Click);
+			// 
+			// FileMoveMenuItem
+			// 
+			this.FileMoveMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileMoveMenuItem.Name = "FileMoveMenuItem";
+			this.FileMoveMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
+			this.FileMoveMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileMoveMenuItem.Text = Du.Globalization.Locale.Text(1311);
+			this.FileMoveMenuItem.Click += new System.EventHandler(this.FileMoveMenuItem_Click);
 			// 
 			// FileCopyImageMenuItem
 			// 
@@ -946,5 +957,7 @@
 		private System.Windows.Forms.ToolStripMenuItem FileOpenExternalMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem FileRenameMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem RenamePopupItem;
+		private System.Windows.Forms.ToolStripMenuItem FileMoveMenuItem;
 	}
 }
+

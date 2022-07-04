@@ -468,6 +468,11 @@ namespace DuView
 			RenameBook();
 		}
 
+		private void FileMoveMenuItem_Click(object sender, EventArgs e)
+		{
+			MoveBook();
+		}
+
 		private void FileCopyImageMenuItem_Click(object sender, EventArgs e)
 		{
 			try
@@ -820,6 +825,36 @@ namespace DuView
 			CloseBook();
 
 			OpenBook(nextfilename ?? fullpath);
+		}
+
+		private void MoveBook()
+		{
+			if (Book == null)
+				return;
+
+			var dlg = new MoveForm();
+			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+				return;
+
+			var filename = dlg.Filename;
+			var nextfilename = Book.FindNextFileAny(Types.BookDirection.Next);
+
+			//
+			if (!Book.MoveFile(filename))
+			{
+				ShowNotification(128, 129, true, 3000);
+				return;
+			}
+
+			CloseBook();
+
+			if (string.IsNullOrEmpty(nextfilename))
+				ShowNotification(106, 110);
+			else
+			{
+				_book_direction = Types.BookDirection.Next;
+				OpenBook(nextfilename);
+			}
 		}
 		#endregion
 

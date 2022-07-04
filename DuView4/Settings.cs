@@ -27,6 +27,8 @@ namespace DuView
 		private static ResizableLineDb s_recently;
 		private static int s_max_recently = 1000;
 
+		private static string[] s_move_keeper = new string[10];
+
 		// -- 뷰
 		private static bool s_view_zoom = true;
 		private static Types.ViewMode s_view_mode = Types.ViewMode.FitWidth;
@@ -106,6 +108,13 @@ namespace DuView
 						s_last_filename = v;
 
 					s_max_recently = rk.GetInt("MaxRecently", s_max_recently);
+
+					for (var i = 0; i < 10; i++)
+					{
+						v = rk.GetDecodingString($"MoveKeep{i}");
+						if (!string.IsNullOrEmpty(v))
+							s_move_keeper[i] = v;
+					}
 
 					//
 					s_view_zoom = rk.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
@@ -274,6 +283,29 @@ namespace DuView
 					using (var rk = new RegKey(c_keyname, true))
 						rk.SetEncodingString("LastFileName", value);
 				}
+			}
+		}
+
+		//
+		public static string GetMoveKeep(int index)
+		{
+			if (index < s_move_keeper.Length)
+				return s_move_keeper[index];
+			return null;
+		}
+
+		//
+		public static void SetMoveKeep(int index, string value)
+		{
+			if (index >= s_move_keeper.Length)
+				return;
+
+			if (!value.Equals(s_move_keeper[index]))
+			{
+				s_move_keeper[index] = value;
+
+				using (var rk = new RegKey(c_keyname, true))
+					rk.SetEncodingString($"MoveKeep{index}", value);
 			}
 		}
 
@@ -613,7 +645,7 @@ namespace DuView
 			get => s_extened_renamer;
 			set
 			{
-				if (value!=s_extened_renamer)
+				if (value != s_extened_renamer)
 				{
 					s_extened_renamer = value;
 

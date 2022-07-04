@@ -118,6 +118,12 @@ namespace DuView
 			}
 		}
 
+		public override bool MoveFile(string newfilename)
+		{
+			// 아직 지원 안함
+			return false;
+		}
+
 		public override IEnumerable<Types.BookEntryInfo> GetEntriesInfo()
 		{
 			var r = new Types.BookEntryInfo[_entries.Count];
