@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using Du.Data;
@@ -9,6 +10,24 @@ namespace DuView
 {
 	public static class ToolBox
 	{
+		// 알 수 있는 로캘 얻기
+		public static string GetKnownCultureLocale(CultureInfo culture)
+		{
+			var name = culture.Name;
+			string locale;
+
+			if (name.StartsWith("ko"))
+				locale = "ko";
+			else if (name.StartsWith("sh"))         // 세인트 헬러나
+				locale = "sh";
+			else if (name.StartsWith("kim"))        // 이런 나라 없다
+				locale = "kim";
+			else
+				locale = "en";
+
+			return locale;
+		}
+
 		// 열 수 있는 이미지
 		public static bool IsValidImageFile(string extension)
 		{
@@ -24,6 +43,22 @@ namespace DuView
 				default:
 					return false;
 			}
+		}
+
+		// 움직이나?
+		public static bool IsAnimatedImageFile(string filename, bool isextension = true)
+		{
+			string extension;
+
+			if (isextension)
+				extension = filename;
+			else
+			{
+				var n = filename.LastIndexOf('.');
+				extension = filename.Substring(n);
+			}
+
+			return extension == ".gif";
 		}
 
 		// 아카이브?

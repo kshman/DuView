@@ -49,6 +49,13 @@ namespace DuView
 		}
 
 		//
+		public enum BookDirection
+		{
+			Previous,
+			Next,
+		}
+
+		//
 		public struct BookEntryInfo
 		{
 			public string Name { get; set; }

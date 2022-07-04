@@ -17,8 +17,16 @@ namespace DuView
 
 		private readonly BadakFormWorker _bfw;
 		private readonly PageSelectForm _select;
+		private readonly OptionForm _option;
 
 		private readonly Rectangle[] _click_bound = new Rectangle[2];
+
+		private System.Windows.Forms.Timer _notify_timer;
+
+		private string _exrun_filename;
+		private FormWindowState _exrun_windowstate;
+
+		private Types.BookDirection _book_direction = Types.BookDirection.Next;
 
 		#region 만들기
 		public ReadForm(string filename)
@@ -39,6 +47,10 @@ namespace DuView
 				MoveTopToMaximize = false,
 			};
 			_select = new PageSelectForm();
+			_option = new OptionForm();
+
+			_notify_timer = new Timer() { Interval = 5000 };
+			_notify_timer.Tick += NotifyTimerTick;
 		}
 		#endregion
 
@@ -94,20 +106,11 @@ namespace DuView
 			else
 			{
 				// 윈도우포스
-				FormDu.MagneticDockForm(ref m, this, Settings.MagneticDockSize);
+				if (Settings.GeneralUseMagnetic)
+					FormDu.MagneticDockForm(ref m, this, Settings.MagneticDockSize);
 
 				// 후....
 				base.WndProc(ref m);
-			}
-		}
-
-		public override string Text
-		{
-			get => base.Text;
-			set
-			{
-				base.Text = value;
-				TitleLabel.Text = value;
 			}
 		}
 
@@ -154,7 +157,8 @@ namespace DuView
 			{
 				// 끝
 				case Keys.Escape:
-					Close();
+					if (Settings.GeneralEscExit)
+						Close();
 					break;
 
 				case Keys.W:
@@ -303,7 +307,8 @@ namespace DuView
 					if (Book != null)
 					{
 						// 책이 있음 최대화
-						_bfw.Maximize();
+						if (Settings.MouseUseDoubleClickState)
+							_bfw.Maximize();
 					}
 					else
 					{
@@ -356,6 +361,8 @@ namespace DuView
 			UpdateViewZoom(Settings.ViewZoom);
 			UpdateViewMode(Settings.ViewMode);
 			UpdateViewQuality(Settings.ViewQuality);
+
+			TopMost = Settings.GeneralAlwaysTop;
 		}
 
 		private void UpdateViewZoom(bool zoom, bool redraw = true)
@@ -446,9 +453,19 @@ namespace DuView
 			OpenBook(Settings.LastFileName);
 		}
 
+		private void FileOpenExternalMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenExternalRun();
+		}
+
 		private void FileCloseMenuItem_Click(object sender, EventArgs e)
 		{
 			CloseBook();
+		}
+
+		private void FileRenameMenuItem_Click(object sender, EventArgs e)
+		{
+			RenameBook();
 		}
 
 		private void FileCopyImageMenuItem_Click(object sender, EventArgs e)
@@ -458,17 +475,39 @@ namespace DuView
 				if (Book != null && Book.PageLeft != null)
 				{
 					Clipboard.SetImage(Book.PageLeft);
-					Notifier.ShowBalloonTip(1000, Locale.Text(101), Locale.Text(102), ToolTipIcon.Info);
+					ShowNotification(101, 102);
 				}
 			}
 			catch
 			{
-				Notifier.ShowBalloonTip(1000, Locale.Text(101), Locale.Text(102), ToolTipIcon.Error);
+				ShowNotification(101, 102, true);
 			}
 		}
 
 		private void FileRefreshMenuItem_Click(object sender, EventArgs e)
 		{
+#if DEBUG
+			if (Book != null)
+			{
+				Book.PrepareImages();
+				DrawBook();
+			}
+			else
+			{
+				ShowNotification("타이틀 안씀", "이 것은 알림 메시지 테스트!");
+			}
+#else
+		Book?.PrepareImages();
+		DrawBook();
+#endif
+		}
+
+		private void FileOptionMenuItem_Click(object sender, EventArgs e)
+		{
+			TopMost = false;
+			_option.ShowDialog(this, 0);
+			TopMost = Settings.GeneralAlwaysTop;
+
 			Book?.PrepareImages();
 			DrawBook();
 		}
@@ -569,12 +608,17 @@ namespace DuView
 				bk.CurrentPage = page;
 				bk.PrepareImages();
 
-				Text = bk.OnlyFileName;
+				TitleLabel.Text = bk.OnlyFileName;
 				Settings.LastFileName = filename;
 
 				DrawBook();
 
 				_select.SetBook(bk);
+			}
+			else
+			{
+				// 책없나
+				ShowNotification(106, 117, true);
 			}
 
 			ResetFocus();
@@ -599,7 +643,7 @@ namespace DuView
 			if (bk == null)
 			{
 				// 아카이브가 뭔가 잘못됨
-				Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(107), ToolTipIcon.Error);
+				ShowNotification(106, 107, true);
 			}
 
 			return bk;
@@ -614,8 +658,8 @@ namespace DuView
 
 			if (bk == null)
 			{
-				// 아카이브가 뭔가 잘못됨
-				Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(108), ToolTipIcon.Error);
+				// 디렉토리가 뭔가 잘못됨
+				ShowNotification(106, 108, true);
 			}
 
 			return bk;
@@ -627,13 +671,14 @@ namespace DuView
 			if (Book == null)
 				return;
 
-			var filename = Book.FindNextFile(true);
+			var filename = Book.FindNextFile(Types.BookDirection.Previous);
 			if (filename == null)
 			{
-				Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(109), ToolTipIcon.Info);
+				ShowNotification(106, 109);
 				return;
 			}
 
+			_book_direction = Types.BookDirection.Previous;
 			OpenBook(filename);
 		}
 
@@ -643,13 +688,14 @@ namespace DuView
 			if (Book == null)
 				return;
 
-			var filename = Book.FindNextFile(false);
+			var filename = Book.FindNextFile(Types.BookDirection.Next);
 			if (filename == null)
 			{
-				Notifier.ShowBalloonTip(1000, Locale.Text(106), Locale.Text(110), ToolTipIcon.Info);
+				ShowNotification(106, 110);
 				return;
 			}
 
+			_book_direction = Types.BookDirection.Next;
 			OpenBook(filename);
 		}
 
@@ -668,11 +714,12 @@ namespace DuView
 					return;
 			}
 
-			var nextfilename = Book.FindNextFile(false) ?? Book.FindNextFile(true);
+			var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
+			var nextfilename = Book.FindNextFileAny(dir);
 
 			if (!Book.DeleteFile(out var closebook))
 			{
-				MessageBox.Show(this, Locale.Text(115), Locale.Text(114), MessageBoxButtons.OK, MessageBoxIcon.Error);
+				ShowNotification(114, 115, true, 3000);
 				return;
 			}
 
@@ -693,6 +740,73 @@ namespace DuView
 				DrawBook();
 			}
 		}
+
+		private void OpenExternalRun()
+		{
+			if (string.IsNullOrEmpty(Settings.ExternalRun) || !File.Exists(Settings.ExternalRun))
+			{
+				ShowNotification(2429, 121);
+				return;
+			}
+
+			if (Book != null)
+			{
+				_exrun_filename = Book.FileName;
+				_exrun_windowstate = WindowState;
+
+				WindowState = FormWindowState.Minimized;
+				CloseBook();
+
+				var ps = new System.Diagnostics.Process();
+				ps.StartInfo.FileName = Settings.ExternalRun;
+				ps.StartInfo.Arguments = _exrun_filename;
+				ps.StartInfo.UseShellExecute = false;
+				ps.StartInfo.CreateNoWindow = true;
+				ps.EnableRaisingEvents = true;
+				ps.Exited += (s, e) => ExternalRun_Exited();
+				ps.Start();
+			}
+		}
+
+		private void ExternalRun_Exited()
+		{
+			Invoke(new Action(() =>
+			{
+				if (Settings.ReloadAfterExternal && !string.IsNullOrEmpty(_exrun_filename))
+					OpenBook(_exrun_filename);
+				WindowState = _exrun_windowstate;
+			}));
+		}
+
+		private void RenameBook()
+		{
+			if (Book == null)
+				return;
+
+			var dlg = new RenameForm();
+			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+				return;
+
+			var filename = dlg.Filename;
+			if (Book.OnlyFileName.Equals(filename))
+				return;
+
+			// 설정에 다음 파일을 열면 다음 파일을 아니면 바뀐 이름 책을 열게함
+			var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
+			var nextfilename = Settings.RenameOpenNext ? Book.FindNextFileAny(dir) : null;
+
+			// 시작
+			if (!Book.RenameFile(filename, out var fullpath))
+			{
+				ShowNotification(122, 123, true, 3000);
+				return;
+			}
+
+			Book.CurrentPage = 0;
+			CloseBook();
+
+			OpenBook(nextfilename ?? fullpath);
+		}
 		#endregion
 
 		#region 그리기
@@ -710,9 +824,26 @@ namespace DuView
 			}
 		}
 
+		//
+		private static void OnAnimateFrameChanged(object sender, EventArgs e)
+		{
+			//_self?.InternalAnimateFrame();
+		}
+
+		//
+		private void InternalAnimateFrame()
+		{
+
+		}
+
 		// 가로로 차게 이미지 그리기
 		private static void DrawBitmapFitWidth(Graphics g, Image bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
 		{
+			if (img.Tag is string entryname && ToolBox.IsAnimatedImageFile(entryname, false))
+			{
+				//ImageAnimator.Animate(img, OnAnimateFrameChanged);
+			}
+
 			(int nw, int nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
 			var rt = ToolBox.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
 
@@ -766,7 +897,7 @@ namespace DuView
 
 			if (w == 0 || h == 0)
 			{
-				Notifier.ShowBalloonTip(1000, Locale.Text(111), Locale.Text(112), ToolTipIcon.Error);
+				ShowNotification(111, 112, true);
 				return;
 			}
 
@@ -938,5 +1069,47 @@ namespace DuView
 			}
 		}
 		#endregion
+
+		#region 도움
+		private void ShowNotification(string title, string mesg, bool iserror = false, int timeout = 2000)
+		{
+			if (Settings.GeneralUseWinNotify)
+				Notifier.ShowBalloonTip(timeout, title, mesg, iserror ? ToolTipIcon.Error : ToolTipIcon.Info);
+			else
+			{
+				if (!NotifyLabel.Visible)
+				{
+					// 보이게 함
+					NotifyLabel.Location = new Point(NotifyLabel.Location.X, (BookCanvas.Height - NotifyLabel.Height) / 2);
+
+					NotifyLabel.Text = mesg;
+					ControlDu.EffectFadeIn(NotifyLabel);
+
+					_notify_timer.Interval = timeout;
+					_notify_timer.Start();
+				}
+				else
+				{
+					// 있는거 메시지 바꿈
+					NotifyLabel.Text = mesg;
+
+					_notify_timer.Stop();
+					_notify_timer.Interval = timeout;
+					_notify_timer.Start();
+				}
+			}
+		}
+
+		private void ShowNotification(int title, int mesg, bool iserror = false, int timeout = 2000)
+		{
+			ShowNotification(Locale.Text(title), Locale.Text(mesg), iserror, timeout);
+		}
+
+		private void NotifyTimerTick(object sender, EventArgs e)
+		{
+			_notify_timer.Stop();
+			ControlDu.EffectFadeOut(NotifyLabel);
+		}
+		#endregion // 도움
 	}
 }

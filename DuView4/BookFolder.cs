@@ -86,6 +86,38 @@ namespace DuView
 			}
 		}
 
+		public override bool RenameFile(string newfilename, out string fullpath)
+		{
+			var di = new DirectoryInfo(FileName);
+			if (di.Parent == null)
+			{
+				fullpath = string.Empty;
+				return false;
+			}
+
+			fullpath = Path.Combine(di.Parent.FullName, newfilename);
+			if (Directory.Exists(fullpath))
+				return false;
+
+			try
+			{
+				try
+				{
+					Microsoft.VisualBasic.FileIO.FileSystem.RenameDirectory(FileName, newfilename);
+				}
+				catch
+				{
+					di.MoveTo(fullpath);
+				}
+
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		public override IEnumerable<Types.BookEntryInfo> GetEntriesInfo()
 		{
 			var r = new Types.BookEntryInfo[_entries.Count];
@@ -115,7 +147,7 @@ namespace DuView
 			}
 		}
 
-		public override string FindNextFile(bool no_i_want_prev_file)
+		public override string FindNextFile(Types.BookDirection direction)
 		{
 			var si = new DirectoryInfo(FileName);
 			if (!si.Exists)
@@ -129,7 +161,7 @@ namespace DuView
 			Array.Sort(drs, new ToolBox.DirectoryInfoComparer());
 
 			var at = Array.FindIndex(drs, x => x.FullName == FileName);
-			var want = no_i_want_prev_file ? at - 1 : at + 1;
+			var want = direction == Types.BookDirection.Previous ? at - 1 : at + 1;
 
 			if (want < 0)
 				return null;

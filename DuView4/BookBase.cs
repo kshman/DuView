@@ -35,14 +35,9 @@ namespace DuView
 		protected abstract Stream OpenStream(object entry);
 		protected abstract string GetEntryName(object entry);
 		public abstract IEnumerable<Types.BookEntryInfo> GetEntriesInfo();
-
-		public virtual bool CanDeleteFile(out string reason)
-		{
-			reason = string.Empty;
-			return true;
-		}
-
+		public virtual bool CanDeleteFile(out string reason) { reason = string.Empty; return true; }
 		public abstract bool DeleteFile(out bool closebook);
+		public abstract bool RenameFile(string newfilename, out string fullpath);
 
 		//
 		protected void SetFileName(FileInfo fi)
@@ -85,7 +80,7 @@ namespace DuView
 
 			var size = img.Width * img.Height * bpp;
 
-			if ((CacheSize + size) > Settings.MaxCacheSize && _cache.Count > 0)
+			if ((CacheSize + size) > Settings.MaxActualPageCache && _cache.Count > 0)
 			{
 				var first = _cache.ElementAt(0);
 				var fsize = first.Value.Width * first.Value.Height * bpp;
@@ -274,9 +269,31 @@ namespace DuView
 		}
 
 		//
-		public virtual string FindNextFile(bool no_i_want_prev_file)
+		public abstract string FindNextFile(Types.BookDirection direction);
+
+		//
+		public string FindNextFileAny(Types.BookDirection first_direction)
 		{
-			return null;
+			string filename;
+
+			if (first_direction == Types.BookDirection.Next)
+			{
+				filename =
+				  FindNextFile(Types.BookDirection.Next) ??
+				  FindNextFile(Types.BookDirection.Previous) ??
+				  null;
+			}
+			else if (first_direction == Types.BookDirection.Previous)
+			{
+				filename =
+				  FindNextFile(Types.BookDirection.Previous) ??
+				  FindNextFile(Types.BookDirection.Next) ??
+				  null;
+			}
+			else
+				filename = null;
+
+			return filename;
 		}
 
 		//
@@ -289,3 +306,6 @@ namespace DuView
 		}
 	}
 }
+
+// 하면 좋은거
+// 메타데이터: https://docs.microsoft.com/ko-kr/dotnet/desktop/winforms/advanced/how-to-read-image-metadata?view=netframeworkdesktop-4.8

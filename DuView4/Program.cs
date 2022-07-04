@@ -16,10 +16,12 @@ namespace DuView
 			var args = Environment.GetCommandLineArgs();
 			var filename = args.Length > 1 ? args[1] : string.Empty;
 
-			if (HasProductProcess(filename))
+			Settings.WhenBeforeStart();
+
+			if (Settings.GeneralRunOnce && HasProductProcess(filename))
 				return;
 
-			Settings.WhenStart();
+			Settings.WhenAfterStart();
 			Settings.InitLocale();
 
 			Application.EnableVisualStyles();
@@ -52,3 +54,8 @@ namespace DuView
 		}
 	}
 }
+
+// 폼데이터 일괄 변환
+// Text = "\{(\d{4})\}";
+// Text = "\{(\d{1,4})\}";
+// Text = Du.Globalization.Locale.Text($1);
