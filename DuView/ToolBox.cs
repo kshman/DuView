@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.Windows.Forms;
 using InterpolationMode = System.Drawing.Drawing2D.InterpolationMode;
 
 namespace DuView;
@@ -189,6 +191,62 @@ public static class ToolBox
 		public int Compare(DirectoryInfo? x, DirectoryInfo? y)
 		{
 			return StringAsNumericComparer.StringAsNumericCompare(x?.FullName, y?.FullName);
+		}
+	}
+
+	//
+	public static void GlobalizationLocaleText(Control container)
+	{
+		foreach (Control c in container.Controls)
+		{
+			Debug.WriteLine($"{c.Name}");
+
+			if (c is Label l)
+				l.Text = Locale.TextAsInt(l.Text);
+			else if (c is ButtonBase b)
+				b.Text = Locale.TextAsInt(b.Text);
+			else if (c is TextBoxBase t)
+				t.Text = Locale.TextAsInt(t.Text);
+			else if (c is TabPage p)
+				p.Text = Locale.TextAsInt(p.Text);
+			else if (c is ToolStrip i)
+			{
+				i.Text = Locale.TextAsInt(i.Text);
+				GlobalizationLocaleText(i.Items);
+			}
+			else if (c is MenuStrip m)
+			{
+				m.Text = Locale.TextAsInt(m.Text);
+				GlobalizationLocaleText(m.Items);
+			}
+			else if (c is ListView v)
+			{
+				foreach (ColumnHeader h in v.Columns)
+					h.Text = Locale.TextAsInt(h.Text);
+			}
+
+			if (c.ContextMenuStrip != null)
+			{
+				GlobalizationLocaleText(c.ContextMenuStrip);
+				GlobalizationLocaleText(c.ContextMenuStrip.Items);
+			}
+
+			if (c.HasChildren)
+				GlobalizationLocaleText(c);
+		}
+	}
+
+	//
+	public static void GlobalizationLocaleText(ToolStripItemCollection collection)
+	{
+		foreach (var c in collection)
+		{
+			if (c is ToolStripDropDownItem s)
+			{
+				s.Text = Locale.TextAsInt(s.Text);
+				if (s.DropDownItems.Count > 0)
+					GlobalizationLocaleText(s.DropDownItems);
+			}
 		}
 	}
 }

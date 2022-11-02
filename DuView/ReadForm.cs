@@ -60,6 +60,9 @@ public partial class ReadForm : Form
 		//
 		if (!string.IsNullOrEmpty(_init_filename))
 			OpenBook(_init_filename);
+
+		//
+		ToolBox.GlobalizationLocaleText(this);
 	}
 
 	private void ReadForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -786,12 +789,26 @@ public partial class ReadForm : Form
 		if (Book == null)
 			return;
 
-		var dlg = new RenameForm();
-		if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
-			return;
+		string? filename = null;
 
-		var filename = dlg.Filename;
-		if (Book.OnlyFileName.Equals(filename))
+		if (Settings.ExtendedRenamer)
+		{
+			var dlg = new RenexForm();
+			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+				return;
+
+			filename = dlg.Filename;
+		}
+		else
+		{
+			var dlg = new RenameForm();
+			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+				return;
+
+			filename = dlg.Filename;
+		}
+
+		if (string.IsNullOrEmpty(filename) || Book.OnlyFileName.Equals(filename))
 			return;
 
 		// 설정에 다음 파일을 열면 다음 파일을 아니면 바뀐 이름 책을 열게함
@@ -1073,30 +1090,25 @@ public partial class ReadForm : Form
 	#region 도움
 	private void ShowNotification(string title, string mesg, bool iserror = false, int timeout = 2000)
 	{
-		if (Settings.GeneralUseWinNotify)
-			Notifier.ShowBalloonTip(timeout, title, mesg, iserror ? ToolTipIcon.Error : ToolTipIcon.Info);
+		if (!NotifyLabel.Visible)
+		{
+			// 보이게 함
+			NotifyLabel.Location = new Point(NotifyLabel.Location.X, (BookCanvas.Height - NotifyLabel.Height) / 2);
+
+			NotifyLabel.Text = mesg;
+			ControlDu.EffectFadeIn(NotifyLabel);
+
+			_notify_timer.Interval = timeout;
+			_notify_timer.Start();
+		}
 		else
 		{
-			if (!NotifyLabel.Visible)
-			{
-				// 보이게 함
-				NotifyLabel.Location = new Point(NotifyLabel.Location.X, (BookCanvas.Height - NotifyLabel.Height) / 2);
+			// 있는거 메시지 바꿈
+			NotifyLabel.Text = mesg;
 
-				NotifyLabel.Text = mesg;
-				ControlDu.EffectFadeIn(NotifyLabel);
-
-				_notify_timer.Interval = timeout;
-				_notify_timer.Start();
-			}
-			else
-			{
-				// 있는거 메시지 바꿈
-				NotifyLabel.Text = mesg;
-
-				_notify_timer.Stop();
-				_notify_timer.Interval = timeout;
-				_notify_timer.Start();
-			}
+			_notify_timer.Stop();
+			_notify_timer.Interval = timeout;
+			_notify_timer.Start();
 		}
 	}
 

@@ -41,28 +41,28 @@
 			// PageInfoLabel
 			// 
 			this.PageInfoLabel.AutoSize = true;
-			this.PageInfoLabel.Font = new System.Drawing.Font("Malgun Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.PageInfoLabel.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.PageInfoLabel.ForeColor = System.Drawing.Color.White;
 			this.PageInfoLabel.Location = new System.Drawing.Point(4, 4);
 			this.PageInfoLabel.Name = "PageInfoLabel";
-			this.PageInfoLabel.Size = new System.Drawing.Size(76, 30);
+			this.PageInfoLabel.Size = new System.Drawing.Size(73, 30);
 			this.PageInfoLabel.TabIndex = 1;
-			this.PageInfoLabel.Text = Locale.Text(2221);
+			this.PageInfoLabel.Text = "2221";
 			this.PageInfoLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseDown);
 			this.PageInfoLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseMove);
 			this.PageInfoLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PageSelectForm_MouseUp);
 			// 
 			// PageList
 			// 
-			this.PageList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.PageList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.PageList.AutoArrange = false;
 			this.PageList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.PageList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.PlFileNameColumn,
-            this.PlDateColumn,
-            this.PlSizeColumn});
+			this.PlFileNameColumn,
+			this.PlDateColumn,
+			this.PlSizeColumn});
 			this.PageList.FullRowSelect = true;
 			this.PageList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.PageList.Location = new System.Drawing.Point(12, 45);
@@ -78,17 +78,17 @@
 			// 
 			// PlFileNameColumn
 			// 
-			this.PlFileNameColumn.Text = Locale.Text(2222);
+			this.PlFileNameColumn.Text = "2222";
 			this.PlFileNameColumn.Width = 76;
 			// 
 			// PlDateColumn
 			// 
-			this.PlDateColumn.Text = Locale.Text(2223);
+			this.PlDateColumn.Text = "2223";
 			this.PlDateColumn.Width = 150;
 			// 
 			// PlSizeColumn
 			// 
-			this.PlSizeColumn.Text = Locale.Text(2224);
+			this.PlSizeColumn.Text = "2224";
 			this.PlSizeColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.PlSizeColumn.Width = 75;
 			// 
@@ -103,7 +103,7 @@
 			this.DoOkButton.Name = "DoOkButton";
 			this.DoOkButton.Size = new System.Drawing.Size(220, 45);
 			this.DoOkButton.TabIndex = 3;
-			this.DoOkButton.Text = Locale.Text(97);
+			this.DoOkButton.Text = "97";
 			this.DoOkButton.UseVisualStyleBackColor = true;
 			this.DoOkButton.Click += new System.EventHandler(this.DoOkButton_Click);
 			// 
@@ -117,7 +117,7 @@
 			this.DoCancelButton.Name = "DoCancelButton";
 			this.DoCancelButton.Size = new System.Drawing.Size(69, 45);
 			this.DoCancelButton.TabIndex = 4;
-			this.DoCancelButton.Text = Locale.Text(98);
+			this.DoCancelButton.Text = "98";
 			this.DoCancelButton.UseVisualStyleBackColor = true;
 			// 
 			// SystemButton
@@ -134,6 +134,7 @@
 			this.SystemButton.ShowMinimize = true;
 			this.SystemButton.Size = new System.Drawing.Size(150, 30);
 			this.SystemButton.TabIndex = 5;
+			this.SystemButton.TabStop = false;
 			// 
 			// PageSelectForm
 			// 
@@ -155,7 +156,7 @@
 			this.MinimizeBox = false;
 			this.Name = "PageSelectForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = Locale.Text(2220);
+			this.Text = "2220";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PageSelectForm_FormClosing);
 			this.Load += new System.EventHandler(this.PageSelectForm_Load);
 			this.Shown += new System.EventHandler(this.PageSelectForm_Shown);

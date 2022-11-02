@@ -44,13 +44,13 @@
 			// TitleLabel
 			// 
 			this.TitleLabel.AutoSize = true;
-			this.TitleLabel.Font = new System.Drawing.Font("Malgun Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.TitleLabel.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.TitleLabel.ForeColor = System.Drawing.Color.White;
 			this.TitleLabel.Location = new System.Drawing.Point(4, 4);
 			this.TitleLabel.Name = "TitleLabel";
 			this.TitleLabel.Size = new System.Drawing.Size(73, 30);
 			this.TitleLabel.TabIndex = 1;
-			this.TitleLabel.Text = Locale.Text(2240);
+			this.TitleLabel.Text = "2240";
 			// 
 			// DoOkButton
 			// 
@@ -63,7 +63,7 @@
 			this.DoOkButton.Name = "DoOkButton";
 			this.DoOkButton.Size = new System.Drawing.Size(220, 45);
 			this.DoOkButton.TabIndex = 3;
-			this.DoOkButton.Text = Locale.Text(97);
+			this.DoOkButton.Text = "97";
 			this.DoOkButton.UseVisualStyleBackColor = true;
 			this.DoOkButton.Click += new System.EventHandler(this.DoOkButton_Click);
 			// 
@@ -78,7 +78,7 @@
 			this.DoCancelButton.Name = "DoCancelButton";
 			this.DoCancelButton.Size = new System.Drawing.Size(69, 45);
 			this.DoCancelButton.TabIndex = 4;
-			this.DoCancelButton.Text = Locale.Text(98);
+			this.DoCancelButton.Text = "98";
 			this.DoCancelButton.UseVisualStyleBackColor = true;
 			// 
 			// SystemButton
@@ -105,7 +105,7 @@
 			this.RenameLabel.Name = "RenameLabel";
 			this.RenameLabel.Size = new System.Drawing.Size(93, 30);
 			this.RenameLabel.TabIndex = 6;
-			this.RenameLabel.Text = Locale.Text(2242);
+			this.RenameLabel.Text = "2242";
 			this.RenameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// CurrentLabel
@@ -115,14 +115,14 @@
 			this.CurrentLabel.Name = "CurrentLabel";
 			this.CurrentLabel.Size = new System.Drawing.Size(93, 30);
 			this.CurrentLabel.TabIndex = 7;
-			this.CurrentLabel.Text = Locale.Text(2241);
+			this.CurrentLabel.Text = "2241";
 			this.CurrentLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// RenameText
 			// 
 			this.RenameText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.RenameText.Font = new System.Drawing.Font("Malgun Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.RenameText.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.RenameText.Location = new System.Drawing.Point(134, 78);
 			this.RenameText.Name = "RenameText";
 			this.RenameText.Size = new System.Drawing.Size(454, 35);
@@ -133,7 +133,7 @@
 			this.CurrentText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.CurrentText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.CurrentText.Font = new System.Drawing.Font("Malgun Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.CurrentText.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.CurrentText.ForeColor = System.Drawing.Color.White;
 			this.CurrentText.Location = new System.Drawing.Point(134, 39);
 			this.CurrentText.Name = "CurrentText";
@@ -148,7 +148,7 @@
 			this.RenameAfterLabel.Name = "RenameAfterLabel";
 			this.RenameAfterLabel.Size = new System.Drawing.Size(93, 30);
 			this.RenameAfterLabel.TabIndex = 10;
-			this.RenameAfterLabel.Text = Locale.Text(2243);
+			this.RenameAfterLabel.Text = "2243";
 			this.RenameAfterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// OpenNextRadio
@@ -157,10 +157,10 @@
 			this.OpenNextRadio.ForeColor = System.Drawing.Color.White;
 			this.OpenNextRadio.Location = new System.Drawing.Point(134, 130);
 			this.OpenNextRadio.Name = "OpenNextRadio";
-			this.OpenNextRadio.Size = new System.Drawing.Size(57, 19);
+			this.OpenNextRadio.Size = new System.Drawing.Size(61, 19);
 			this.OpenNextRadio.TabIndex = 11;
 			this.OpenNextRadio.TabStop = true;
-			this.OpenNextRadio.Text = Locale.Text(2244);
+			this.OpenNextRadio.Text = "2244";
 			this.OpenNextRadio.UseVisualStyleBackColor = true;
 			this.OpenNextRadio.CheckedChanged += new System.EventHandler(this.OpenNextRadio_CheckedChanged);
 			// 
@@ -170,10 +170,10 @@
 			this.OpenAgainRadio.ForeColor = System.Drawing.Color.White;
 			this.OpenAgainRadio.Location = new System.Drawing.Point(280, 130);
 			this.OpenAgainRadio.Name = "OpenAgainRadio";
-			this.OpenAgainRadio.Size = new System.Drawing.Size(57, 19);
+			this.OpenAgainRadio.Size = new System.Drawing.Size(61, 19);
 			this.OpenAgainRadio.TabIndex = 12;
 			this.OpenAgainRadio.TabStop = true;
-			this.OpenAgainRadio.Text = Locale.Text(2245);
+			this.OpenAgainRadio.Text = "2245";
 			this.OpenAgainRadio.UseVisualStyleBackColor = true;
 			this.OpenAgainRadio.CheckedChanged += new System.EventHandler(this.OpenAgainRadio_CheckedChanged);
 			// 
@@ -205,7 +205,7 @@
 			this.MinimumSize = new System.Drawing.Size(400, 210);
 			this.Name = "RenameForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = Locale.Text(2240);
+			this.Text = "2240";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RenameForm_FormClosing);
 			this.Load += new System.EventHandler(this.RenameForm_Load);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RenameForm_MouseDown);

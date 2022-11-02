@@ -22,6 +22,8 @@ public partial class PageSelectForm : Form
 
 	private void PageSelectForm_Load(object sender, EventArgs e)
 	{
+		//
+		ToolBox.GlobalizationLocaleText(this);
 
 	}
 
@@ -112,7 +114,7 @@ public partial class PageSelectForm : Form
 
 	public void SetBook(BookBase book)
 	{
-		PageInfoLabel.Text = $"{Locale.Text(2305)} {book.TotalPage}";
+		PageInfoLabel.Text = $"{Locale.Text(2225)} {book.TotalPage}";
 
 		PageList.BeginUpdate();
 		PageList.Items.Clear();

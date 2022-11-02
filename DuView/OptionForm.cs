@@ -3,7 +3,7 @@
 public partial class OptionForm : Form
 {
 	private readonly BadakFormWorker _bfw;
-	private IEnumerable<string> _locales = Locale.GetLocaleList();
+	private readonly IEnumerable<string> _locales = Locale.GetLocaleList();
 
 	private static readonly string[] Credits =
 	{
@@ -46,6 +46,9 @@ public partial class OptionForm : Form
 		LocalesList.Items.Add(Locale.Text(126));
 		foreach (var l in _locales)
 			LocalesList.Items.Add(l);
+
+		//
+		ToolBox.GlobalizationLocaleText(this);
 	}
 
 	private void OptionForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -90,7 +93,6 @@ public partial class OptionForm : Form
 		RunOnceCheck.Checked = Settings.GeneralRunOnce;
 		EscExitCheck.Checked = Settings.GeneralEscExit;
 		UseMagneticCheck.Checked = Settings.GeneralUseMagnetic;
-		UseWinNoifyCheck.Checked = Settings.GeneralUseWinNotify;
 		ConfirmDeleteCheck.Checked = Settings.GeneralConfirmDelete;
 		AlwayTopCheck.Checked = Settings.GeneralAlwaysTop;
 		UpdateNotifyCheck.Checked = Settings.GeneralUpdateNotify;
@@ -126,11 +128,6 @@ public partial class OptionForm : Form
 	private void EscExitCheck_CheckedChanged(object sender, EventArgs e)
 	{
 		Settings.GeneralEscExit = EscExitCheck.Checked;
-	}
-
-	private void UseWinNoifyCheck_CheckedChanged(object sender, EventArgs e)
-	{
-		Settings.GeneralUseWinNotify = UseWinNoifyCheck.Checked;
 	}
 
 	private void UseMagneticCheck_CheckedChanged(object sender, EventArgs e)

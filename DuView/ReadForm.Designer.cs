@@ -60,6 +60,7 @@
 			this.FileOpenExternalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.FileRenameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileCopyImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.FileDeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,10 +69,10 @@
 			this.FileOptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.MaxCacheMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.Notifier = new System.Windows.Forms.NotifyIcon(this.components);
 			this.BookCanvas = new System.Windows.Forms.PictureBox();
 			this.ContextPopup = new Du.WinForms.BadakContextMenuStrip(this.components);
 			this.OpenPopupItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.RenamePopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ClosePopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.ControlPopItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,8 +105,6 @@
 			this.OptionPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ExitPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.NotifyLabel = new System.Windows.Forms.Label();
-			this.FileRenameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.RenamePopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.TopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.BookCanvas)).BeginInit();
@@ -136,7 +135,7 @@
 			this.PageInfo.Name = "PageInfo";
 			this.PageInfo.Size = new System.Drawing.Size(149, 15);
 			this.PageInfo.TabIndex = 4;
-			this.PageInfo.Text = Locale.Text(0);
+			this.PageInfo.Text = "0";
 			this.PageInfo.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			this.PageInfo.Visible = false;
 			this.PageInfo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
@@ -153,7 +152,7 @@
 			this.TitleLabel.Name = "TitleLabel";
 			this.TitleLabel.Size = new System.Drawing.Size(627, 36);
 			this.TitleLabel.TabIndex = 3;
-			this.TitleLabel.Text = Locale.Text(0);
+			this.TitleLabel.Text = "0";
 			this.TitleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
 			this.TitleLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
 			this.TitleLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseUp);
@@ -185,9 +184,9 @@
 			this.MaxCacheMenuItem});
 			this.MenuStrip.Location = new System.Drawing.Point(3, 3);
 			this.MenuStrip.Name = "MenuStrip";
-			this.MenuStrip.Size = new System.Drawing.Size(228, 24);
+			this.MenuStrip.Size = new System.Drawing.Size(244, 24);
 			this.MenuStrip.TabIndex = 1;
-			this.MenuStrip.Text = Locale.Text(95);
+			this.MenuStrip.Text = "95";
 			// 
 			// ViewMenuItem
 			// 
@@ -201,16 +200,16 @@
 			this.ViewMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewMenuItem.Image = global::DuView.Properties.Resources.viewmode_pitwidth;
 			this.ViewMenuItem.Name = "ViewMenuItem";
-			this.ViewMenuItem.Size = new System.Drawing.Size(67, 20);
-			this.ViewMenuItem.Text = Locale.Text(1100);
+			this.ViewMenuItem.Size = new System.Drawing.Size(71, 20);
+			this.ViewMenuItem.Text = "1100";
 			// 
 			// ViewZoomMenuItem
 			// 
 			this.ViewZoomMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewZoomMenuItem.Name = "ViewZoomMenuItem";
 			this.ViewZoomMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D0)));
-			this.ViewZoomMenuItem.Size = new System.Drawing.Size(146, 22);
-			this.ViewZoomMenuItem.Text = Locale.Text(1101);
+			this.ViewZoomMenuItem.Size = new System.Drawing.Size(151, 22);
+			this.ViewZoomMenuItem.Text = "1101";
 			this.ViewZoomMenuItem.Click += new System.EventHandler(this.ViewZoomMenuItem_Click);
 			// 
 			// ViewQualityMenuItem
@@ -226,16 +225,16 @@
 			this.VwqHqBicubicMenuItem});
 			this.ViewQualityMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewQualityMenuItem.Name = "ViewQualityMenuItem";
-			this.ViewQualityMenuItem.Size = new System.Drawing.Size(146, 22);
-			this.ViewQualityMenuItem.Text = Locale.Text(1102);
+			this.ViewQualityMenuItem.Size = new System.Drawing.Size(151, 22);
+			this.ViewQualityMenuItem.Text = "1102";
 			// 
 			// VwqLowMenuItem
 			// 
 			this.VwqLowMenuItem.ForeColor = System.Drawing.Color.White;
 			this.VwqLowMenuItem.Name = "VwqLowMenuItem";
-			this.VwqLowMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.VwqLowMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.VwqLowMenuItem.Tag = DuView.Types.ViewQuality.Low;
-			this.VwqLowMenuItem.Text = Locale.Text(2101);
+			this.VwqLowMenuItem.Text = "2101";
 			this.VwqLowMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqDefaultMenuItem
@@ -243,74 +242,74 @@
 			this.VwqDefaultMenuItem.ForeColor = System.Drawing.Color.White;
 			this.VwqDefaultMenuItem.Name = "VwqDefaultMenuItem";
 			this.VwqDefaultMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D5)));
-			this.VwqDefaultMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.VwqDefaultMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.VwqDefaultMenuItem.Tag = DuView.Types.ViewQuality.Default;
-			this.VwqDefaultMenuItem.Text = Locale.Text(2102);
+			this.VwqDefaultMenuItem.Text = "2102";
 			this.VwqDefaultMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqBilinearMenuItem
 			// 
 			this.VwqBilinearMenuItem.ForeColor = System.Drawing.Color.White;
 			this.VwqBilinearMenuItem.Name = "VwqBilinearMenuItem";
-			this.VwqBilinearMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.VwqBilinearMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.VwqBilinearMenuItem.Tag = DuView.Types.ViewQuality.Bilinear;
-			this.VwqBilinearMenuItem.Text = Locale.Text(2103);
+			this.VwqBilinearMenuItem.Text = "2103";
 			this.VwqBilinearMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqBicubicMenuItem
 			// 
 			this.VwqBicubicMenuItem.ForeColor = System.Drawing.Color.White;
 			this.VwqBicubicMenuItem.Name = "VwqBicubicMenuItem";
-			this.VwqBicubicMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.VwqBicubicMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.VwqBicubicMenuItem.Tag = DuView.Types.ViewQuality.Bicubic;
-			this.VwqBicubicMenuItem.Text = Locale.Text(2104);
+			this.VwqBicubicMenuItem.Text = "2104";
 			this.VwqBicubicMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqHighMenuItem
 			// 
 			this.VwqHighMenuItem.ForeColor = System.Drawing.Color.White;
 			this.VwqHighMenuItem.Name = "VwqHighMenuItem";
-			this.VwqHighMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.VwqHighMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.VwqHighMenuItem.Tag = DuView.Types.ViewQuality.High;
-			this.VwqHighMenuItem.Text = Locale.Text(2105);
+			this.VwqHighMenuItem.Text = "2105";
 			this.VwqHighMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// toolStripSeparator9
 			// 
 			this.toolStripSeparator9.Name = "toolStripSeparator9";
-			this.toolStripSeparator9.Size = new System.Drawing.Size(143, 6);
+			this.toolStripSeparator9.Size = new System.Drawing.Size(148, 6);
 			// 
 			// VwqHqBilinearMenuItem
 			// 
 			this.VwqHqBilinearMenuItem.ForeColor = System.Drawing.Color.White;
 			this.VwqHqBilinearMenuItem.Name = "VwqHqBilinearMenuItem";
-			this.VwqHqBilinearMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.VwqHqBilinearMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.VwqHqBilinearMenuItem.Tag = DuView.Types.ViewQuality.HqBilinear;
-			this.VwqHqBilinearMenuItem.Text = Locale.Text(2106);
+			this.VwqHqBilinearMenuItem.Text = "2106";
 			this.VwqHqBilinearMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// VwqHqBicubicMenuItem
 			// 
 			this.VwqHqBicubicMenuItem.ForeColor = System.Drawing.Color.White;
 			this.VwqHqBicubicMenuItem.Name = "VwqHqBicubicMenuItem";
-			this.VwqHqBicubicMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.VwqHqBicubicMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.VwqHqBicubicMenuItem.Tag = DuView.Types.ViewQuality.HqBicubic;
-			this.VwqHqBicubicMenuItem.Text = Locale.Text(2107);
+			this.VwqHqBicubicMenuItem.Text = "2107";
 			this.VwqHqBicubicMenuItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(148, 6);
 			// 
 			// ViewFitMenuItem
 			// 
 			this.ViewFitMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewFitMenuItem.Name = "ViewFitMenuItem";
 			this.ViewFitMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
-			this.ViewFitMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.ViewFitMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.ViewFitMenuItem.Tag = DuView.Types.ViewMode.FitWidth;
-			this.ViewFitMenuItem.Text = Locale.Text(1103);
+			this.ViewFitMenuItem.Text = "1103";
 			this.ViewFitMenuItem.Click += new System.EventHandler(this.ViewModeMenuItem_Click);
 			// 
 			// ViewLeftRightMenuItem
@@ -318,9 +317,9 @@
 			this.ViewLeftRightMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewLeftRightMenuItem.Name = "ViewLeftRightMenuItem";
 			this.ViewLeftRightMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
-			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.ViewLeftRightMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.ViewLeftRightMenuItem.Tag = DuView.Types.ViewMode.LeftToRight;
-			this.ViewLeftRightMenuItem.Text = Locale.Text(1105);
+			this.ViewLeftRightMenuItem.Text = "1105";
 			this.ViewLeftRightMenuItem.Click += new System.EventHandler(this.ViewModeMenuItem_Click);
 			// 
 			// ViewRightLeftMenuItem
@@ -328,9 +327,9 @@
 			this.ViewRightLeftMenuItem.ForeColor = System.Drawing.Color.White;
 			this.ViewRightLeftMenuItem.Name = "ViewRightLeftMenuItem";
 			this.ViewRightLeftMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D4)));
-			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.ViewRightLeftMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.ViewRightLeftMenuItem.Tag = DuView.Types.ViewMode.RightToLeft;
-			this.ViewRightLeftMenuItem.Text = Locale.Text(1106);
+			this.ViewRightLeftMenuItem.Text = "1106";
 			this.ViewRightLeftMenuItem.Click += new System.EventHandler(this.ViewModeMenuItem_Click);
 			// 
 			// PageMenuItem
@@ -341,30 +340,30 @@
 			this.PageAddFavMenuItem});
 			this.PageMenuItem.ForeColor = System.Drawing.Color.White;
 			this.PageMenuItem.Name = "PageMenuItem";
-			this.PageMenuItem.Size = new System.Drawing.Size(51, 20);
-			this.PageMenuItem.Text = Locale.Text(1200);
+			this.PageMenuItem.Size = new System.Drawing.Size(55, 20);
+			this.PageMenuItem.Text = "1200";
 			// 
 			// PageSelectMenuItem
 			// 
 			this.PageSelectMenuItem.ForeColor = System.Drawing.Color.White;
 			this.PageSelectMenuItem.Name = "PageSelectMenuItem";
-			this.PageSelectMenuItem.Size = new System.Drawing.Size(125, 22);
+			this.PageSelectMenuItem.Size = new System.Drawing.Size(130, 22);
 			this.PageSelectMenuItem.Tag = DuView.Types.Controls.Select;
-			this.PageSelectMenuItem.Text = Locale.Text(1201);
+			this.PageSelectMenuItem.Text = "1201";
 			this.PageSelectMenuItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// toolStripSeparator13
 			// 
 			this.toolStripSeparator13.Name = "toolStripSeparator13";
-			this.toolStripSeparator13.Size = new System.Drawing.Size(122, 6);
+			this.toolStripSeparator13.Size = new System.Drawing.Size(127, 6);
 			// 
 			// PageAddFavMenuItem
 			// 
 			this.PageAddFavMenuItem.ForeColor = System.Drawing.Color.White;
 			this.PageAddFavMenuItem.Name = "PageAddFavMenuItem";
 			this.PageAddFavMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-			this.PageAddFavMenuItem.Size = new System.Drawing.Size(125, 22);
-			this.PageAddFavMenuItem.Text = Locale.Text(1202);
+			this.PageAddFavMenuItem.Size = new System.Drawing.Size(130, 22);
+			this.PageAddFavMenuItem.Text = "1202";
 			// 
 			// FileMenuItem
 			// 
@@ -384,16 +383,16 @@
 			this.FileExitMenuItem});
 			this.FileMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileMenuItem.Name = "FileMenuItem";
-			this.FileMenuItem.Size = new System.Drawing.Size(51, 20);
-			this.FileMenuItem.Text = Locale.Text(1300);
+			this.FileMenuItem.Size = new System.Drawing.Size(55, 20);
+			this.FileMenuItem.Text = "1300";
 			// 
 			// FileOpenMenuItem
 			// 
 			this.FileOpenMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOpenMenuItem.Name = "FileOpenMenuItem";
 			this.FileOpenMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.FileOpenMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileOpenMenuItem.Text = Locale.Text(1301);
+			this.FileOpenMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileOpenMenuItem.Text = "1301";
 			this.FileOpenMenuItem.Click += new System.EventHandler(this.FileOpenMenuItem_Click);
 			// 
 			// FileOpenLastMenuItem
@@ -402,8 +401,8 @@
 			this.FileOpenLastMenuItem.Name = "FileOpenLastMenuItem";
 			this.FileOpenLastMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
 			| System.Windows.Forms.Keys.Z)));
-			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileOpenLastMenuItem.Text = Locale.Text(1302);
+			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileOpenLastMenuItem.Text = "1302";
 			this.FileOpenLastMenuItem.Click += new System.EventHandler(this.FileOpenLastMenuItem_Click);
 			// 
 			// FileOpenExternalMenuItem
@@ -411,8 +410,8 @@
 			this.FileOpenExternalMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOpenExternalMenuItem.Name = "FileOpenExternalMenuItem";
 			this.FileOpenExternalMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F11;
-			this.FileOpenExternalMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileOpenExternalMenuItem.Text = Locale.Text(1309);
+			this.FileOpenExternalMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileOpenExternalMenuItem.Text = "1309";
 			this.FileOpenExternalMenuItem.Click += new System.EventHandler(this.FileOpenExternalMenuItem_Click);
 			// 
 			// FileCloseMenuItem
@@ -420,50 +419,59 @@
 			this.FileCloseMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileCloseMenuItem.Name = "FileCloseMenuItem";
 			this.FileCloseMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-			this.FileCloseMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileCloseMenuItem.Text = Locale.Text(1303);
+			this.FileCloseMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileCloseMenuItem.Text = "1303";
 			this.FileCloseMenuItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(181, 6);
+			// 
+			// FileRenameMenuItem
+			// 
+			this.FileRenameMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileRenameMenuItem.Name = "FileRenameMenuItem";
+			this.FileRenameMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+			this.FileRenameMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileRenameMenuItem.Text = "1310";
+			this.FileRenameMenuItem.Click += new System.EventHandler(this.FileRenameMenuItem_Click);
 			// 
 			// FileCopyImageMenuItem
 			// 
 			this.FileCopyImageMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileCopyImageMenuItem.Name = "FileCopyImageMenuItem";
 			this.FileCopyImageMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.FileCopyImageMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileCopyImageMenuItem.Text = Locale.Text(1304);
+			this.FileCopyImageMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileCopyImageMenuItem.Text = "1304";
 			this.FileCopyImageMenuItem.Click += new System.EventHandler(this.FileCopyImageMenuItem_Click);
 			// 
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(181, 6);
 			// 
 			// FileDeleteMenuItem
 			// 
 			this.FileDeleteMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileDeleteMenuItem.Name = "FileDeleteMenuItem";
 			this.FileDeleteMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.FileDeleteMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileDeleteMenuItem.Text = Locale.Text(1307);
+			this.FileDeleteMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileDeleteMenuItem.Text = "1307";
 			this.FileDeleteMenuItem.Click += new System.EventHandler(this.FileDeleteMenuItem_Click);
 			// 
 			// toolStripSeparator14
 			// 
 			this.toolStripSeparator14.Name = "toolStripSeparator14";
-			this.toolStripSeparator14.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator14.Size = new System.Drawing.Size(181, 6);
 			// 
 			// FileRefreshMenuItem
 			// 
 			this.FileRefreshMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileRefreshMenuItem.Name = "FileRefreshMenuItem";
 			this.FileRefreshMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.FileRefreshMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileRefreshMenuItem.Text = Locale.Text(1305);
+			this.FileRefreshMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileRefreshMenuItem.Text = "1305";
 			this.FileRefreshMenuItem.Click += new System.EventHandler(this.FileRefreshMenuItem_Click);
 			// 
 			// FileOptionMenuItem
@@ -471,30 +479,24 @@
 			this.FileOptionMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOptionMenuItem.Name = "FileOptionMenuItem";
 			this.FileOptionMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.FileOptionMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileOptionMenuItem.Text = Locale.Text(1308);
+			this.FileOptionMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileOptionMenuItem.Text = "1308";
 			this.FileOptionMenuItem.Click += new System.EventHandler(this.FileOptionMenuItem_Click);
 			// 
 			// FileExitMenuItem
 			// 
 			this.FileExitMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileExitMenuItem.Name = "FileExitMenuItem";
-			this.FileExitMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileExitMenuItem.Text = Locale.Text(1306);
+			this.FileExitMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.FileExitMenuItem.Text = "1306";
 			this.FileExitMenuItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
 			// MaxCacheMenuItem
 			// 
 			this.MaxCacheMenuItem.ForeColor = System.Drawing.Color.White;
 			this.MaxCacheMenuItem.Name = "MaxCacheMenuItem";
-			this.MaxCacheMenuItem.Size = new System.Drawing.Size(51, 20);
-			this.MaxCacheMenuItem.Text = Locale.Text(1800);
-			// 
-			// Notifier
-			// 
-			this.Notifier.Icon = ((System.Drawing.Icon)(resources.GetObject("Notifier.Icon")));
-			this.Notifier.Text = Locale.Text(0);
-			this.Notifier.Visible = true;
+			this.MaxCacheMenuItem.Size = new System.Drawing.Size(55, 20);
+			this.MaxCacheMenuItem.Text = "1800";
 			// 
 			// BookCanvas
 			// 
@@ -532,28 +534,36 @@
 			this.OptionPopupItem,
 			this.ExitPopupItem});
 			this.ContextPopup.Name = "ContextPopup";
-			this.ContextPopup.Size = new System.Drawing.Size(107, 254);
+			this.ContextPopup.Size = new System.Drawing.Size(111, 254);
 			// 
 			// OpenPopupItem
 			// 
 			this.OpenPopupItem.ForeColor = System.Drawing.Color.White;
 			this.OpenPopupItem.Name = "OpenPopupItem";
-			this.OpenPopupItem.Size = new System.Drawing.Size(180, 22);
-			this.OpenPopupItem.Text = Locale.Text(1301);
+			this.OpenPopupItem.Size = new System.Drawing.Size(110, 22);
+			this.OpenPopupItem.Text = "1301";
 			this.OpenPopupItem.Click += new System.EventHandler(this.FileOpenMenuItem_Click);
+			// 
+			// RenamePopupItem
+			// 
+			this.RenamePopupItem.ForeColor = System.Drawing.Color.White;
+			this.RenamePopupItem.Name = "RenamePopupItem";
+			this.RenamePopupItem.Size = new System.Drawing.Size(110, 22);
+			this.RenamePopupItem.Text = "1309";
+			this.RenamePopupItem.Click += new System.EventHandler(this.FileOpenExternalMenuItem_Click);
 			// 
 			// ClosePopupItem
 			// 
 			this.ClosePopupItem.ForeColor = System.Drawing.Color.White;
 			this.ClosePopupItem.Name = "ClosePopupItem";
-			this.ClosePopupItem.Size = new System.Drawing.Size(180, 22);
-			this.ClosePopupItem.Text = Locale.Text(1303);
+			this.ClosePopupItem.Size = new System.Drawing.Size(110, 22);
+			this.ClosePopupItem.Text = "1303";
 			this.ClosePopupItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(107, 6);
 			// 
 			// ControlPopItem
 			// 
@@ -570,104 +580,104 @@
 			this.CtrlNextFilePopupItem});
 			this.ControlPopItem.ForeColor = System.Drawing.Color.White;
 			this.ControlPopItem.Name = "ControlPopItem";
-			this.ControlPopItem.Size = new System.Drawing.Size(180, 22);
-			this.ControlPopItem.Text = Locale.Text(2200);
+			this.ControlPopItem.Size = new System.Drawing.Size(110, 22);
+			this.ControlPopItem.Text = "2200";
 			// 
 			// CtrlPrevPopupItem
 			// 
 			this.CtrlPrevPopupItem.ForeColor = System.Drawing.Color.White;
 			this.CtrlPrevPopupItem.Name = "CtrlPrevPopupItem";
-			this.CtrlPrevPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CtrlPrevPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.CtrlPrevPopupItem.Tag = DuView.Types.Controls.Previous;
-			this.CtrlPrevPopupItem.Text = Locale.Text(2201);
+			this.CtrlPrevPopupItem.Text = "2201";
 			this.CtrlPrevPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlNextPopupItem
 			// 
 			this.CtrlNextPopupItem.ForeColor = System.Drawing.Color.White;
 			this.CtrlNextPopupItem.Name = "CtrlNextPopupItem";
-			this.CtrlNextPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CtrlNextPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.CtrlNextPopupItem.Tag = DuView.Types.Controls.Next;
-			this.CtrlNextPopupItem.Text = Locale.Text(2202);
+			this.CtrlNextPopupItem.Text = "2202";
 			this.CtrlNextPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlHomePopupItem
 			// 
 			this.CtrlHomePopupItem.ForeColor = System.Drawing.Color.White;
 			this.CtrlHomePopupItem.Name = "CtrlHomePopupItem";
-			this.CtrlHomePopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CtrlHomePopupItem.Size = new System.Drawing.Size(110, 22);
 			this.CtrlHomePopupItem.Tag = DuView.Types.Controls.First;
-			this.CtrlHomePopupItem.Text = Locale.Text(2203);
+			this.CtrlHomePopupItem.Text = "2203";
 			this.CtrlHomePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlEndPopupItem
 			// 
 			this.CtrlEndPopupItem.ForeColor = System.Drawing.Color.White;
 			this.CtrlEndPopupItem.Name = "CtrlEndPopupItem";
-			this.CtrlEndPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CtrlEndPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.CtrlEndPopupItem.Tag = DuView.Types.Controls.Last;
-			this.CtrlEndPopupItem.Text = Locale.Text(2204);
+			this.CtrlEndPopupItem.Text = "2204";
 			this.CtrlEndPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// toolStripSeparator11
 			// 
 			this.toolStripSeparator11.Name = "toolStripSeparator11";
-			this.toolStripSeparator11.Size = new System.Drawing.Size(103, 6);
+			this.toolStripSeparator11.Size = new System.Drawing.Size(107, 6);
 			// 
 			// CtrlPrev10PopupItem
 			// 
 			this.CtrlPrev10PopupItem.ForeColor = System.Drawing.Color.White;
 			this.CtrlPrev10PopupItem.Name = "CtrlPrev10PopupItem";
-			this.CtrlPrev10PopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CtrlPrev10PopupItem.Size = new System.Drawing.Size(110, 22);
 			this.CtrlPrev10PopupItem.Tag = DuView.Types.Controls.SeekPrevious10;
-			this.CtrlPrev10PopupItem.Text = Locale.Text(2205);
+			this.CtrlPrev10PopupItem.Text = "2205";
 			this.CtrlPrev10PopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlNext10PopupItem
 			// 
 			this.CtrlNext10PopupItem.ForeColor = System.Drawing.Color.White;
 			this.CtrlNext10PopupItem.Name = "CtrlNext10PopupItem";
-			this.CtrlNext10PopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CtrlNext10PopupItem.Size = new System.Drawing.Size(110, 22);
 			this.CtrlNext10PopupItem.Tag = DuView.Types.Controls.SeekNext10;
-			this.CtrlNext10PopupItem.Text = Locale.Text(2206);
+			this.CtrlNext10PopupItem.Text = "2206";
 			this.CtrlNext10PopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// toolStripSeparator12
 			// 
 			this.toolStripSeparator12.Name = "toolStripSeparator12";
-			this.toolStripSeparator12.Size = new System.Drawing.Size(103, 6);
+			this.toolStripSeparator12.Size = new System.Drawing.Size(107, 6);
 			// 
 			// CtrlPrevFilePopupItem
 			// 
 			this.CtrlPrevFilePopupItem.ForeColor = System.Drawing.Color.White;
 			this.CtrlPrevFilePopupItem.Name = "CtrlPrevFilePopupItem";
-			this.CtrlPrevFilePopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CtrlPrevFilePopupItem.Size = new System.Drawing.Size(110, 22);
 			this.CtrlPrevFilePopupItem.Tag = DuView.Types.Controls.ScanPrevious;
-			this.CtrlPrevFilePopupItem.Text = Locale.Text(2207);
+			this.CtrlPrevFilePopupItem.Text = "2207";
 			this.CtrlPrevFilePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// CtrlNextFilePopupItem
 			// 
 			this.CtrlNextFilePopupItem.ForeColor = System.Drawing.Color.White;
 			this.CtrlNextFilePopupItem.Name = "CtrlNextFilePopupItem";
-			this.CtrlNextFilePopupItem.Size = new System.Drawing.Size(106, 22);
+			this.CtrlNextFilePopupItem.Size = new System.Drawing.Size(110, 22);
 			this.CtrlNextFilePopupItem.Tag = DuView.Types.Controls.ScanNext;
-			this.CtrlNextFilePopupItem.Text = Locale.Text(2208);
+			this.CtrlNextFilePopupItem.Text = "2208";
 			this.CtrlNextFilePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// PagesPopupItem
 			// 
 			this.PagesPopupItem.ForeColor = System.Drawing.Color.White;
 			this.PagesPopupItem.Name = "PagesPopupItem";
-			this.PagesPopupItem.Size = new System.Drawing.Size(180, 22);
+			this.PagesPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.PagesPopupItem.Tag = DuView.Types.Controls.Select;
-			this.PagesPopupItem.Text = Locale.Text(1201);
+			this.PagesPopupItem.Text = "1201";
 			this.PagesPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
 			// 
 			// toolStripSeparator5
 			// 
 			this.toolStripSeparator5.Name = "toolStripSeparator5";
-			this.toolStripSeparator5.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator5.Size = new System.Drawing.Size(107, 6);
 			// 
 			// QualityPopupItem
 			// 
@@ -682,121 +692,121 @@
 			this.QualityHqBicubicPopupItem});
 			this.QualityPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityPopupItem.Name = "QualityPopupItem";
-			this.QualityPopupItem.Size = new System.Drawing.Size(180, 22);
-			this.QualityPopupItem.Text = Locale.Text(2100);
+			this.QualityPopupItem.Size = new System.Drawing.Size(110, 22);
+			this.QualityPopupItem.Text = "2100";
 			// 
 			// QualityLowPopupItem
 			// 
 			this.QualityLowPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityLowPopupItem.Name = "QualityLowPopupItem";
-			this.QualityLowPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.QualityLowPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.QualityLowPopupItem.Tag = DuView.Types.ViewQuality.Low;
-			this.QualityLowPopupItem.Text = Locale.Text(2101);
+			this.QualityLowPopupItem.Text = "2101";
 			this.QualityLowPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityDefaultPopupItem
 			// 
 			this.QualityDefaultPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityDefaultPopupItem.Name = "QualityDefaultPopupItem";
-			this.QualityDefaultPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.QualityDefaultPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.QualityDefaultPopupItem.Tag = DuView.Types.ViewQuality.Default;
-			this.QualityDefaultPopupItem.Text = Locale.Text(2102);
+			this.QualityDefaultPopupItem.Text = "2102";
 			this.QualityDefaultPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityBilinearPopupItem
 			// 
 			this.QualityBilinearPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityBilinearPopupItem.Name = "QualityBilinearPopupItem";
-			this.QualityBilinearPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.QualityBilinearPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.QualityBilinearPopupItem.Tag = DuView.Types.ViewQuality.Bilinear;
-			this.QualityBilinearPopupItem.Text = Locale.Text(2103);
+			this.QualityBilinearPopupItem.Text = "2103";
 			this.QualityBilinearPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityBicubicPopupItem
 			// 
 			this.QualityBicubicPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityBicubicPopupItem.Name = "QualityBicubicPopupItem";
-			this.QualityBicubicPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.QualityBicubicPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.QualityBicubicPopupItem.Tag = DuView.Types.ViewQuality.Bicubic;
-			this.QualityBicubicPopupItem.Text = Locale.Text(2104);
+			this.QualityBicubicPopupItem.Text = "2104";
 			this.QualityBicubicPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityHighPopupItem
 			// 
 			this.QualityHighPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityHighPopupItem.Name = "QualityHighPopupItem";
-			this.QualityHighPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.QualityHighPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.QualityHighPopupItem.Tag = DuView.Types.ViewQuality.High;
-			this.QualityHighPopupItem.Text = Locale.Text(2105);
+			this.QualityHighPopupItem.Text = "2105";
 			this.QualityHighPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// toolStripSeparator10
 			// 
 			this.toolStripSeparator10.Name = "toolStripSeparator10";
-			this.toolStripSeparator10.Size = new System.Drawing.Size(103, 6);
+			this.toolStripSeparator10.Size = new System.Drawing.Size(107, 6);
 			// 
 			// QualityHqBilinearPopupItem
 			// 
 			this.QualityHqBilinearPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityHqBilinearPopupItem.Name = "QualityHqBilinearPopupItem";
-			this.QualityHqBilinearPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.QualityHqBilinearPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.QualityHqBilinearPopupItem.Tag = DuView.Types.ViewQuality.HqBilinear;
-			this.QualityHqBilinearPopupItem.Text = Locale.Text(2106);
+			this.QualityHqBilinearPopupItem.Text = "2106";
 			this.QualityHqBilinearPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// QualityHqBicubicPopupItem
 			// 
 			this.QualityHqBicubicPopupItem.ForeColor = System.Drawing.Color.White;
 			this.QualityHqBicubicPopupItem.Name = "QualityHqBicubicPopupItem";
-			this.QualityHqBicubicPopupItem.Size = new System.Drawing.Size(106, 22);
+			this.QualityHqBicubicPopupItem.Size = new System.Drawing.Size(110, 22);
 			this.QualityHqBicubicPopupItem.Tag = DuView.Types.ViewQuality.HqBicubic;
-			this.QualityHqBicubicPopupItem.Text = Locale.Text(2107);
+			this.QualityHqBicubicPopupItem.Text = "2107";
 			this.QualityHqBicubicPopupItem.Click += new System.EventHandler(this.ViewQualityMenuItem_Click);
 			// 
 			// toolStripSeparator6
 			// 
 			this.toolStripSeparator6.Name = "toolStripSeparator6";
-			this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator6.Size = new System.Drawing.Size(107, 6);
 			// 
 			// DeletePopupItem
 			// 
 			this.DeletePopupItem.ForeColor = System.Drawing.Color.White;
 			this.DeletePopupItem.Name = "DeletePopupItem";
-			this.DeletePopupItem.Size = new System.Drawing.Size(180, 22);
-			this.DeletePopupItem.Text = Locale.Text(1307);
+			this.DeletePopupItem.Size = new System.Drawing.Size(110, 22);
+			this.DeletePopupItem.Text = "1307";
 			this.DeletePopupItem.Click += new System.EventHandler(this.FileDeleteMenuItem_Click);
 			// 
 			// toolStripSeparator7
 			// 
 			this.toolStripSeparator7.Name = "toolStripSeparator7";
-			this.toolStripSeparator7.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator7.Size = new System.Drawing.Size(107, 6);
 			// 
 			// CopyImagePopupItem
 			// 
 			this.CopyImagePopupItem.ForeColor = System.Drawing.Color.White;
 			this.CopyImagePopupItem.Name = "CopyImagePopupItem";
-			this.CopyImagePopupItem.Size = new System.Drawing.Size(180, 22);
-			this.CopyImagePopupItem.Text = Locale.Text(1304);
+			this.CopyImagePopupItem.Size = new System.Drawing.Size(110, 22);
+			this.CopyImagePopupItem.Text = "1304";
 			// 
 			// toolStripSeparator8
 			// 
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator8.Size = new System.Drawing.Size(107, 6);
 			// 
 			// OptionPopupItem
 			// 
 			this.OptionPopupItem.ForeColor = System.Drawing.Color.White;
 			this.OptionPopupItem.Name = "OptionPopupItem";
-			this.OptionPopupItem.Size = new System.Drawing.Size(180, 22);
-			this.OptionPopupItem.Text = Locale.Text(1308);
+			this.OptionPopupItem.Size = new System.Drawing.Size(110, 22);
+			this.OptionPopupItem.Text = "1308";
 			this.OptionPopupItem.Click += new System.EventHandler(this.FileOptionMenuItem_Click);
 			// 
 			// ExitPopupItem
 			// 
 			this.ExitPopupItem.ForeColor = System.Drawing.Color.White;
 			this.ExitPopupItem.Name = "ExitPopupItem";
-			this.ExitPopupItem.Size = new System.Drawing.Size(180, 22);
-			this.ExitPopupItem.Text = Locale.Text(1306);
+			this.ExitPopupItem.Size = new System.Drawing.Size(110, 22);
+			this.ExitPopupItem.Text = "1306";
 			this.ExitPopupItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
 			// NotifyLabel
@@ -805,7 +815,7 @@
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.NotifyLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
 			this.NotifyLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.NotifyLabel.Font = new System.Drawing.Font("Malgun Gothic", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.NotifyLabel.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.NotifyLabel.ForeColor = System.Drawing.Color.White;
 			this.NotifyLabel.Location = new System.Drawing.Point(25, 160);
 			this.NotifyLabel.Name = "NotifyLabel";
@@ -814,23 +824,6 @@
 			this.NotifyLabel.Text = "This is notify message";
 			this.NotifyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.NotifyLabel.Visible = false;
-			// 
-			// FileRenameMenuItem
-			// 
-			this.FileRenameMenuItem.ForeColor = System.Drawing.Color.White;
-			this.FileRenameMenuItem.Name = "FileRenameMenuItem";
-			this.FileRenameMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-			this.FileRenameMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileRenameMenuItem.Text = Locale.Text(1310);
-			this.FileRenameMenuItem.Click += new System.EventHandler(this.FileRenameMenuItem_Click);
-			// 
-			// RenamePopupItem
-			// 
-			this.RenamePopupItem.ForeColor = System.Drawing.Color.White;
-			this.RenamePopupItem.Name = "RenamePopupItem";
-			this.RenamePopupItem.Size = new System.Drawing.Size(106, 22);
-			this.RenamePopupItem.Text = Locale.Text(1309);
-			this.RenamePopupItem.Click += new System.EventHandler(this.FileOpenExternalMenuItem_Click);
 			// 
 			// ReadForm
 			// 
@@ -848,7 +841,7 @@
 			this.MainMenuStrip = this.MenuStrip;
 			this.MinimumSize = new System.Drawing.Size(250, 250);
 			this.Name = "ReadForm";
-			this.Text = Locale.Text(0);
+			this.Text = "0";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReadForm_FormClosing);
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ReadForm_FormClosed);
 			this.Load += new System.EventHandler(this.ReadForm_Load);
@@ -874,7 +867,6 @@
 		private Label PageInfo;
 		private Label TitleLabel;
 		private BadakSystemButton SystemButton;
-		private NotifyIcon Notifier;
 		private PictureBox BookCanvas;
 		private BadakContextMenuStrip ContextPopup;
 		private ToolStripMenuItem ViewMenuItem;

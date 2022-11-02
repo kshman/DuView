@@ -33,13 +33,14 @@ internal static class Settings
 	// -- 기본
 	private static bool s_run_only_once_instance = true;
 	private static bool s_esc_to_exit = true;
-	private static bool s_use_windows_notification = true;
 	private static bool s_use_magnetic_window = false;
 	private static bool s_confirm_when_delete_file = true;
 	private static bool s_always_on_top = false;
 	private static bool s_use_update_notification = true;
 	private static string s_external_run = string.Empty;
 	private static bool s_reload_after_external = true;
+	private static string s_firefox_run = string.Empty;
+	private static bool s_extened_renamer = true;
 
 	// -- 마우스
 	private static bool s_use_doubleclick_state = false;
@@ -108,12 +109,13 @@ internal static class Settings
 				//
 				s_esc_to_exit = rk.GetBool("GeneralEscExit", s_esc_to_exit);
 				s_use_magnetic_window = rk.GetBool("GeneralUseMagnetic", s_use_magnetic_window);
-				s_use_windows_notification = rk.GetBool("GeneralUseWinNotify", s_use_windows_notification);
 				s_confirm_when_delete_file = rk.GetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
 				s_always_on_top = rk.GetBool("GeneralAlwaysTop", s_always_on_top);
 				s_use_update_notification = rk.GetBool("GeneralUpdateNotify", s_use_update_notification);
 				s_external_run = rk.GetString("ExternalRun") ?? s_external_run;
 				s_reload_after_external = rk.GetBool("ReloadAfterExternalExit", s_reload_after_external);
+				s_firefox_run = rk.GetString("FirefoxRun") ?? s_firefox_run;
+				s_extened_renamer = rk.GetBool("ExtendedRenamer", s_extened_renamer);
 
 				//
 				s_use_doubleclick_state = rk.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
@@ -464,22 +466,6 @@ internal static class Settings
 	}
 
 	//
-	public static bool GeneralUseWinNotify
-	{
-		get => s_use_windows_notification;
-		set
-		{
-			if (value != s_use_windows_notification)
-			{
-				s_use_windows_notification = value;
-
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("GeneralUseWinNotify", s_use_windows_notification);
-			}
-		}
-	}
-
-	//
 	public static bool GeneralConfirmDelete
 	{
 		get => s_confirm_when_delete_file;
@@ -555,6 +541,38 @@ internal static class Settings
 
 				using var rk = new RegKey(c_keyname, true);
 				rk.SetBool("ReloadAfterExternalExit", s_reload_after_external);
+			}
+		}
+	}
+
+	//
+	public static string FirefoxRun
+	{
+		get => s_firefox_run;
+		set
+		{
+			if (!value.Equals(s_firefox_run))
+			{
+				s_firefox_run = value;
+
+				using (var rk = new RegKey(c_keyname, true))
+					rk.SetString("FirefoxRun", s_firefox_run);
+			}
+		}
+	}
+
+	//
+	public static bool ExtendedRenamer
+	{
+		get => s_extened_renamer;
+		set
+		{
+			if (value != s_extened_renamer)
+			{
+				s_extened_renamer = value;
+
+				using (var rk = new RegKey(c_keyname, true))
+					rk.SetBool("ExtendedRenamer", s_extened_renamer);
 			}
 		}
 	}

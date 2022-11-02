@@ -26,6 +26,9 @@ public partial class RenameForm : Form
 			OpenAgainRadio.Checked = true;
 
 		ActiveControl = RenameText;
+
+		//
+		ToolBox.GlobalizationLocaleText(this);
 	}
 
 	private void RenameForm_FormClosing(object sender, FormClosingEventArgs e)
