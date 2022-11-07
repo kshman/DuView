@@ -157,8 +157,8 @@ public partial class RenexForm : Form
 			ws = filename;
 		else
 		{
-			_extension = filename.Substring(e);
-			ws = filename.Substring(0, e);
+			_extension = filename[e..];
+			ws = filename[..e];
 		}
 
 		try
@@ -171,7 +171,7 @@ public partial class RenexForm : Form
 				if (l > n)
 				{
 					AuthorText.Text = ws.Substring(n + 1, l - n - 1).Trim();
-					ws = ws.Substring(l + 1).TrimStart();
+					ws = ws[(l + 1)..].TrimStart();
 				}
 			}
 
@@ -183,7 +183,7 @@ public partial class RenexForm : Form
 				if (l > n)
 				{
 					AdditionalText.Text = ws.Substring(n + 1, l - n - 1).Trim();
-					ws = ws.Substring(0, n - 1).Trim();
+					ws = ws[..(n - 1)].Trim();
 				}
 			}
 
@@ -191,11 +191,11 @@ public partial class RenexForm : Form
 			n = ws.LastIndexOf(' ');
 			if (n >= 0)
 			{
-				var s = ws.Substring(n + 1);
+				var s = ws[(n + 1)..];
 				if (int.TryParse(s, out l))
 				{
-					IndexText.Text = ws.Substring(n + 1).Trim();
-					ws = ws.Substring(0, n).Trim();
+					IndexText.Text = ws[(n + 1)..].Trim();
+					ws = ws[..n].Trim();
 				}
 			}
 
@@ -213,7 +213,7 @@ public partial class RenexForm : Form
 			if (e < 0)
 				TitleText.Text = filename;
 			else
-				TitleText.Text = filename.Substring(0, e);
+				TitleText.Text = filename[..e];
 		}
 	}
 }

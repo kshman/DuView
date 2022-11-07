@@ -30,7 +30,7 @@ public static class ToolBox
 	{
 		return extension switch
 		{
-			".png" or ".jpg" or ".jpeg" or ".bmp" or ".tga" or ".gif" => true,
+			".png" or ".jpg" or ".jpeg" or ".bmp" or ".tga" or ".webp" or ".gif" => true,
 			_ => false,
 		};
 	}

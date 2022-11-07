@@ -1,4 +1,6 @@
-﻿namespace DuView;
+﻿using WebPWrapper;
+
+namespace DuView;
 
 public abstract class BookBase : IDisposable
 {
@@ -93,6 +95,38 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
+	private byte[]? ReadAllStream(Stream st)
+	{
+		try
+		{
+			// 이건 파일 스트림
+			int total = (int)st.Length;
+			if (total < 0)
+				return null;
+
+			byte[] ret = new byte[total];
+			int read = 0;
+
+			while (read < total)
+				read += st.Read(ret, read, total);
+
+			return ret;
+		}
+		catch (NotSupportedException /*ex*/)
+		{
+			// 이건 ZIP 스트림
+			using var ms = new MemoryStream();
+			st.CopyTo(ms);
+			byte[] ret = ms.ToArray();
+			return ret;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	//
 	private Image? ReadPage(int pageno)
 	{
 		Image? img = null;
@@ -107,9 +141,30 @@ public abstract class BookBase : IDisposable
 
 			if (st != null)
 			{
-				img = Image.FromStream(st);
-				img.Tag = GetEntryName(en);
-				CacheImage(pageno, img);
+				using var ms = new MemoryStream();
+				st.CopyTo(ms);
+
+				try
+				{
+					// 일단 읽어본다
+					img = Image.FromStream(ms);
+				}
+				catch (Exception /*ex*/)
+				{
+					// 지원안하면 맞는거 찾아본다
+					ms.Position = 0;
+					var raw = ms.ToArray();
+					if (raw!=null)
+					{
+						// WEBP?
+						if (raw.Length > 12 &&
+							raw[8] == 'W' && raw[9] == 'E' && raw[10] == 'B' && raw[11] == 'P')
+						{
+							WebP p = new WebP();
+							img = p.Decode(raw);
+						}
+					}
+				}
 			}
 		}
 
