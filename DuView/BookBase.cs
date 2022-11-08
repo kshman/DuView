@@ -17,7 +17,7 @@ public abstract class BookBase : IDisposable
 
 	//
 	protected readonly List<object> _entries = new();
-	private readonly Dictionary<int, Image> _cache = new();
+	private readonly Dictionary<int, MemoryStream> _cache = new();
 
 	//
 	protected BookBase()
@@ -66,32 +66,31 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	private void CacheImage(int page, Image img)
+	private void CacheImage(int page, MemoryStream? ms)
 	{
-		const int bpp = 4;  // byte per pixel
-
-		if (_cache.ContainsKey(page))
+		if (ms == null || _cache.ContainsKey(page))
 			return;
 
-		var size = img.Width * img.Height * bpp;
+		var size = ms.Length;
 
 		if ((CacheSize + size) > Settings.MaxActualPageCache && _cache.Count > 0)
 		{
 			var first = _cache.ElementAt(0);
-			var fsize = first.Value.Width * first.Value.Height * bpp;
+			var fsize = first.Value.Length;
+			first.Value.Dispose();
 
 			_cache.Remove(first.Key);
 			CacheSize -= fsize;
 		}
 
-		_cache.Add(page, img);
+		_cache.Add(page, ms);
 		CacheSize += size;
 	}
 
 	//
-	private bool TryCache(int page, out Image? img)
+	private bool TryCache(int page, out MemoryStream? st)
 	{
-		return _cache.TryGetValue(page, out img);
+		return _cache.TryGetValue(page, out st);
 	}
 
 	//
@@ -101,28 +100,35 @@ public abstract class BookBase : IDisposable
 
 		if (pageno >= 0 && pageno < TotalPage)
 		{
-			if (TryCache(pageno, out img))
-				return img;
-
 			var en = _entries[pageno];
-			using var st = OpenStream(en);
+			bool storecache = false;
+			MemoryStream? ms;
 
-			if (st != null)
+			if (!TryCache(pageno, out ms))
 			{
-				using var ms = new MemoryStream();
-				st.CopyTo(ms);
+				// 캐시에 없으면 파일 처리
+				using var st = OpenStream(en);
+				if (st != null)
+				{
+					ms = new();
+					st.CopyTo(ms);
+					storecache = true;
+				}
+			}
 
+			if (ms != null)
+			{
 				try
 				{
-					// 일단 읽어본다
+					// 일단 이미지로 읽어보자
 					img = Image.FromStream(ms);
 				}
-				catch (Exception /*ex*/)
+				catch (Exception)
 				{
-					// 지원안하면 맞는거 찾아본다
+					// 지원하는 형식인지 확인하자
 					ms.Position = 0;
 					var raw = ms.ToArray();
-					if (raw!=null)
+					if (raw != null)
 					{
 						// WEBP?
 						if (raw.Length > 12 &&
@@ -132,11 +138,8 @@ public abstract class BookBase : IDisposable
 				}
 			}
 
-			if (img != null)
-			{
-				img.Tag = GetEntryName(en);
-				CacheImage(pageno, img);
-			}
+			if (img != null && storecache)
+				CacheImage(pageno, ms);
 		}
 
 		return img ?? Properties.Resources.ouch_noimg;
