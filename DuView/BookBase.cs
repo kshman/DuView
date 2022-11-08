@@ -95,38 +95,6 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	private byte[]? ReadAllStream(Stream st)
-	{
-		try
-		{
-			// 이건 파일 스트림
-			int total = (int)st.Length;
-			if (total < 0)
-				return null;
-
-			byte[] ret = new byte[total];
-			int read = 0;
-
-			while (read < total)
-				read += st.Read(ret, read, total);
-
-			return ret;
-		}
-		catch (NotSupportedException /*ex*/)
-		{
-			// 이건 ZIP 스트림
-			using var ms = new MemoryStream();
-			st.CopyTo(ms);
-			byte[] ret = ms.ToArray();
-			return ret;
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	//
 	private Image? ReadPage(int pageno)
 	{
 		Image? img = null;
@@ -159,12 +127,15 @@ public abstract class BookBase : IDisposable
 						// WEBP?
 						if (raw.Length > 12 &&
 							raw[8] == 'W' && raw[9] == 'E' && raw[10] == 'B' && raw[11] == 'P')
-						{
-							WebP p = new WebP();
-							img = p.Decode(raw);
-						}
+							img = WebP.Decode(raw);
 					}
 				}
+			}
+
+			if (img != null)
+			{
+				img.Tag = GetEntryName(en);
+				CacheImage(pageno, img);
 			}
 		}
 
@@ -193,8 +164,7 @@ public abstract class BookBase : IDisposable
 			{
 				Image? right = null;
 
-				var entryname = left.Tag as string;
-				if (entryname == null || !ToolBox.IsAnimatedImageFile(entryname, false))
+				if (left.Tag is not string entryname || !ToolBox.IsAnimatedImageFile(entryname, false))
 				{
 					if (left.Width > left.Height)
 					{
