@@ -2,7 +2,7 @@
 
 namespace DuView;
 
-public partial class RenexForm : Form
+public partial class RenexForm : Form, ILocaleTranspose
 {
 	public string Filename { get; private set; } = string.Empty;
 
@@ -20,8 +20,6 @@ public partial class RenexForm : Form
 			MoveTopToMaximize = false,
 			BodyAsTitle = true,
 		};
-
-		ToolBox.LocaleTextOnControl(this);
 	}
 
 	private void RenexForm_Load(object sender, EventArgs e)
@@ -30,6 +28,13 @@ public partial class RenexForm : Form
 			SearchButton.Enabled = false;
 
 		ActiveControl = TitleText;
+
+		LocaleTranspose();
+	}
+
+	public void LocaleTranspose()
+	{
+		ToolBox.LocaleTextOnControl(this);
 	}
 
 	private void RenexForm_FormClosing(object sender, FormClosingEventArgs e)

@@ -1,6 +1,6 @@
 ﻿namespace DuView;
 
-public partial class RenameForm : Form
+public partial class RenameForm : Form, ILocaleTranspose
 {
 	public string Filename { get; private set; } = string.Empty;
 
@@ -28,6 +28,11 @@ public partial class RenameForm : Form
 		ActiveControl = RenameText;
 
 		//
+		LocaleTranspose();
+	}
+
+	public void LocaleTranspose()
+	{
 		ToolBox.LocaleTextOnControl(this);
 	}
 

@@ -33,6 +33,7 @@ public abstract class BookBase : IDisposable
 	public virtual bool CanDeleteFile(out string? reason) { reason = string.Empty; return true; }
 	public abstract bool DeleteFile(out bool closebook);
 	public abstract bool RenameFile(string newfilename, out string fullpath);
+	public abstract bool MoveFile(string newfilename);
 
 	//
 	protected void SetFileName(FileInfo fi)

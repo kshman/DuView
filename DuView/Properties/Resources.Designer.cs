@@ -63,6 +63,16 @@ namespace DuView.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
+        internal static System.Drawing.Bitmap folder_blue {
+            get {
+                object obj = ResourceManager.GetObject("folder-blue", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
         internal static System.Drawing.Bitmap housebari_head_128 {
             get {
                 object obj = ResourceManager.GetObject("housebari_head_128", resourceCulture);
@@ -71,7 +81,32 @@ namespace DuView.Properties {
         }
         
         /// <summary>
-        ///   과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   # English messages
+        ///LANG=English
+        ///
+        ///0=DuView
+        ///1=PuruLive
+        ///2=https://github.com/kshman/DuView
+        ///94=Close
+        ///95=Menu
+        ///96=Do you want to continue?
+        ///97=Ok
+        ///98=Cancel
+        ///99=(reserved)
+        ///
+        ///101=Copy image
+        ///102=Copied to clipboard!
+        ///103=Fail to copying image to clipboard!
+        ///104=Select an archive or image
+        ///105=Archive|*.zip|All files|*.*
+        ///106=Open book
+        ///107=Cannot open the archive file!
+        ///108=Cannot acces directory!
+        ///109=No previous book!
+        ///110=No next book!
+        ///111=View book
+        ///112=Image drawing error!
+        ///113=file is archive file [나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string locale_english {
             get {
@@ -80,7 +115,42 @@ namespace DuView.Properties {
         }
         
         /// <summary>
-        ///   # 한국어 메시지과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   # 한국말 메시지
+        ///LANG=한국말
+        ///
+        ///0=두뷰
+        ///1=PuruLive
+        ///2=https://github.com/kshman/DuView
+        ///94=닫기
+        ///95=메뉴
+        ///96=계속하시겠습니까?
+        ///97=선택
+        ///98=취소
+        ///99=(기능없음)
+        ///
+        ///101=이미지 복사
+        ///102=클립보드로 복사했습니다!
+        ///103=클립보드에 넣을 수 없습니다!
+        ///104=책이나 이미지를 고르세요
+        ///105=압축 파일|*.zip|모든 파일|*.*
+        ///106=책 열기
+        ///107=열 수 없는 압축 파일입니다!
+        ///108=디렉토리를 열 수 없어요!
+        ///109=이전 책이 없어요!
+        ///110=다음 책이 없어요!
+        ///111=책 보기
+        ///112=이미지 그리기 오류!
+        ///113=파일은 압축 파일입니다
+        ///114=책 지우기
+        ///115=책을 지울 수 없었습니다
+        ///116=디렉토리입니다
+        ///117=책을 열 수 없습니다
+        ///118=찾아보기
+        ///119=실행 파일|*.exe
+        ///120=적절한 파일을 고르세요
+        ///121=외부 실행 파일이 없거나 실패했습니다
+        ///122=책 이름 바꾸기
+        ///123=책 이[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string locale_korean {
             get {

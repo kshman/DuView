@@ -3,6 +3,7 @@
 public partial class ReadForm : Form, ILocaleTranspose
 {
 	private static ReadForm? _self;
+	public static ReadForm? Self => _self;
 
 	private BookBase? Book { get; set; }
 
@@ -68,6 +69,8 @@ public partial class ReadForm : Form, ILocaleTranspose
 	public void LocaleTranspose()
 	{
 		ToolBox.LocaleTextOnControl(this);
+		ToolBox.LocaleTextOnControl(_select);
+		ToolBox.LocaleTextOnControl(_option);
 	}
 
 	private void ReadForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -79,6 +82,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	{
 		CleanBook();
 
+		Settings.KeepMoveLocation();
 		Settings.KeepLocationSize(WindowState, Location, Size);
 		Settings.SaveFileInfos();
 	}
@@ -263,6 +267,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 			case Keys.BrowserForward:
 			case Keys.OemCloseBrackets:
 				OpenNextBook();
+				break;
+
+			case Keys.Add:
+				MoveBook();
 				break;
 
 			// 기능
@@ -478,6 +486,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 	private void FileRenameMenuItem_Click(object sender, EventArgs e)
 	{
 		RenameBook();
+	}
+
+	private void FileMoveMenuItem_Click(object sender, EventArgs e)
+	{
+		MoveBook();
 	}
 
 	private void FileCopyImageMenuItem_Click(object sender, EventArgs e)
@@ -726,7 +739,9 @@ public partial class ReadForm : Form, ILocaleTranspose
 				return;
 		}
 
-		var nextfilename = Book.FindNextFileAny(_book_direction);
+
+		var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
+		var nextfilename = Book.FindNextFileAny(dir);
 
 		if (!Book.DeleteFile(out var closebook))
 		{
@@ -817,7 +832,8 @@ public partial class ReadForm : Form, ILocaleTranspose
 			return;
 
 		// 설정에 다음 파일을 열면 다음 파일을 아니면 바뀐 이름 책을 열게함
-		var nextfilename = Settings.RenameOpenNext ? Book.FindNextFileAny(_book_direction) : null;
+		var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
+		var nextfilename = Settings.RenameOpenNext ? Book.FindNextFileAny(dir) : null;
 
 		// 시작
 		if (!Book.RenameFile(filename, out var fullpath))
@@ -830,6 +846,36 @@ public partial class ReadForm : Form, ILocaleTranspose
 		CloseBook();
 
 		OpenBook(nextfilename ?? fullpath);
+	}
+
+	private void MoveBook()
+	{
+		if (Book == null)
+			return;
+
+		var dlg = new MoveForm();
+		if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+			return;
+
+		var filename = dlg.Filename;
+		var nextfilename = Book.FindNextFileAny(Types.BookDirection.Next);
+
+		//
+		if (!Book.MoveFile(filename))
+		{
+			ShowNotification(128, 129, true, 3000);
+			return;
+		}
+
+		CloseBook();
+
+		if (string.IsNullOrEmpty(nextfilename))
+			ShowNotification(106, 110);
+		else
+		{
+			_book_direction = Types.BookDirection.Next;
+			OpenBook(nextfilename);
+		}
 	}
 	#endregion
 

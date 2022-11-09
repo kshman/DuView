@@ -1,6 +1,6 @@
 ﻿namespace DuView;
 
-public partial class OptionForm : Form
+public partial class OptionForm : Form, ILocaleTranspose
 {
 	private readonly BadakFormWorker _bfw;
 	private readonly IEnumerable<string> _locales = Locale.GetLocaleList();
@@ -43,11 +43,16 @@ public partial class OptionForm : Form
 
 	private void OptionForm_Load(object sender, EventArgs e)
 	{
+		LocalesList.BeginUpdate();
+		LocalesList.Items.Clear();
 		LocalesList.Items.Add(Locale.Text(126));
 		foreach (var l in _locales)
 			LocalesList.Items.Add(l);
+		LocalesList.EndUpdate();
+	}
 
-		//
+	public void LocaleTranspose()
+	{
 		ToolBox.LocaleTextOnControl(this);
 	}
 

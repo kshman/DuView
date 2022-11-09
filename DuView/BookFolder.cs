@@ -111,6 +111,12 @@ internal class BookFolder : BookBase
 		}
 	}
 
+	public override bool MoveFile(string newfilename)
+	{
+		// 안만드러쓰요
+		return false;
+	}
+
 	public override IEnumerable<Types.BookEntryInfo> GetEntriesInfo()
 	{
 		var r = new Types.BookEntryInfo[_entries.Count];

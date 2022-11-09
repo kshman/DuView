@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\locale_english.txt" />
-    <Resource Include="Resources\locale_korean.txt" />
+    <EmbeddedResource Include="Resources\locale_english.txt" />
+    <EmbeddedResource Include="Resources\locale_korean.txt" />
   </ItemGroup>
 
   <ItemGroup>

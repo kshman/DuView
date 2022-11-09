@@ -67,6 +67,14 @@ LANG=English
 1308=Op&tion
 1309=Open &with external
 1310=Re&name
+1311=Bro&wse
+1312=&Add location
+1313=Select move location
+1314=Location
+1315=Index
+1316=&Move
+1317=&Change location
+1318=&Delete this location
 
 # 기타(1800)
 1800=Cac&he

@@ -19,6 +19,9 @@ internal static class Settings
 	private static ResizableLineDb? s_recently;
 	private static int s_max_recently = 1000;
 
+	// -- 이동
+	private static readonly List<string> s_move = new();
+
 	// -- 뷰
 	private static bool s_view_zoom = true;
 	private static Types.ViewMode s_view_mode = Types.ViewMode.FitWidth;
@@ -39,6 +42,7 @@ internal static class Settings
 	private static bool s_use_update_notification = true;
 	private static string s_external_run = string.Empty;
 	private static bool s_reload_after_external = true;
+	private static bool s_keep_book_direction = false;
 	private static string s_firefox_run = string.Empty;
 	private static bool s_extened_renamer = true;
 
@@ -114,12 +118,22 @@ internal static class Settings
 				s_use_update_notification = rk.GetBool("GeneralUpdateNotify", s_use_update_notification);
 				s_external_run = rk.GetString("ExternalRun") ?? s_external_run;
 				s_reload_after_external = rk.GetBool("ReloadAfterExternalExit", s_reload_after_external);
+				s_keep_book_direction = rk.GetBool("KeepBookDirection", s_keep_book_direction);
 				s_firefox_run = rk.GetString("FirefoxRun") ?? s_firefox_run;
 				s_extened_renamer = rk.GetBool("ExtendedRenamer", s_extened_renamer);
 
 				//
 				s_use_doubleclick_state = rk.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
 				s_use_click_page = rk.GetBool("MouseUseClickPage", s_use_click_page);
+
+				//
+				for (int i = 0; ; i++)
+				{
+					var s = rk.GetDecodingString($"MoveKeep{i}");
+					if (string.IsNullOrEmpty(s))
+						break;
+					s_move.Add(s);
+				}
 			}
 		}
 
@@ -145,7 +159,7 @@ internal static class Settings
 	}
 
 	//
-	private static void SetLocale(string locale)
+	public static void SetLocale(string locale)
 	{
 		if (!Locale.HasLocale(locale))
 		{
@@ -387,6 +401,51 @@ internal static class Settings
 	}
 
 	//
+	public static string? GetMoveLocation(int index)
+	{
+		if (index < s_move.Count)
+			return s_move[index];
+		return null;
+	}
+
+	//
+	public static void AddMoveLocation(string value)
+	{
+		s_move.Add(value);
+	}
+
+	//
+	public static void SetMoveLocation(int index, string value)
+	{
+		if (index < s_move.Count && !value.Equals(s_move[index]))
+			s_move[index] = value;
+	}
+
+	//
+	public static void DeleteMoveLocation(int index)
+	{
+		if (index < s_move.Count)
+			s_move.RemoveAt(index);
+	}
+
+	//
+	public static string[] GetMoveLocations()
+	{
+		return s_move.ToArray();
+	}
+
+	//
+	public static void KeepMoveLocation()
+	{
+		using var rk = new RegKey(c_keyname, true);
+
+		for (int i = 0; i < s_move.Count; i++)
+			rk.SetEncodingString($"MoveKeep{i}", s_move[i]);
+
+		rk.SetEncodingString($"MoveKeep{s_move.Count}", string.Empty);
+	}
+
+	//
 	public static void SaveFileInfos()
 	{
 		if (s_recently != null)
@@ -546,6 +605,22 @@ internal static class Settings
 	}
 
 	//
+	public static bool KeepBookDirection
+	{
+		get => s_keep_book_direction;
+		set
+		{
+			if (value != s_keep_book_direction)
+			{
+				s_keep_book_direction = value;
+
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("KeepBookDirection", s_keep_book_direction);
+			}
+		}
+	}
+
+	//
 	public static string FirefoxRun
 	{
 		get => s_firefox_run;
@@ -555,8 +630,8 @@ internal static class Settings
 			{
 				s_firefox_run = value;
 
-				using (var rk = new RegKey(c_keyname, true))
-					rk.SetString("FirefoxRun", s_firefox_run);
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetString("FirefoxRun", s_firefox_run);
 			}
 		}
 	}
@@ -571,8 +646,8 @@ internal static class Settings
 			{
 				s_extened_renamer = value;
 
-				using (var rk = new RegKey(c_keyname, true))
-					rk.SetBool("ExtendedRenamer", s_extened_renamer);
+				using var rk = new RegKey(c_keyname, true);
+				rk.SetBool("ExtendedRenamer", s_extened_renamer);
 			}
 		}
 	}

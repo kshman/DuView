@@ -1,6 +1,6 @@
 ﻿namespace DuView;
 
-public partial class PageSelectForm : Form
+public partial class PageSelectForm : Form, ILocaleTranspose
 {
 	public int SelectedPage { get; private set; }
 
@@ -22,9 +22,11 @@ public partial class PageSelectForm : Form
 
 	private void PageSelectForm_Load(object sender, EventArgs e)
 	{
-		//
-		ToolBox.LocaleTextOnControl(this);
+	}
 
+	public void LocaleTranspose()
+	{
+		ToolBox.LocaleTextOnControl(this);
 	}
 
 	private void PageSelectForm_FormClosing(object sender, FormClosingEventArgs e)
