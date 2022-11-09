@@ -63,6 +63,9 @@ public partial class OptionForm : Form, ILocaleTranspose
 
 		if (ExternalRunText.TextLength > 0)
 			Settings.ExternalRun = ExternalRunText.Text;
+
+		if (FirefoxRunText.TextLength > 0)
+			Settings.FirefoxRun = FirefoxRunText.Text;
 	}
 
 	private void OptionForm_MouseDown(object sender, MouseEventArgs e)
@@ -171,6 +174,24 @@ public partial class OptionForm : Form, ILocaleTranspose
 	private void ReloadExternalExitCheck_CheckedChanged(object sender, EventArgs e)
 	{
 		Settings.ReloadAfterExternal = ReloadExternalExitCheck.Checked;
+	}
+
+	private void FirefoxRunButton_Click(object sender, EventArgs e)
+	{
+		var dlg = new OpenFileDialog()
+		{
+			Title = Locale.Text(120),
+			Filter = Locale.Text(119),
+			InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+		};
+
+		if (dlg.ShowDialog() == DialogResult.OK)
+			FirefoxRunText.Text = dlg.FileName;
+	}
+
+	private void ExtendedRenamerCheck_CheckedChanged(object sender, EventArgs e)
+	{
+		Settings.ExtendedRenamer = ExtendedRenamerCheck.Checked;
 	}
 	#endregion // 기본
 

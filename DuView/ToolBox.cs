@@ -209,6 +209,8 @@ public static class ToolBox
 				t.Text = Locale.TextAsInt(t.Text);
 			else if (c is TabPage p)
 				p.Text = Locale.TextAsInt(p.Text);
+			else if (c is GroupBox g)
+				g.Text = Locale.TextAsInt(g.Text);
 			else if (c is ToolStrip i)
 			{
 				i.Text = Locale.TextAsInt(i.Text);

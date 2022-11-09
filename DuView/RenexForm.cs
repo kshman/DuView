@@ -108,13 +108,18 @@ public partial class RenexForm : Form, ILocaleTranspose
 		if (dot > 0)
 			name = name[..dot];
 
-		var keyword = name.Replace('"', '\'');
+		var keyword = Uri.EscapeDataString(name.Replace('"', '\''));
+
+		// -search 키워드
+		// -private-window URL
+		// -new-tab URL
+		// -foreground
+		var op = "-foreground -private-window";
+		var se = $"\"https://www.google.com/search?client=duview&q={keyword}\"";
 
 		var ps = new System.Diagnostics.Process();
 		ps.StartInfo.FileName = Settings.FirefoxRun;
-		// -search 키워드
-		// -private-window --new-tab
-		ps.StartInfo.Arguments = $"-search \"{keyword}\" --new-tab --foreground";
+		ps.StartInfo.Arguments = $"{op} {se}";
 		ps.StartInfo.UseShellExecute = false;
 		ps.StartInfo.CreateNoWindow = true;
 		ps.EnableRaisingEvents = false;

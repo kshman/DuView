@@ -33,14 +33,18 @@
 			this.SystemButton = new Du.WinForms.BadakSystemButton();
 			this.OptionTab = new System.Windows.Forms.TabControl();
 			this.GeneralPage = new System.Windows.Forms.TabPage();
-			this.ReloadExternalExitCheck = new System.Windows.Forms.CheckBox();
+			this.ExtendedRenamerCheck = new System.Windows.Forms.CheckBox();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.FirefoxRunButton = new System.Windows.Forms.Button();
+			this.FirefoxRunText = new System.Windows.Forms.TextBox();
+			this.ExternalRunGroup = new System.Windows.Forms.GroupBox();
 			this.ExternalRunButton = new System.Windows.Forms.Button();
 			this.ExternalRunText = new System.Windows.Forms.TextBox();
-			this.ExternalRunLabel = new System.Windows.Forms.Label();
-			this.CacheSizeValue = new System.Windows.Forms.NumericUpDown();
-			this.label1 = new System.Windows.Forms.Label();
+			this.ReloadExternalExitCheck = new System.Windows.Forms.CheckBox();
+			this.CacheSizeGroup = new System.Windows.Forms.GroupBox();
 			this.CacheMeasureLabel = new System.Windows.Forms.Label();
-			this.CacheSizeLabel = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
+			this.CacheSizeValue = new System.Windows.Forms.NumericUpDown();
 			this.UpdateNotifyCheck = new System.Windows.Forms.CheckBox();
 			this.AlwayTopCheck = new System.Windows.Forms.CheckBox();
 			this.ConfirmDeleteCheck = new System.Windows.Forms.CheckBox();
@@ -62,6 +66,9 @@
 			this.LocalesList = new System.Windows.Forms.ListBox();
 			this.OptionTab.SuspendLayout();
 			this.GeneralPage.SuspendLayout();
+			this.groupBox1.SuspendLayout();
+			this.ExternalRunGroup.SuspendLayout();
+			this.CacheSizeGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CacheSizeValue)).BeginInit();
 			this.ViewPage.SuspendLayout();
 			this.KmPage.SuspendLayout();
@@ -76,7 +83,7 @@
 			this.TitleLabel.Location = new System.Drawing.Point(5, 5);
 			this.TitleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.TitleLabel.Name = "TitleLabel";
-			this.TitleLabel.Size = new System.Drawing.Size(41, 20);
+			this.TitleLabel.Size = new System.Drawing.Size(51, 20);
 			this.TitleLabel.TabIndex = 1;
 			this.TitleLabel.Text = "2400";
 			this.TitleLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OptionForm_MouseDown);
@@ -136,14 +143,10 @@
 			// GeneralPage
 			// 
 			this.GeneralPage.AutoScroll = true;
-			this.GeneralPage.Controls.Add(this.ReloadExternalExitCheck);
-			this.GeneralPage.Controls.Add(this.ExternalRunButton);
-			this.GeneralPage.Controls.Add(this.ExternalRunText);
-			this.GeneralPage.Controls.Add(this.ExternalRunLabel);
-			this.GeneralPage.Controls.Add(this.CacheSizeValue);
-			this.GeneralPage.Controls.Add(this.label1);
-			this.GeneralPage.Controls.Add(this.CacheMeasureLabel);
-			this.GeneralPage.Controls.Add(this.CacheSizeLabel);
+			this.GeneralPage.Controls.Add(this.ExtendedRenamerCheck);
+			this.GeneralPage.Controls.Add(this.groupBox1);
+			this.GeneralPage.Controls.Add(this.ExternalRunGroup);
+			this.GeneralPage.Controls.Add(this.CacheSizeGroup);
 			this.GeneralPage.Controls.Add(this.UpdateNotifyCheck);
 			this.GeneralPage.Controls.Add(this.AlwayTopCheck);
 			this.GeneralPage.Controls.Add(this.ConfirmDeleteCheck);
@@ -159,21 +162,64 @@
 			this.GeneralPage.Text = "2401";
 			this.GeneralPage.UseVisualStyleBackColor = true;
 			// 
-			// ReloadExternalExitCheck
+			// ExtendedRenamerCheck
 			// 
-			this.ReloadExternalExitCheck.AutoSize = true;
-			this.ReloadExternalExitCheck.Location = new System.Drawing.Point(320, 232);
-			this.ReloadExternalExitCheck.Name = "ReloadExternalExitCheck";
-			this.ReloadExternalExitCheck.Size = new System.Drawing.Size(60, 24);
-			this.ReloadExternalExitCheck.TabIndex = 15;
-			this.ReloadExternalExitCheck.Text = "2430";
-			this.ReloadExternalExitCheck.UseVisualStyleBackColor = true;
-			this.ReloadExternalExitCheck.CheckedChanged += new System.EventHandler(this.ReloadExternalExitCheck_CheckedChanged);
+			this.ExtendedRenamerCheck.AutoSize = true;
+			this.ExtendedRenamerCheck.Location = new System.Drawing.Point(17, 316);
+			this.ExtendedRenamerCheck.Name = "ExtendedRenamerCheck";
+			this.ExtendedRenamerCheck.Size = new System.Drawing.Size(70, 24);
+			this.ExtendedRenamerCheck.TabIndex = 22;
+			this.ExtendedRenamerCheck.Text = "2442";
+			this.ExtendedRenamerCheck.UseVisualStyleBackColor = true;
+			this.ExtendedRenamerCheck.CheckedChanged += new System.EventHandler(this.ExtendedRenamerCheck_CheckedChanged);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.FirefoxRunButton);
+			this.groupBox1.Controls.Add(this.FirefoxRunText);
+			this.groupBox1.Location = new System.Drawing.Point(284, 225);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(310, 97);
+			this.groupBox1.TabIndex = 21;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "2431";
+			// 
+			// FirefoxRunButton
+			// 
+			this.FirefoxRunButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.FirefoxRunButton.Location = new System.Drawing.Point(212, 62);
+			this.FirefoxRunButton.Name = "FirefoxRunButton";
+			this.FirefoxRunButton.Size = new System.Drawing.Size(92, 28);
+			this.FirefoxRunButton.TabIndex = 14;
+			this.FirefoxRunButton.Text = "118";
+			this.FirefoxRunButton.UseVisualStyleBackColor = true;
+			this.FirefoxRunButton.Click += new System.EventHandler(this.FirefoxRunButton_Click);
+			// 
+			// FirefoxRunText
+			// 
+			this.FirefoxRunText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.FirefoxRunText.Location = new System.Drawing.Point(6, 29);
+			this.FirefoxRunText.Name = "FirefoxRunText";
+			this.FirefoxRunText.Size = new System.Drawing.Size(298, 27);
+			this.FirefoxRunText.TabIndex = 13;
+			// 
+			// ExternalRunGroup
+			// 
+			this.ExternalRunGroup.Controls.Add(this.ExternalRunButton);
+			this.ExternalRunGroup.Controls.Add(this.ExternalRunText);
+			this.ExternalRunGroup.Controls.Add(this.ReloadExternalExitCheck);
+			this.ExternalRunGroup.Location = new System.Drawing.Point(284, 99);
+			this.ExternalRunGroup.Name = "ExternalRunGroup";
+			this.ExternalRunGroup.Size = new System.Drawing.Size(310, 120);
+			this.ExternalRunGroup.TabIndex = 20;
+			this.ExternalRunGroup.TabStop = false;
+			this.ExternalRunGroup.Text = "2429";
 			// 
 			// ExternalRunButton
 			// 
 			this.ExternalRunButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.ExternalRunButton.Location = new System.Drawing.Point(502, 202);
+			this.ExternalRunButton.Location = new System.Drawing.Point(212, 62);
 			this.ExternalRunButton.Name = "ExternalRunButton";
 			this.ExternalRunButton.Size = new System.Drawing.Size(92, 28);
 			this.ExternalRunButton.TabIndex = 14;
@@ -185,70 +231,75 @@
 			// 
 			this.ExternalRunText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.ExternalRunText.Location = new System.Drawing.Point(320, 169);
+			this.ExternalRunText.Location = new System.Drawing.Point(6, 29);
 			this.ExternalRunText.Name = "ExternalRunText";
-			this.ExternalRunText.Size = new System.Drawing.Size(274, 27);
+			this.ExternalRunText.Size = new System.Drawing.Size(298, 27);
 			this.ExternalRunText.TabIndex = 13;
 			// 
-			// ExternalRunLabel
+			// ReloadExternalExitCheck
 			// 
-			this.ExternalRunLabel.AutoSize = true;
-			this.ExternalRunLabel.Location = new System.Drawing.Point(299, 146);
-			this.ExternalRunLabel.Name = "ExternalRunLabel";
-			this.ExternalRunLabel.Size = new System.Drawing.Size(41, 20);
-			this.ExternalRunLabel.TabIndex = 12;
-			this.ExternalRunLabel.Text = "2429";
+			this.ReloadExternalExitCheck.AutoSize = true;
+			this.ReloadExternalExitCheck.Location = new System.Drawing.Point(30, 92);
+			this.ReloadExternalExitCheck.Name = "ReloadExternalExitCheck";
+			this.ReloadExternalExitCheck.Size = new System.Drawing.Size(70, 24);
+			this.ReloadExternalExitCheck.TabIndex = 15;
+			this.ReloadExternalExitCheck.Text = "2430";
+			this.ReloadExternalExitCheck.UseVisualStyleBackColor = true;
+			this.ReloadExternalExitCheck.CheckedChanged += new System.EventHandler(this.ReloadExternalExitCheck_CheckedChanged);
+			// 
+			// CacheSizeGroup
+			// 
+			this.CacheSizeGroup.Controls.Add(this.CacheMeasureLabel);
+			this.CacheSizeGroup.Controls.Add(this.label1);
+			this.CacheSizeGroup.Controls.Add(this.CacheSizeValue);
+			this.CacheSizeGroup.Location = new System.Drawing.Point(284, 7);
+			this.CacheSizeGroup.Name = "CacheSizeGroup";
+			this.CacheSizeGroup.Size = new System.Drawing.Size(310, 86);
+			this.CacheSizeGroup.TabIndex = 19;
+			this.CacheSizeGroup.TabStop = false;
+			this.CacheSizeGroup.Text = "2427";
+			// 
+			// CacheMeasureLabel
+			// 
+			this.CacheMeasureLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.CacheMeasureLabel.AutoSize = true;
+			this.CacheMeasureLabel.Location = new System.Drawing.Point(253, 33);
+			this.CacheMeasureLabel.Name = "CacheMeasureLabel";
+			this.CacheMeasureLabel.Size = new System.Drawing.Size(51, 20);
+			this.CacheMeasureLabel.TabIndex = 9;
+			this.CacheMeasureLabel.Text = "2428";
+			// 
+			// label1
+			// 
+			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(164, 57);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(80, 20);
+			this.label1.TabIndex = 10;
+			this.label1.Text = "(0 ~ 1024)";
 			// 
 			// CacheSizeValue
 			// 
 			this.CacheSizeValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.CacheSizeValue.Location = new System.Drawing.Point(320, 63);
+			this.CacheSizeValue.Location = new System.Drawing.Point(6, 30);
 			this.CacheSizeValue.Maximum = new decimal(new int[] {
             1024,
             0,
             0,
             0});
 			this.CacheSizeValue.Name = "CacheSizeValue";
-			this.CacheSizeValue.Size = new System.Drawing.Size(187, 27);
+			this.CacheSizeValue.Size = new System.Drawing.Size(232, 27);
 			this.CacheSizeValue.TabIndex = 11;
 			this.CacheSizeValue.ThousandsSeparator = true;
-			// 
-			// label1
-			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(433, 90);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(80, 20);
-			this.label1.TabIndex = 10;
-			this.label1.Text = "(0 ~ 1024)";
-			// 
-			// CacheMeasureLabel
-			// 
-			this.CacheMeasureLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.CacheMeasureLabel.AutoSize = true;
-			this.CacheMeasureLabel.Location = new System.Drawing.Point(522, 66);
-			this.CacheMeasureLabel.Name = "CacheMeasureLabel";
-			this.CacheMeasureLabel.Size = new System.Drawing.Size(41, 20);
-			this.CacheMeasureLabel.TabIndex = 9;
-			this.CacheMeasureLabel.Text = "2428";
-			// 
-			// CacheSizeLabel
-			// 
-			this.CacheSizeLabel.AutoSize = true;
-			this.CacheSizeLabel.Location = new System.Drawing.Point(299, 40);
-			this.CacheSizeLabel.Name = "CacheSizeLabel";
-			this.CacheSizeLabel.Size = new System.Drawing.Size(41, 20);
-			this.CacheSizeLabel.TabIndex = 7;
-			this.CacheSizeLabel.Text = "2427";
 			// 
 			// UpdateNotifyCheck
 			// 
 			this.UpdateNotifyCheck.AutoSize = true;
 			this.UpdateNotifyCheck.Location = new System.Drawing.Point(17, 275);
 			this.UpdateNotifyCheck.Name = "UpdateNotifyCheck";
-			this.UpdateNotifyCheck.Size = new System.Drawing.Size(60, 24);
+			this.UpdateNotifyCheck.Size = new System.Drawing.Size(70, 24);
 			this.UpdateNotifyCheck.TabIndex = 6;
 			this.UpdateNotifyCheck.Text = "2426";
 			this.UpdateNotifyCheck.UseVisualStyleBackColor = true;
@@ -259,7 +310,7 @@
 			this.AlwayTopCheck.AutoSize = true;
 			this.AlwayTopCheck.Location = new System.Drawing.Point(17, 232);
 			this.AlwayTopCheck.Name = "AlwayTopCheck";
-			this.AlwayTopCheck.Size = new System.Drawing.Size(60, 24);
+			this.AlwayTopCheck.Size = new System.Drawing.Size(70, 24);
 			this.AlwayTopCheck.TabIndex = 5;
 			this.AlwayTopCheck.Text = "2425";
 			this.AlwayTopCheck.UseVisualStyleBackColor = true;
@@ -270,7 +321,7 @@
 			this.ConfirmDeleteCheck.AutoSize = true;
 			this.ConfirmDeleteCheck.Location = new System.Drawing.Point(17, 189);
 			this.ConfirmDeleteCheck.Name = "ConfirmDeleteCheck";
-			this.ConfirmDeleteCheck.Size = new System.Drawing.Size(60, 24);
+			this.ConfirmDeleteCheck.Size = new System.Drawing.Size(70, 24);
 			this.ConfirmDeleteCheck.TabIndex = 4;
 			this.ConfirmDeleteCheck.Text = "2424";
 			this.ConfirmDeleteCheck.UseVisualStyleBackColor = true;
@@ -281,7 +332,7 @@
 			this.EscExitCheck.AutoSize = true;
 			this.EscExitCheck.Location = new System.Drawing.Point(17, 60);
 			this.EscExitCheck.Name = "EscExitCheck";
-			this.EscExitCheck.Size = new System.Drawing.Size(60, 24);
+			this.EscExitCheck.Size = new System.Drawing.Size(70, 24);
 			this.EscExitCheck.TabIndex = 2;
 			this.EscExitCheck.Text = "2421";
 			this.EscExitCheck.UseVisualStyleBackColor = true;
@@ -292,7 +343,7 @@
 			this.RunOnceCheck.AutoSize = true;
 			this.RunOnceCheck.Location = new System.Drawing.Point(17, 17);
 			this.RunOnceCheck.Name = "RunOnceCheck";
-			this.RunOnceCheck.Size = new System.Drawing.Size(60, 24);
+			this.RunOnceCheck.Size = new System.Drawing.Size(70, 24);
 			this.RunOnceCheck.TabIndex = 1;
 			this.RunOnceCheck.Text = "2420";
 			this.RunOnceCheck.UseVisualStyleBackColor = true;
@@ -303,7 +354,7 @@
 			this.UseMagneticCheck.AutoSize = true;
 			this.UseMagneticCheck.Location = new System.Drawing.Point(17, 146);
 			this.UseMagneticCheck.Name = "UseMagneticCheck";
-			this.UseMagneticCheck.Size = new System.Drawing.Size(60, 24);
+			this.UseMagneticCheck.Size = new System.Drawing.Size(70, 24);
 			this.UseMagneticCheck.TabIndex = 0;
 			this.UseMagneticCheck.Text = "2423";
 			this.UseMagneticCheck.UseVisualStyleBackColor = true;
@@ -313,11 +364,11 @@
 			// 
 			this.ViewPage.AutoScroll = true;
 			this.ViewPage.Controls.Add(this.label2);
-			this.ViewPage.Location = new System.Drawing.Point(4, 24);
+			this.ViewPage.Location = new System.Drawing.Point(4, 29);
 			this.ViewPage.Margin = new System.Windows.Forms.Padding(4);
 			this.ViewPage.Name = "ViewPage";
-			this.ViewPage.Padding = new System.Windows.Forms.Padding(4);
-			this.ViewPage.Size = new System.Drawing.Size(601, 476);
+			this.ViewPage.Padding = new System.Windows.Forms.Padding(4); ;
+			this.ViewPage.Size = new System.Drawing.Size(601, 471);
 			this.ViewPage.TabIndex = 1;
 			this.ViewPage.Text = "2402";
 			this.ViewPage.UseVisualStyleBackColor = true;
@@ -327,7 +378,7 @@
 			this.label2.AutoSize = true;
 			this.label2.Location = new System.Drawing.Point(20, 20);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(41, 20);
+			this.label2.Size = new System.Drawing.Size(51, 20);
 			this.label2.TabIndex = 0;
 			this.label2.Text = "2410";
 			// 
@@ -337,10 +388,10 @@
 			this.KmPage.Controls.Add(this.UseClickToPageCheck);
 			this.KmPage.Controls.Add(this.UseDoubleClickStateCheck);
 			this.KmPage.Controls.Add(this.label3);
-			this.KmPage.Location = new System.Drawing.Point(4, 24);
+			this.KmPage.Location = new System.Drawing.Point(4, 29);
 			this.KmPage.Margin = new System.Windows.Forms.Padding(4);
 			this.KmPage.Name = "KmPage";
-			this.KmPage.Size = new System.Drawing.Size(601, 476);
+			this.KmPage.Size = new System.Drawing.Size(601, 471);
 			this.KmPage.TabIndex = 2;
 			this.KmPage.Text = "2403";
 			this.KmPage.UseVisualStyleBackColor = true;
@@ -350,7 +401,7 @@
 			this.UseClickToPageCheck.AutoSize = true;
 			this.UseClickToPageCheck.Location = new System.Drawing.Point(17, 60);
 			this.UseClickToPageCheck.Name = "UseClickToPageCheck";
-			this.UseClickToPageCheck.Size = new System.Drawing.Size(60, 24);
+			this.UseClickToPageCheck.Size = new System.Drawing.Size(70, 24);
 			this.UseClickToPageCheck.TabIndex = 3;
 			this.UseClickToPageCheck.Text = "2441";
 			this.UseClickToPageCheck.UseVisualStyleBackColor = true;
@@ -361,7 +412,7 @@
 			this.UseDoubleClickStateCheck.AutoSize = true;
 			this.UseDoubleClickStateCheck.Location = new System.Drawing.Point(17, 17);
 			this.UseDoubleClickStateCheck.Name = "UseDoubleClickStateCheck";
-			this.UseDoubleClickStateCheck.Size = new System.Drawing.Size(60, 24);
+			this.UseDoubleClickStateCheck.Size = new System.Drawing.Size(70, 24);
 			this.UseDoubleClickStateCheck.TabIndex = 2;
 			this.UseDoubleClickStateCheck.Text = "2440";
 			this.UseDoubleClickStateCheck.UseVisualStyleBackColor = true;
@@ -372,7 +423,7 @@
 			this.label3.AutoSize = true;
 			this.label3.Location = new System.Drawing.Point(20, 20);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(41, 20);
+			this.label3.Size = new System.Drawing.Size(51, 20);
 			this.label3.TabIndex = 1;
 			this.label3.Text = "2410";
 			// 
@@ -380,10 +431,10 @@
 			// 
 			this.PadPage.AutoScroll = true;
 			this.PadPage.Controls.Add(this.label4);
-			this.PadPage.Location = new System.Drawing.Point(4, 24);
+			this.PadPage.Location = new System.Drawing.Point(4, 29);
 			this.PadPage.Margin = new System.Windows.Forms.Padding(4);
 			this.PadPage.Name = "PadPage";
-			this.PadPage.Size = new System.Drawing.Size(601, 476);
+			this.PadPage.Size = new System.Drawing.Size(601, 471);
 			this.PadPage.TabIndex = 4;
 			this.PadPage.Text = "2404";
 			this.PadPage.UseVisualStyleBackColor = true;
@@ -393,17 +444,17 @@
 			this.label4.AutoSize = true;
 			this.label4.Location = new System.Drawing.Point(20, 20);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(41, 20);
+			this.label4.Size = new System.Drawing.Size(51, 20);
 			this.label4.TabIndex = 2;
 			this.label4.Text = "2410";
 			// 
 			// SecurityPage
 			// 
 			this.SecurityPage.AutoScroll = true;
-			this.SecurityPage.Location = new System.Drawing.Point(4, 24);
+			this.SecurityPage.Location = new System.Drawing.Point(4, 29);
 			this.SecurityPage.Margin = new System.Windows.Forms.Padding(4);
 			this.SecurityPage.Name = "SecurityPage";
-			this.SecurityPage.Size = new System.Drawing.Size(601, 476);
+			this.SecurityPage.Size = new System.Drawing.Size(601, 471);
 			this.SecurityPage.TabIndex = 3;
 			this.SecurityPage.Text = "2405";
 			this.SecurityPage.UseVisualStyleBackColor = true;
@@ -413,9 +464,9 @@
 			this.LocalePage.Controls.Add(this.CreditScroll);
 			this.LocalePage.Controls.Add(this.LocaleToRestartLabel);
 			this.LocalePage.Controls.Add(this.LocalesList);
-			this.LocalePage.Location = new System.Drawing.Point(4, 24);
+			this.LocalePage.Location = new System.Drawing.Point(4, 29);
 			this.LocalePage.Name = "LocalePage";
-			this.LocalePage.Size = new System.Drawing.Size(601, 476);
+			this.LocalePage.Size = new System.Drawing.Size(601, 471);
 			this.LocalePage.TabIndex = 5;
 			this.LocalePage.Text = "2406";
 			this.LocalePage.UseVisualStyleBackColor = true;
@@ -431,16 +482,16 @@
 			this.CreditScroll.Location = new System.Drawing.Point(179, 3);
 			this.CreditScroll.Name = "CreditScroll";
 			this.CreditScroll.Padding = new System.Windows.Forms.Padding(10, 10, 0, 0);
-			this.CreditScroll.Size = new System.Drawing.Size(419, 431);
+			this.CreditScroll.Size = new System.Drawing.Size(419, 436);
 			this.CreditScroll.TabIndex = 2;
 			// 
 			// LocaleToRestartLabel
 			// 
 			this.LocaleToRestartLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.LocaleToRestartLabel.AutoSize = true;
-			this.LocaleToRestartLabel.Location = new System.Drawing.Point(179, 437);
+			this.LocaleToRestartLabel.Location = new System.Drawing.Point(179, 442);
 			this.LocaleToRestartLabel.Name = "LocaleToRestartLabel";
-			this.LocaleToRestartLabel.Size = new System.Drawing.Size(33, 20);
+			this.LocaleToRestartLabel.Size = new System.Drawing.Size(43, 20);
 			this.LocaleToRestartLabel.TabIndex = 1;
 			this.LocaleToRestartLabel.Text = "125";
 			// 
@@ -452,7 +503,7 @@
 			this.LocalesList.ItemHeight = 20;
 			this.LocalesList.Location = new System.Drawing.Point(3, 3);
 			this.LocalesList.Name = "LocalesList";
-			this.LocalesList.Size = new System.Drawing.Size(170, 424);
+			this.LocalesList.Size = new System.Drawing.Size(170, 444);
 			this.LocalesList.TabIndex = 0;
 			this.LocalesList.SelectedIndexChanged += new System.EventHandler(this.LocalesList_SelectedIndexChanged);
 			// 
@@ -487,6 +538,12 @@
 			this.OptionTab.ResumeLayout(false);
 			this.GeneralPage.ResumeLayout(false);
 			this.GeneralPage.PerformLayout();
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
+			this.ExternalRunGroup.ResumeLayout(false);
+			this.ExternalRunGroup.PerformLayout();
+			this.CacheSizeGroup.ResumeLayout(false);
+			this.CacheSizeGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CacheSizeValue)).EndInit();
 			this.ViewPage.ResumeLayout(false);
 			this.ViewPage.PerformLayout();
@@ -516,7 +573,6 @@
 		private CheckBox UseMagneticCheck;
 		private Label label1;
 		private Label CacheMeasureLabel;
-		private Label CacheSizeLabel;
 		private CheckBox UpdateNotifyCheck;
 		private CheckBox AlwayTopCheck;
 		private CheckBox ConfirmDeleteCheck;
@@ -529,11 +585,16 @@
 		private CheckBox UseDoubleClickStateCheck;
 		private Button ExternalRunButton;
 		private TextBox ExternalRunText;
-		private Label ExternalRunLabel;
 		private CheckBox ReloadExternalExitCheck;
 		private TabPage LocalePage;
 		private Label LocaleToRestartLabel;
 		private ListBox LocalesList;
 		private ScrollingBox CreditScroll;
+		private GroupBox groupBox1;
+		private Button FirefoxRunButton;
+		private TextBox FirefoxRunText;
+		private GroupBox ExternalRunGroup;
+		private GroupBox CacheSizeGroup;
+		private CheckBox ExtendedRenamerCheck;
 	}
 }

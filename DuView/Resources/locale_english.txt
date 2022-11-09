@@ -37,7 +37,7 @@ LANG=English
 124=Destination already exist!
 125=Require restart for apply locale
 126=System default
-127=Search
+127=&Search
 128=Move book
 129=Fail to move book!
 
@@ -144,6 +144,8 @@ LANG=English
 2428=MB
 2429=External run
 2430=Reload book after external exit
+2431=Browser for search
 2440=Use double click to maximize/minimize
 2441=Use click to changing prev/next page
+2442=Use extended renamer
 
