@@ -21,7 +21,7 @@ public partial class RenexForm : Form
 			BodyAsTitle = true,
 		};
 
-		ToolBox.GlobalizationLocaleText(this);
+		ToolBox.LocaleTextOnControl(this);
 	}
 
 	private void RenexForm_Load(object sender, EventArgs e)

@@ -570,6 +570,16 @@ namespace WebPWrapper
 			catch (Exception ex) { throw new Exception(ex.Message + "\r\nIn WebP.GetVersion"); }
 		}
 
+		public static bool IsWebP(byte[] rawWebP)
+		{
+			return
+				rawWebP.Length > 16 &&
+				rawWebP[8] == 'W' &&
+				rawWebP[9] == 'E' &&
+				rawWebP[10] == 'B' &&
+				rawWebP[11] == 'P';
+		}
+
 		/// <summary>Get info of WEBP data</summary>
 		/// <param name="rawWebP">The data of WebP</param>
 		/// <param name="width">width of image</param>
@@ -868,15 +878,15 @@ namespace WebPWrapper
 			}
 		}
 
-		private static int MyWriter([InAttribute()] IntPtr data, UIntPtr data_size, ref WebPPicture picture)
+		private static int MyWriter([In()] IntPtr data, UIntPtr data_size, ref WebPPicture picture)
 		{
-			UnsafeNativeMethods.CopyMemory(picture.custom_ptr, data, (uint)data_size);
+			UnsafeNativeMethods.CopyMemory(picture.custom_ptr, data, data_size);
 			//picture.custom_ptr = IntPtr.Add(picture.custom_ptr, (int)data_size);   //Only in .NET > 4.0
 			picture.custom_ptr = new IntPtr(picture.custom_ptr.ToInt64() + (int)data_size);
 			return 1;
 		}
 
-		private delegate int MyWriterDelegate([InAttribute()] IntPtr data, UIntPtr data_size, ref WebPPicture picture);
+		private delegate int MyWriterDelegate([In()] IntPtr data, UIntPtr data_size, ref WebPPicture picture);
 		#endregion
 	}
 
@@ -885,8 +895,8 @@ namespace WebPWrapper
 	internal sealed partial class UnsafeNativeMethods
 	{
 
-		[DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
-		internal static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
+		[DllImport("kernel32.dll", EntryPoint = "RtlCopyMemory", SetLastError = false)]
+		internal static extern void CopyMemory(IntPtr dest, IntPtr src, UIntPtr count);
 
 		private static readonly int WEBP_DECODER_ABI_VERSION = 0x0208;
 
@@ -924,9 +934,9 @@ namespace WebPWrapper
 			};
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPGetFeaturesInternal")]
-		private static extern VP8StatusCode WebPGetFeaturesInternal_x86([InAttribute()] IntPtr rawWebP, UIntPtr data_size, ref WebPBitstreamFeatures features, int WEBP_DECODER_ABI_VERSION);
+		private static extern VP8StatusCode WebPGetFeaturesInternal_x86([In()] IntPtr rawWebP, UIntPtr data_size, ref WebPBitstreamFeatures features, int WEBP_DECODER_ABI_VERSION);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPGetFeaturesInternal")]
-		private static extern VP8StatusCode WebPGetFeaturesInternal_x64([InAttribute()] IntPtr rawWebP, UIntPtr data_size, ref WebPBitstreamFeatures features, int WEBP_DECODER_ABI_VERSION);
+		private static extern VP8StatusCode WebPGetFeaturesInternal_x64([In()] IntPtr rawWebP, UIntPtr data_size, ref WebPBitstreamFeatures features, int WEBP_DECODER_ABI_VERSION);
 
 		/// <summary>Activate the lossless compression mode with the desired efficiency</summary>
 		/// <param name="config">The WebPConfig struct</param>
@@ -1103,9 +1113,9 @@ namespace WebPWrapper
 			};
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPGetInfo")]
-		private static extern int WebPGetInfo_x86([InAttribute()] IntPtr data, UIntPtr data_size, out int width, out int height);
+		private static extern int WebPGetInfo_x86([In()] IntPtr data, UIntPtr data_size, out int width, out int height);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPGetInfo")]
-		private static extern int WebPGetInfo_x64([InAttribute()] IntPtr data, UIntPtr data_size, out int width, out int height);
+		private static extern int WebPGetInfo_x64([In()] IntPtr data, UIntPtr data_size, out int width, out int height);
 
 		/// <summary>Decode WEBP image pointed to by *data and returns BGR samples into a preallocated buffer</summary>
 		/// <param name="data">Pointer to WebP image data</param>
@@ -1130,9 +1140,9 @@ namespace WebPWrapper
 			}
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPDecodeBGRInto")]
-		private static extern IntPtr WebPDecodeBGRInto_x86([InAttribute()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
+		private static extern IntPtr WebPDecodeBGRInto_x86([In()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPDecodeBGRInto")]
-		private static extern IntPtr WebPDecodeBGRInto_x64([InAttribute()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
+		private static extern IntPtr WebPDecodeBGRInto_x64([In()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
 
 		/// <summary>Decode WEBP image pointed to by *data and returns BGRA samples into a preallocated buffer</summary>
 		/// <param name="data">Pointer to WebP image data</param>
@@ -1157,9 +1167,9 @@ namespace WebPWrapper
 			}
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPDecodeBGRAInto")]
-		private static extern IntPtr WebPDecodeBGRAInto_x86([InAttribute()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
+		private static extern IntPtr WebPDecodeBGRAInto_x86([In()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPDecodeBGRAInto")]
-		private static extern IntPtr WebPDecodeBGRAInto_x64([InAttribute()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
+		private static extern IntPtr WebPDecodeBGRAInto_x64([In()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
 
 		/// <summary>Decode WEBP image pointed to by *data and returns ARGB samples into a preallocated buffer</summary>
 		/// <param name="data">Pointer to WebP image data</param>
@@ -1184,9 +1194,9 @@ namespace WebPWrapper
 			}
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPDecodeARGBInto")]
-		private static extern IntPtr WebPDecodeARGBInto_x86([InAttribute()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
+		private static extern IntPtr WebPDecodeARGBInto_x86([In()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPDecodeARGBInto")]
-		private static extern IntPtr WebPDecodeARGBInto_x64([InAttribute()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
+		private static extern IntPtr WebPDecodeARGBInto_x64([In()] IntPtr data, UIntPtr data_size, IntPtr output_buffer, int output_buffer_size, int output_stride);
 
 		/// <summary>Initialize the configuration as empty. This function must always be called first, unless WebPGetFeatures() is to be called</summary>
 		/// <param name="webPDecoderConfig">Configuration structure</param>
@@ -1263,9 +1273,9 @@ namespace WebPWrapper
 			};
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeBGR")]
-		private static extern int WebPEncodeBGR_x86([InAttribute()] IntPtr bgr, int width, int height, int stride, float quality_factor, out IntPtr output);
+		private static extern int WebPEncodeBGR_x86([In()] IntPtr bgr, int width, int height, int stride, float quality_factor, out IntPtr output);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeBGR")]
-		private static extern int WebPEncodeBGR_x64([InAttribute()] IntPtr bgr, int width, int height, int stride, float quality_factor, out IntPtr output);
+		private static extern int WebPEncodeBGR_x64([In()] IntPtr bgr, int width, int height, int stride, float quality_factor, out IntPtr output);
 
 		/// <summary>Lossy encoding images</summary>
 		/// <param name="bgr">Pointer to BGRA image data</param>
@@ -1285,9 +1295,9 @@ namespace WebPWrapper
 			};
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeBGRA")]
-		private static extern int WebPEncodeBGRA_x86([InAttribute()] IntPtr bgra, int width, int height, int stride, float quality_factor, out IntPtr output);
+		private static extern int WebPEncodeBGRA_x86([In()] IntPtr bgra, int width, int height, int stride, float quality_factor, out IntPtr output);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeBGRA")]
-		private static extern int WebPEncodeBGRA_x64([InAttribute()] IntPtr bgra, int width, int height, int stride, float quality_factor, out IntPtr output);
+		private static extern int WebPEncodeBGRA_x64([In()] IntPtr bgra, int width, int height, int stride, float quality_factor, out IntPtr output);
 
 		/// <summary>Lossless encoding images pointed to by *data in WebP format</summary>
 		/// <param name="bgr">Pointer to BGR image data</param>
@@ -1306,9 +1316,9 @@ namespace WebPWrapper
 			};
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeLosslessBGR")]
-		private static extern int WebPEncodeLosslessBGR_x86([InAttribute()] IntPtr bgr, int width, int height, int stride, out IntPtr output);
+		private static extern int WebPEncodeLosslessBGR_x86([In()] IntPtr bgr, int width, int height, int stride, out IntPtr output);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeLosslessBGR")]
-		private static extern int WebPEncodeLosslessBGR_x64([InAttribute()] IntPtr bgr, int width, int height, int stride, out IntPtr output);
+		private static extern int WebPEncodeLosslessBGR_x64([In()] IntPtr bgr, int width, int height, int stride, out IntPtr output);
 
 		/// <summary>Lossless encoding images pointed to by *data in WebP format</summary>
 		/// <param name="bgra">Pointer to BGRA image data</param>
@@ -1327,9 +1337,9 @@ namespace WebPWrapper
 			};
 		}
 		[DllImport("libwebp_x86.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeLosslessBGRA")]
-		private static extern int WebPEncodeLosslessBGRA_x86([InAttribute()] IntPtr bgra, int width, int height, int stride, out IntPtr output);
+		private static extern int WebPEncodeLosslessBGRA_x86([In()] IntPtr bgra, int width, int height, int stride, out IntPtr output);
 		[DllImport("libwebp_x64.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeLosslessBGRA")]
-		private static extern int WebPEncodeLosslessBGRA_x64([InAttribute()] IntPtr bgra, int width, int height, int stride, out IntPtr output);
+		private static extern int WebPEncodeLosslessBGRA_x64([In()] IntPtr bgra, int width, int height, int stride, out IntPtr output);
 
 		/// <summary>Releases memory returned by the WebPEncode</summary>
 		/// <param name="p">Pointer to memory</param>

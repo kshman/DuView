@@ -39,9 +39,15 @@ internal class BookZip : BookBase
 	}
 
 	//
-	protected override Stream? OpenStream(object entry)
+	protected override MemoryStream? ReadEntry(object entry)
 	{
-		return (entry is ZipArchiveEntry e) ? e.Open() : null;
+		if (entry is not ZipArchiveEntry z)
+			return null;
+
+		using var st = z.Open();
+		MemoryStream ms = new();
+		st.CopyTo(ms);
+		return ms;
 	}
 
 	protected override string? GetEntryName(object entry)

@@ -1,6 +1,6 @@
 ﻿namespace DuView;
 
-public partial class ReadForm : Form
+public partial class ReadForm : Form, ILocaleTranspose
 {
 	private static ReadForm? _self;
 
@@ -62,7 +62,12 @@ public partial class ReadForm : Form
 			OpenBook(_init_filename);
 
 		//
-		ToolBox.GlobalizationLocaleText(this);
+		LocaleTranspose();
+	}
+
+	public void LocaleTranspose()
+	{
+		ToolBox.LocaleTextOnControl(this);
 	}
 
 	private void ReadForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -72,12 +77,7 @@ public partial class ReadForm : Form
 
 	private void ReadForm_FormClosed(object sender, FormClosedEventArgs e)
 	{
-		if (Book != null)
-		{
-			Settings.SetRecentlyPage(Book);
-			Book.Dispose();
-			Book = null;
-		}
+		CleanBook();
 
 		Settings.KeepLocationSize(WindowState, Location, Size);
 		Settings.SaveFileInfos();
@@ -540,24 +540,34 @@ public partial class ReadForm : Form
 	#endregion
 
 	#region 파일 처리
+	// 책 닫기 공통
+	private void CleanBook()
+	{
+		if (Book != null)
+		{
+			Settings.SetRecentlyPage(Book);
+			Book.Dispose();
+			Book = null;
+
+			_select.ResetBook();
+
+			// 강제GC
+			GC.Collect();
+		}
+
+		ResetFocus();
+	}
+
 	// 책 닫기
 	private void CloseBook()
 	{
 		if (Book != null)
 		{
+			CleanBook();
+
 			Text = Locale.Text(0);
-
-			Settings.SetRecentlyPage(Book);
-
-			Book.Dispose();
-			Book = null;
-
 			DrawBook();
-
-			_select.ResetBook();
 		}
-
-		ResetFocus();
 	}
 
 	// 책 고르기 다이얼로그
@@ -606,12 +616,7 @@ public partial class ReadForm : Form
 
 		if (bk != null)
 		{
-			if (Book != null)
-			{
-				Settings.SetRecentlyPage(Book);
-				Book.Dispose();
-			}
-
+			CleanBook();
 			Book = bk;
 
 			if (page < 0)

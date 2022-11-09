@@ -128,15 +128,20 @@ internal class BookFolder : BookBase
 		return e.Name;
 	}
 
-	protected override Stream? OpenStream(object entry)
+	protected override MemoryStream? ReadEntry(object entry)
 	{
 		var e = (Types.BookEntryInfo)entry;
 		if (e.Name == null)
 			return null;
 		else
 		{
-			var st = new FileStream(e.Name, FileMode.Open, FileAccess.Read);
-			return st;
+			using var st = new FileStream(e.Name, FileMode.Open, FileAccess.Read);
+			if (st == null)
+				return null;
+
+			MemoryStream ms = new();
+			st.CopyTo(ms);
+			return ms;
 		}
 	}
 

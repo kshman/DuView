@@ -14,13 +14,13 @@ public static class ToolBox
 		string locale;
 
 		if (name.StartsWith("ko"))
-			locale = "ko";
-		else if (name.StartsWith("sh"))         // 세인트 헬러나
-			locale = "sh";
-		else if (name.StartsWith("kim"))        // 이런 나라 없다
-			locale = "kim";
+			locale = "ko";                  // 대한민국
+		else if (name.StartsWith("sh"))
+			locale = "sh";                  // 세인트 헬러나
+		else if (name.StartsWith("kim"))
+			locale = "kim";                 // 이런 나라 없다
 		else
-			locale = "en";
+			locale = "en";                  // 기본은 영어
 
 		return locale;
 	}
@@ -195,7 +195,7 @@ public static class ToolBox
 	}
 
 	//
-	public static void GlobalizationLocaleText(Control container)
+	public static void LocaleTextOnControl(Control container)
 	{
 		foreach (Control c in container.Controls)
 		{
@@ -212,12 +212,12 @@ public static class ToolBox
 			else if (c is ToolStrip i)
 			{
 				i.Text = Locale.TextAsInt(i.Text);
-				GlobalizationLocaleText(i.Items);
+				LocaleTextOnCollection(i.Items);
 			}
 			else if (c is MenuStrip m)
 			{
 				m.Text = Locale.TextAsInt(m.Text);
-				GlobalizationLocaleText(m.Items);
+				LocaleTextOnCollection(m.Items);
 			}
 			else if (c is ListView v)
 			{
@@ -227,17 +227,17 @@ public static class ToolBox
 
 			if (c.ContextMenuStrip != null)
 			{
-				GlobalizationLocaleText(c.ContextMenuStrip);
-				GlobalizationLocaleText(c.ContextMenuStrip.Items);
+				LocaleTextOnControl(c.ContextMenuStrip);
+				LocaleTextOnCollection(c.ContextMenuStrip.Items);
 			}
 
 			if (c.HasChildren)
-				GlobalizationLocaleText(c);
+				LocaleTextOnControl(c);
 		}
 	}
 
 	//
-	public static void GlobalizationLocaleText(ToolStripItemCollection collection)
+	public static void LocaleTextOnCollection(ToolStripItemCollection collection)
 	{
 		foreach (var c in collection)
 		{
@@ -245,7 +245,7 @@ public static class ToolBox
 			{
 				s.Text = Locale.TextAsInt(s.Text);
 				if (s.DropDownItems.Count > 0)
-					GlobalizationLocaleText(s.DropDownItems);
+					LocaleTextOnCollection(s.DropDownItems);
 			}
 		}
 	}

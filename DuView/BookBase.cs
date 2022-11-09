@@ -27,7 +27,7 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	protected abstract Stream? OpenStream(object entry);
+	protected abstract MemoryStream? ReadEntry(object entry);
 	protected abstract string? GetEntryName(object entry);
 	public abstract IEnumerable<Types.BookEntryInfo> GetEntriesInfo();
 	public virtual bool CanDeleteFile(out string? reason) { reason = string.Empty; return true; }
@@ -62,13 +62,15 @@ public abstract class BookBase : IDisposable
 		{
 			_entries.Clear();
 			_cache.Clear();
+			PageLeft?.Dispose();
+			PageRight?.Dispose();
 		}
 	}
 
 	//
-	private void CacheImage(int page, MemoryStream? ms)
+	private void CacheStream(int page, MemoryStream ms)
 	{
-		if (ms == null || _cache.ContainsKey(page))
+		if (_cache.ContainsKey(page))
 			return;
 
 		var size = ms.Length;
@@ -76,11 +78,12 @@ public abstract class BookBase : IDisposable
 		if ((CacheSize + size) > Settings.MaxActualPageCache && _cache.Count > 0)
 		{
 			var first = _cache.ElementAt(0);
-			var fsize = first.Value.Length;
-			first.Value.Dispose();
+			var value = first.Value;
 
 			_cache.Remove(first.Key);
-			CacheSize -= fsize;
+			CacheSize -= value.Length;
+
+			value.Dispose();
 		}
 
 		_cache.Add(page, ms);
@@ -102,18 +105,12 @@ public abstract class BookBase : IDisposable
 		{
 			var en = _entries[pageno];
 			bool storecache = false;
-			MemoryStream? ms;
 
-			if (!TryCache(pageno, out ms))
+			if (!TryCache(pageno, out MemoryStream? ms))
 			{
 				// 캐시에 없으면 파일 처리
-				using var st = OpenStream(en);
-				if (st != null)
-				{
-					ms = new();
-					st.CopyTo(ms);
-					storecache = true;
-				}
+				ms = ReadEntry(en);
+				storecache = true;
 			}
 
 			if (ms != null)
@@ -131,15 +128,14 @@ public abstract class BookBase : IDisposable
 					if (raw != null)
 					{
 						// WEBP?
-						if (raw.Length > 12 &&
-							raw[8] == 'W' && raw[9] == 'E' && raw[10] == 'B' && raw[11] == 'P')
+						if (WebP.IsWebP(raw))
 							img = WebP.Decode(raw);
 					}
 				}
-			}
 
-			if (img != null && storecache)
-				CacheImage(pageno, ms);
+				if (storecache)
+					CacheStream(pageno, ms);
+			}
 		}
 
 		return img ?? Properties.Resources.ouch_noimg;
@@ -148,6 +144,9 @@ public abstract class BookBase : IDisposable
 	//
 	public void PrepareImages()
 	{
+		PageLeft?.Dispose();
+		PageRight?.Dispose();
+
 		var mode = Settings.ViewMode;
 
 		if (mode is Types.ViewMode.FitWidth or Types.ViewMode.FitHeight)

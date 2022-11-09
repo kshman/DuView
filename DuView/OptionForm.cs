@@ -48,7 +48,7 @@ public partial class OptionForm : Form
 			LocalesList.Items.Add(l);
 
 		//
-		ToolBox.GlobalizationLocaleText(this);
+		ToolBox.LocaleTextOnControl(this);
 	}
 
 	private void OptionForm_FormClosing(object sender, FormClosingEventArgs e)

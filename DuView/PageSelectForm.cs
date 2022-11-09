@@ -23,7 +23,7 @@ public partial class PageSelectForm : Form
 	private void PageSelectForm_Load(object sender, EventArgs e)
 	{
 		//
-		ToolBox.GlobalizationLocaleText(this);
+		ToolBox.LocaleTextOnControl(this);
 
 	}
 

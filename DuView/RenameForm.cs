@@ -28,7 +28,7 @@ public partial class RenameForm : Form
 		ActiveControl = RenameText;
 
 		//
-		ToolBox.GlobalizationLocaleText(this);
+		ToolBox.LocaleTextOnControl(this);
 	}
 
 	private void RenameForm_FormClosing(object sender, FormClosingEventArgs e)
