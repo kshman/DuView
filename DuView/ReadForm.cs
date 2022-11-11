@@ -16,7 +16,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private readonly Rectangle[] _click_bound = new Rectangle[2];
 
-	private System.Windows.Forms.Timer _notify_timer;
+	private readonly System.Windows.Forms.Timer _notify_timer;
 
 	private string? _exrun_filename;
 	private FormWindowState _exrun_windowstate;
@@ -116,16 +116,6 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 			// 후....
 			base.WndProc(ref m);
-		}
-	}
-
-	public override string Text
-	{
-		get => base.Text;
-		set
-		{
-			base.Text = value;
-			TitleLabel.Text = value;
 		}
 	}
 
@@ -505,7 +495,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		}
 		catch
 		{
-			ShowNotification(101, 102, true);
+			ShowNotification(102);
 		}
 	}
 
@@ -578,7 +568,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		{
 			CleanBook();
 
-			Text = Locale.Text(0);
+			TitleLabel.Text = Text = Locale.Text(0);
 			DrawBook();
 		}
 	}
@@ -638,7 +628,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			bk.CurrentPage = page;
 			bk.PrepareImages();
 
-			Text = bk.OnlyFileName;
+			TitleLabel.Text = bk.OnlyFileName;
 			Settings.LastFileName = filename;
 
 			DrawBook();
@@ -648,7 +638,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		else
 		{
 			// 책없나
-			ShowNotification(106, 117, true);
+			ShowNotification(117);
 		}
 
 		ResetFocus();
@@ -668,7 +658,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (bk == null)
 		{
 			// 아카이브가 뭔가 잘못됨
-			ShowNotification(106, 107, true);
+			ShowNotification(107);
 		}
 
 		return bk;
@@ -684,7 +674,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (bk == null)
 		{
 			// 아카이브가 뭔가 잘못됨
-			ShowNotification(106, 108, true);
+			ShowNotification(108);
 		}
 
 		return bk;
@@ -745,7 +735,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		if (!Book.DeleteFile(out var closebook))
 		{
-			ShowNotification(114, 115, true, 3000);
+			ShowNotification(115, 3000);
 			return;
 		}
 
@@ -809,7 +799,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		string? filename = null;
+		string? filename;
 
 		if (Settings.ExtendedRenamer)
 		{
@@ -838,7 +828,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		// 시작
 		if (!Book.RenameFile(filename, out var fullpath))
 		{
-			ShowNotification(122, 123, true, 3000);
+			ShowNotification(123, 3000);
 			return;
 		}
 
@@ -863,7 +853,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		//
 		if (!Book.MoveFile(filename))
 		{
-			ShowNotification(128, 129, true, 3000);
+			ShowNotification(129, 3000);
 			return;
 		}
 
@@ -901,7 +891,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void InternalAnimateFrame()
 	{
+		if (_bmp!=null)
+		{
 
+		}
 	}
 
 	// 가로로 차게 이미지 그리기
@@ -965,7 +958,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		if (w == 0 || h == 0)
 		{
-			ShowNotification(111, 112, true);
+			ShowNotification(112);
 			return;
 		}
 
@@ -1139,7 +1132,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	#endregion
 
 	#region 도움
-	private void ShowNotification(string title, string mesg, bool iserror = false, int timeout = 2000)
+	private void ShowNotification(string mesg, int timeout = 2000)
 	{
 		if (!NotifyLabel.Visible)
 		{
@@ -1163,9 +1156,9 @@ public partial class ReadForm : Form, ILocaleTranspose
 		}
 	}
 
-	private void ShowNotification(int title, int mesg, bool iserror = false, int timeout = 2000)
+	private void ShowNotification(int mesg, int timeout = 2000)
 	{
-		ShowNotification(Locale.Text(title), Locale.Text(mesg), iserror, timeout);
+		ShowNotification(Locale.Text(mesg), timeout);
 	}
 
 	private void NotifyTimerTick(object? sender, EventArgs e)
