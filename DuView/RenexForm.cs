@@ -159,10 +159,9 @@ public partial class RenexForm : Form, ILocaleTranspose
 	private void ParseFilename(string filename)
 	{
 		string ws;
-		int e, n, l;
 
 		// 확장자
-		e = filename.LastIndexOf('.');
+		var e = filename.LastIndexOf('.');
 		if (e < 0)
 			ws = filename;
 		else
@@ -174,7 +173,8 @@ public partial class RenexForm : Form, ILocaleTranspose
 		try
 		{
 			// 작가
-			n = ws.IndexOf('[');
+			var n = ws.IndexOf('[');
+			int l;
 			if (n >= 0)
 			{
 				l = ws.IndexOf(']');
@@ -220,10 +220,7 @@ public partial class RenexForm : Form, ILocaleTranspose
 			IndexText.Text = string.Empty;
 			AdditionalText.Text = string.Empty;
 
-			if (e < 0)
-				TitleText.Text = filename;
-			else
-				TitleText.Text = filename[..e];
+			TitleText.Text = e < 0 ? filename : filename[..e];
 		}
 	}
 }

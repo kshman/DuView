@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
-using System.Windows.Forms;
+﻿using System.Globalization;
 using InterpolationMode = System.Drawing.Drawing2D.InterpolationMode;
 
 namespace DuView;
@@ -199,32 +197,31 @@ public static class ToolBox
 	{
 		foreach (Control c in container.Controls)
 		{
-			Debug.WriteLine($"{c.Name}");
-
-			if (c is Label l)
-				l.Text = Locale.TextAsInt(l.Text);
-			else if (c is ButtonBase b)
-				b.Text = Locale.TextAsInt(b.Text);
-			else if (c is TextBoxBase t)
-				t.Text = Locale.TextAsInt(t.Text);
-			else if (c is TabPage p)
-				p.Text = Locale.TextAsInt(p.Text);
-			else if (c is GroupBox g)
-				g.Text = Locale.TextAsInt(g.Text);
-			else if (c is ToolStrip i)
+			switch (c)
 			{
-				i.Text = Locale.TextAsInt(i.Text);
-				LocaleTextOnCollection(i.Items);
-			}
-			else if (c is MenuStrip m)
-			{
-				m.Text = Locale.TextAsInt(m.Text);
-				LocaleTextOnCollection(m.Items);
-			}
-			else if (c is ListView v)
-			{
-				foreach (ColumnHeader h in v.Columns)
-					h.Text = Locale.TextAsInt(h.Text);
+				case Label l:
+					l.Text = Locale.TextAsInt(l.Text);
+					break;
+				case ButtonBase b:
+					b.Text = Locale.TextAsInt(b.Text);
+					break;
+				case TextBoxBase t:
+					t.Text = Locale.TextAsInt(t.Text);
+					break;
+				case TabPage p:
+					p.Text = Locale.TextAsInt(p.Text);
+					break;
+				case GroupBox g:
+					g.Text = Locale.TextAsInt(g.Text);
+					break;
+				case ToolStrip i:
+					i.Text = Locale.TextAsInt(i.Text);
+					LocaleTextOnCollection(i.Items);
+					break;
+				case ListView v:
+					foreach (ColumnHeader h in v.Columns)
+						h.Text = Locale.TextAsInt(h.Text);
+					break;
 			}
 
 			if (c.ContextMenuStrip != null)
@@ -243,12 +240,12 @@ public static class ToolBox
 	{
 		foreach (var c in collection)
 		{
-			if (c is ToolStripDropDownItem s)
-			{
-				s.Text = Locale.TextAsInt(s.Text);
-				if (s.DropDownItems.Count > 0)
-					LocaleTextOnCollection(s.DropDownItems);
-			}
+			if (c is not ToolStripDropDownItem s) 
+				continue;
+
+			s.Text = Locale.TextAsInt(s.Text);
+			if (s.DropDownItems.Count > 0)
+				LocaleTextOnCollection(s.DropDownItems);
 		}
 	}
 }

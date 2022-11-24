@@ -55,9 +55,9 @@ internal class BookFolder : BookBase
 		return true;
 	}
 
-	public override bool DeleteFile(out bool closebook)
+	public override bool DeleteFile(out bool close_book)
 	{
-		closebook = true;
+		close_book = true;
 
 		try
 		{
@@ -79,28 +79,28 @@ internal class BookFolder : BookBase
 		}
 	}
 
-	public override bool RenameFile(string newfilename, out string fullpath)
+	public override bool RenameFile(string new_filename, out string full_path)
 	{
 		var di = new DirectoryInfo(FileName);
 		if (di.Parent == null)
 		{
-			fullpath = string.Empty;
+			full_path = string.Empty;
 			return false;
 		}
 
-		fullpath = Path.Combine(di.Parent.FullName, newfilename);
-		if (Directory.Exists(fullpath))
+		full_path = Path.Combine(di.Parent.FullName, new_filename);
+		if (Directory.Exists(full_path))
 			return false;
 
 		try
 		{
 			try
 			{
-				Microsoft.VisualBasic.FileIO.FileSystem.RenameDirectory(FileName, newfilename);
+				Microsoft.VisualBasic.FileIO.FileSystem.RenameDirectory(FileName, new_filename);
 			}
 			catch
 			{
-				di.MoveTo(fullpath);
+				di.MoveTo(full_path);
 			}
 
 			return true;
@@ -111,7 +111,7 @@ internal class BookFolder : BookBase
 		}
 	}
 
-	public override bool MoveFile(string newfilename)
+	public override bool MoveFile(string new_filename)
 	{
 		// 안만드러쓰요
 		return false;
@@ -142,9 +142,6 @@ internal class BookFolder : BookBase
 		else
 		{
 			using var st = new FileStream(e.Name, FileMode.Open, FileAccess.Read);
-			if (st == null)
-				return null;
-
 			MemoryStream ms = new();
 			st.CopyTo(ms);
 			return ms;
@@ -167,13 +164,7 @@ internal class BookFolder : BookBase
 		var at = Array.FindIndex(drs, x => x.FullName == FileName);
 		var want = direction == Types.BookDirection.Previous ? at - 1 : at + 1;
 
-		if (want < 0)
-			return null;
-
-		if (want >= drs.Length)
-			return null;
-
-		return drs[want].FullName;
+		return want < 0 ? null : want >= drs.Length ? null : drs[want].FullName;
 	}
 }
 

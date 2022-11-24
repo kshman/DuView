@@ -895,8 +895,8 @@ namespace WebPWrapper
 	internal sealed partial class UnsafeNativeMethods
 	{
 
-		[DllImport("kernel32.dll", EntryPoint = "RtlCopyMemory", SetLastError = false)]
-		internal static extern void CopyMemory(IntPtr dest, IntPtr src, UIntPtr count);
+		[LibraryImport("kernel32.dll", EntryPoint = "RtlCopyMemory", SetLastError = false)]
+		internal static partial void CopyMemory(IntPtr dest, IntPtr src, UIntPtr count);
 
 		private static readonly int WEBP_DECODER_ABI_VERSION = 0x0208;
 

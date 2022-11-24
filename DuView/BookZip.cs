@@ -157,9 +157,9 @@ internal class BookZip : BookBase
 	}
 
 	//
-	public override bool DeleteFile(out bool closebook)
+	public override bool DeleteFile(out bool close_book)
 	{
-		closebook = true;
+		close_book = true;
 
 		if (_zip != null)
 		{
@@ -188,17 +188,17 @@ internal class BookZip : BookBase
 	}
 
 	//
-	public override bool RenameFile(string newfilename, out string fullpath)
+	public override bool RenameFile(string new_filename, out string full_path)
 	{
 		var fi = new FileInfo(FileName);
 		if (fi.Directory == null)
 		{
-			fullpath = string.Empty;
+			full_path = string.Empty;
 			return false;
 		}
 
-		fullpath = Path.Combine(fi.Directory.FullName, newfilename);
-		if (File.Exists(fullpath))
+		full_path = Path.Combine(fi.Directory.FullName, new_filename);
+		if (File.Exists(full_path))
 			return false;
 
 		if (_zip != null)
@@ -211,11 +211,11 @@ internal class BookZip : BookBase
 		{
 			try
 			{
-				Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(FileName, newfilename);
+				Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(FileName, new_filename);
 			}
 			catch
 			{
-				fi.MoveTo(fullpath);
+				fi.MoveTo(full_path);
 			}
 
 			return true;
@@ -226,12 +226,12 @@ internal class BookZip : BookBase
 		}
 	}
 
-	public override bool MoveFile(string newfilename)
+	public override bool MoveFile(string new_filename)
 	{
-		if (FileName.Equals(newfilename))
+		if (FileName.Equals(new_filename))
 			return false;
 
-		if (File.Exists(newfilename))
+		if (File.Exists(new_filename))
 			return false;
 
 		if (_zip != null)
@@ -244,12 +244,12 @@ internal class BookZip : BookBase
 		{
 			try
 			{
-				Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(FileName, newfilename);
+				Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(FileName, new_filename);
 			}
 			catch
 			{
 				var fi = new FileInfo(FileName);
-				fi.MoveTo(newfilename);
+				fi.MoveTo(new_filename);
 			}
 
 			return true;

@@ -36,19 +36,19 @@ internal static class Settings
 	// -- 기본
 	private static bool s_run_only_once_instance = true;
 	private static bool s_esc_to_exit = true;
-	private static bool s_use_magnetic_window = false;
+	private static bool s_use_magnetic_window;
 	private static bool s_confirm_when_delete_file = true;
-	private static bool s_always_on_top = false;
+	private static bool s_always_on_top;
 	private static bool s_use_update_notification = true;
 	private static string s_external_run = string.Empty;
 	private static bool s_reload_after_external = true;
-	private static bool s_keep_book_direction = false;
+	private static bool s_keep_book_direction;
 	private static string s_firefox_run = string.Empty;
 	private static bool s_extened_renamer = true;
 
 	// -- 마우스
-	private static bool s_use_doubleclick_state = false;
-	private static bool s_use_click_page = false;
+	private static bool s_use_doubleclick_state;
+	private static bool s_use_click_page;
 
 	// -- 기타
 
@@ -326,10 +326,7 @@ internal static class Settings
 	}
 
 	//
-	public static long MaxActualPageCache
-	{
-		get => s_max_page_cache * 1048576L;
-	}
+	public static long MaxActualPageCache => s_max_page_cache * 1048576L;
 
 	//
 	public static int MaxPageCache
@@ -337,13 +334,11 @@ internal static class Settings
 		get => s_max_page_cache;
 		set
 		{
-			if (value != s_max_page_cache)
-			{
-				s_max_page_cache = value;
+			if (value == s_max_page_cache)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("MaxPageCache", value);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetInt("MaxPageCache", s_max_page_cache = value);
 		}
 	}
 
@@ -353,13 +348,11 @@ internal static class Settings
 		get => s_max_recently;
 		set
 		{
-			if (value != s_max_recently)
-			{
-				s_max_recently = value;
+			if (value == s_max_recently)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("MaxRecently", value);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetInt("MaxRecently", s_max_recently = value);
 		}
 	}
 
@@ -376,20 +369,20 @@ internal static class Settings
 	//
 	public static void SetRecentlyPage(string onlyfilename, int page)
 	{
-		if (!string.IsNullOrEmpty(onlyfilename) && s_recently != null)
-		{
-			var s = Converter.EncodingString(onlyfilename);
+		if (string.IsNullOrEmpty(onlyfilename) || s_recently == null)
+			return;
 
-			if (page > 0)
-			{
-				s_recently.Set(s, page);
-				s_recently.ResizeCutFrontSlowly(s_max_recently);
-			}
-			else
-			{
-				// 페이지가 0 이면 저장할 필요가 없쟎음
-				s_recently.Remove(s);
-			}
+		var s = Converter.EncodingString(onlyfilename);
+
+		if (page > 0)
+		{
+			s_recently.Set(s, page);
+			s_recently.ResizeCutFrontSlowly(s_max_recently);
+		}
+		else
+		{
+			// 페이지가 0 이면 저장할 필요가 없쟎음
+			s_recently.Remove(s);
 		}
 	}
 
@@ -403,9 +396,7 @@ internal static class Settings
 	//
 	public static string? GetMoveLocation(int index)
 	{
-		if (index < s_move.Count)
-			return s_move[index];
-		return null;
+		return index < s_move.Count ? s_move[index] : null;
 	}
 
 	//
@@ -439,7 +430,7 @@ internal static class Settings
 	{
 		using var rk = new RegKey(c_keyname, true);
 
-		for (int i = 0; i < s_move.Count; i++)
+		for (var i = 0; i < s_move.Count; i++)
 			rk.SetEncodingString($"MoveKeep{i}", s_move[i]);
 
 		rk.SetEncodingString($"MoveKeep{s_move.Count}", string.Empty);
@@ -448,15 +439,15 @@ internal static class Settings
 	//
 	public static void SaveFileInfos()
 	{
-		if (s_recently != null)
+		if (s_recently == null)
+			return;
+
+		var rfn = RecentlyPath;
+		s_recently.Save(rfn, Encoding.UTF8, new[]
 		{
-			var rfn = RecentlyPath;
-			s_recently.Save(rfn, Encoding.UTF8, new[]
-			{
-				"DuView recently files list",
-				$"Created: {DateTime.Now}"
-			});
-		}
+			"DuView recently files list",
+			$"Created: {DateTime.Now}"
+		});
 	}
 
 	//
@@ -465,13 +456,11 @@ internal static class Settings
 		get => s_rename_open_next;
 		set
 		{
-			if (value != s_rename_open_next)
-			{
-				s_rename_open_next = value;
+			if (value == s_rename_open_next)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("RenameOpenNext", s_rename_open_next);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("RenameOpenNext", s_rename_open_next = value);
 		}
 	}
 
@@ -482,13 +471,11 @@ internal static class Settings
 		get => s_run_only_once_instance;
 		set
 		{
-			if (value != s_run_only_once_instance)
-			{
-				s_run_only_once_instance = value;
+			if (value == s_run_only_once_instance)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("GeneralRunOnce", s_run_only_once_instance);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("GeneralRunOnce", s_run_only_once_instance = value);
 		}
 	}
 
@@ -498,13 +485,11 @@ internal static class Settings
 		get => s_esc_to_exit;
 		set
 		{
-			if (value != s_esc_to_exit)
-			{
-				s_esc_to_exit = value;
+			if (value == s_esc_to_exit)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("GeneralEscExit", s_esc_to_exit);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("GeneralEscExit", s_esc_to_exit = value);
 		}
 	}
 
@@ -514,13 +499,11 @@ internal static class Settings
 		get => s_use_magnetic_window;
 		set
 		{
-			if (value != s_use_magnetic_window)
-			{
-				s_use_magnetic_window = value;
+			if (value == s_use_magnetic_window)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("GeneralUseMagnetic", s_use_magnetic_window);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("GeneralUseMagnetic", s_use_magnetic_window = value);
 		}
 	}
 
@@ -530,13 +513,11 @@ internal static class Settings
 		get => s_confirm_when_delete_file;
 		set
 		{
-			if (value != s_confirm_when_delete_file)
-			{
-				s_confirm_when_delete_file = value;
+			if (value == s_confirm_when_delete_file)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("GeneralConfirmDelete", s_confirm_when_delete_file = value);
 		}
 	}
 
@@ -546,13 +527,11 @@ internal static class Settings
 		get => s_always_on_top;
 		set
 		{
-			if (value != s_always_on_top)
-			{
-				s_always_on_top = value;
+			if (value == s_always_on_top)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("GeneralAlwaysTop", s_always_on_top);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("GeneralAlwaysTop", s_always_on_top = value);
 		}
 	}
 
@@ -562,13 +541,11 @@ internal static class Settings
 		get => s_use_update_notification;
 		set
 		{
-			if (value != s_use_update_notification)
-			{
-				s_use_update_notification = value;
+			if (value == s_use_update_notification)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("GeneralUpdateNotify", s_use_update_notification);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("GeneralUpdateNotify", s_use_update_notification = value);
 		}
 	}
 
@@ -578,13 +555,11 @@ internal static class Settings
 		get => s_external_run;
 		set
 		{
-			if (!value.Equals(s_external_run))
-			{
-				s_external_run = value;
+			if (value.Equals(s_external_run))
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetString("ExternalRun", s_external_run);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetString("ExternalRun", s_external_run = value);
 		}
 	}
 
@@ -594,13 +569,11 @@ internal static class Settings
 		get => s_reload_after_external;
 		set
 		{
-			if (value != s_reload_after_external)
-			{
-				s_reload_after_external = value;
+			if (value == s_reload_after_external)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("ReloadAfterExternalExit", s_reload_after_external);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("ReloadAfterExternalExit", s_reload_after_external = value);
 		}
 	}
 
@@ -610,13 +583,11 @@ internal static class Settings
 		get => s_keep_book_direction;
 		set
 		{
-			if (value != s_keep_book_direction)
-			{
-				s_keep_book_direction = value;
+			if (value == s_keep_book_direction)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("KeepBookDirection", s_keep_book_direction);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("KeepBookDirection", s_keep_book_direction = value);
 		}
 	}
 
@@ -626,13 +597,11 @@ internal static class Settings
 		get => s_firefox_run;
 		set
 		{
-			if (!value.Equals(s_firefox_run))
-			{
-				s_firefox_run = value;
+			if (value.Equals(s_firefox_run))
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetString("FirefoxRun", s_firefox_run);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetString("FirefoxRun", s_firefox_run = value);
 		}
 	}
 
@@ -642,13 +611,11 @@ internal static class Settings
 		get => s_extened_renamer;
 		set
 		{
-			if (value != s_extened_renamer)
-			{
-				s_extened_renamer = value;
+			if (value == s_extened_renamer)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("ExtendedRenamer", s_extened_renamer);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("ExtendedRenamer", s_extened_renamer = value);
 		}
 	}
 	#endregion // 기본
@@ -660,13 +627,11 @@ internal static class Settings
 		get => s_use_doubleclick_state;
 		set
 		{
-			if (value != s_use_doubleclick_state)
-			{
-				s_use_doubleclick_state = value;
+			if (value == s_use_doubleclick_state)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("MouseUseDoubleClick", s_use_doubleclick_state);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("MouseUseDoubleClick", s_use_doubleclick_state = value);
 		}
 	}
 
@@ -676,13 +641,11 @@ internal static class Settings
 		get => s_use_click_page;
 		set
 		{
-			if (value != s_use_click_page)
-			{
-				s_use_click_page = value;
+			if (value == s_use_click_page)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetBool("MouseUseClickPage", s_use_click_page);
-			}
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("MouseUseClickPage", s_use_click_page = value);
 		}
 	}
 	#endregion // 마우스

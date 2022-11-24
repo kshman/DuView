@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DuView;
+﻿namespace DuView;
 
 public partial class MoveForm : Form, ILocaleTranspose
 {
@@ -254,7 +252,7 @@ public partial class MoveForm : Form, ILocaleTranspose
 		}
 	}
 
-	private bool OpenFolderDialog(string path, out string ret, bool shownewfolder = false)
+	private static bool OpenFolderDialog(string path, out string ret, bool shownewfolder = false)
 	{
 		FolderBrowserDialog dlg = new()
 		{

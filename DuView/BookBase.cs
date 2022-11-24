@@ -31,9 +31,9 @@ public abstract class BookBase : IDisposable
 	protected abstract string? GetEntryName(object entry);
 	public abstract IEnumerable<Types.BookEntryInfo> GetEntriesInfo();
 	public virtual bool CanDeleteFile(out string? reason) { reason = string.Empty; return true; }
-	public abstract bool DeleteFile(out bool closebook);
-	public abstract bool RenameFile(string newfilename, out string fullpath);
-	public abstract bool MoveFile(string newfilename);
+	public abstract bool DeleteFile(out bool close_book);
+	public abstract bool RenameFile(string new_filename, out string full_path);
+	public abstract bool MoveFile(string new_filename);
 
 	//
 	protected void SetFileName(FileInfo fi)
@@ -105,7 +105,7 @@ public abstract class BookBase : IDisposable
 		if (pageno >= 0 && pageno < TotalPage)
 		{
 			var en = _entries[pageno];
-			bool storecache = false;
+			var storecache = false;
 
 			if (!TryCache(pageno, out MemoryStream? ms))
 			{
@@ -126,15 +126,20 @@ public abstract class BookBase : IDisposable
 					// 지원하는 형식인지 확인하자
 					ms.Position = 0;
 					var raw = ms.ToArray();
-					if (raw != null)
+					// WEBP?
+					try
 					{
-						// WEBP?
 						if (WebP.IsWebP(raw))
 							img = WebP.Decode(raw);
 					}
+					catch
+					{
+						// 애니메이션 WEBP는 안댄다...
+						img = null;
+					}
 				}
 
-				if (storecache)
+				if (storecache && img != null)
 					CacheStream(pageno, ms);
 			}
 		}
@@ -301,29 +306,14 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	public string? FindNextFileAny(Types.BookDirection first_direction)
+	public string? FindNextFileAny(Types.BookDirection first_direction) => first_direction switch
 	{
-		string? filename;
-
-		if (first_direction == Types.BookDirection.Next)
-		{
-			filename =
-			  FindNextFile(Types.BookDirection.Next) ??
-			  FindNextFile(Types.BookDirection.Previous) ??
-			  null;
-		}
-		else if (first_direction == Types.BookDirection.Previous)
-		{
-			filename =
-			  FindNextFile(Types.BookDirection.Previous) ??
-			  FindNextFile(Types.BookDirection.Next) ??
-			  null;
-		}
-		else
-			filename = null;
-
-		return filename;
-	}
+		Types.BookDirection.Next => FindNextFile(Types.BookDirection.Next) ??
+									FindNextFile(Types.BookDirection.Previous) ?? null,
+		Types.BookDirection.Previous => FindNextFile(Types.BookDirection.Previous) ??
+										FindNextFile(Types.BookDirection.Next) ?? null,
+		_ => null
+	};
 
 	//
 	protected class BookEntryInfoComparer : IComparer<Types.BookEntryInfo>

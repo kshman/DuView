@@ -2,8 +2,7 @@
 
 public partial class ReadForm : Form, ILocaleTranspose
 {
-	private static ReadForm? _self;
-	public static ReadForm? Self => _self;
+	public static ReadForm? Self { get; private set; }
 
 	private BookBase? Book { get; set; }
 
@@ -18,15 +17,15 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private readonly System.Windows.Forms.Timer _notify_timer;
 
-	private string? _exrun_filename;
-	private FormWindowState _exrun_windowstate;
+	private string? _extern_run_filename;
+	private FormWindowState _extern_run_window_state;
 
 	private Types.BookDirection _book_direction = Types.BookDirection.Next;
 
 	#region 만들기
 	public ReadForm(string filename)
 	{
-		_self = this;
+		Self = this;
 
 		InitializeComponent();
 
@@ -260,6 +259,8 @@ public partial class ReadForm : Form, ILocaleTranspose
 				break;
 
 			case Keys.Add:
+			case Keys.Oemplus:
+			case Keys.Insert:
 				MoveBook();
 				break;
 
@@ -268,6 +269,12 @@ public partial class ReadForm : Form, ILocaleTranspose
 				if (!e.Alt) // ALT가 눌리면 ALT+F가 호출되야 하기 때문에
 					_bfw.Maximize();
 				break;
+
+#if DEBUG && true
+			default:
+				System.Diagnostics.Debug.WriteLine($"키코드: {e.KeyCode}");
+				break;
+#endif
 		}
 	}
 	#endregion
@@ -509,7 +516,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		}
 		else
 		{
-			ShowNotification("타이틀 안씀", "이 것은 알림 메시지 테스트!");
+			ShowNotification("이 것은 알림 메시지 테스트!");
 		}
 #else
 		Book?.PrepareImages();
@@ -767,31 +774,31 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		if (Book != null)
 		{
-			_exrun_filename = Book.FileName;
-			_exrun_windowstate = WindowState;
+			_extern_run_filename = Book.FileName;
+			_extern_run_window_state = WindowState;
 
 			WindowState = FormWindowState.Minimized;
 			CloseBook();
 
 			var ps = new System.Diagnostics.Process();
 			ps.StartInfo.FileName = Settings.ExternalRun;
-			ps.StartInfo.Arguments = _exrun_filename;
+			ps.StartInfo.Arguments = _extern_run_filename;
 			ps.StartInfo.UseShellExecute = false;
 			ps.StartInfo.CreateNoWindow = true;
 			ps.EnableRaisingEvents = true;
-			ps.Exited += (s, e) => ExternalRun_Exited();
+			ps.Exited += (_, _) => ExternalRun_Exited();
 			ps.Start();
 		}
 	}
 
 	private void ExternalRun_Exited()
 	{
-		Invoke(new Action(() =>
+		Invoke(method: () =>
 		{
-			if (Settings.ReloadAfterExternal && !string.IsNullOrEmpty(_exrun_filename))
-				OpenBook(_exrun_filename);
-			WindowState = _exrun_windowstate;
-		}));
+			if (Settings.ReloadAfterExternal && !string.IsNullOrEmpty(_extern_run_filename))
+				OpenBook(_extern_run_filename);
+			WindowState = _extern_run_window_state;
+		});
 	}
 
 	private void RenameBook()
@@ -884,18 +891,20 @@ public partial class ReadForm : Form, ILocaleTranspose
 		}
 	}
 
+	/*
 	private static void OnAnimateFrameChanged(object? sender, EventArgs e)
 	{
-		_self?.InternalAnimateFrame();
+		Self?.InternalAnimateFrame();
 	}
 
 	private void InternalAnimateFrame()
 	{
-		if (_bmp!=null)
+		if (_bmp != null)
 		{
 
 		}
 	}
+	*/
 
 	// 가로로 차게 이미지 그리기
 	private static void DrawBitmapFitWidth(Graphics g, Image bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
@@ -941,11 +950,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 		}
 		else
 		{
-			PageInfo.Text = $"{Book.CurrentPage + 1}/{Book.TotalPage}";
+			PageInfo.Text = $@"{Book.CurrentPage + 1}/{Book.TotalPage}";
 			PageInfo.Visible = true;
 
 			var cache = ToolBox.SizeToString(Book.CacheSize);
-			MaxCacheMenuItem.Text = $"[{cache}]";
+			MaxCacheMenuItem.Text = $@"[{cache}]";
 		}
 
 		// 창이 최소화면 그려션 안된다

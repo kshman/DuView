@@ -14,7 +14,7 @@ namespace DuView
 		/// 해당 애플리케이션의 주 진입점입니다.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			var args = Environment.GetCommandLineArgs();
 			var filename = args.Length > 1 ? args[1] : string.Empty;
@@ -33,13 +33,13 @@ namespace DuView
 
 		private static bool HasProductProcess(string filename)
 		{
-			var prcs = System.Diagnostics.Process.GetProcessesByName(Application.ProductName);
+			var procs = System.Diagnostics.Process.GetProcessesByName(Application.ProductName);
 
-			if (prcs.Length < 2)
+			if (procs.Length < 2)
 				return false;
 			else
 			{
-				var p = prcs[0].Id == Environment.ProcessId ? prcs[1] : prcs[0];
+				var p = procs[0].Id == Environment.ProcessId ? procs[1] : procs[0];
 				var h = p.MainWindowHandle;
 
 				FormDu.ShowIfIconic(h);

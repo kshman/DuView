@@ -116,7 +116,7 @@ public partial class PageSelectForm : Form, ILocaleTranspose
 
 	public void SetBook(BookBase book)
 	{
-		PageInfoLabel.Text = $"{Locale.Text(2225)} {book.TotalPage}";
+		PageInfoLabel.Text = $@"{Locale.Text(2225)} {book.TotalPage}";
 
 		PageList.BeginUpdate();
 		PageList.Items.Clear();
