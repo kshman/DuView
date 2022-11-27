@@ -1,27 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Wrapper for WebP format in C#. (MIT) Jose M. Piñeiro
-///////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-/// Decode Functions:
-/// Bitmap Load(string pathFileName) - Load a WebP file in bitmap.
-/// Bitmap Decode(byte[] rawWebP) - Decode WebP data (rawWebP) to bitmap.
-/// Bitmap Decode(byte[] rawWebP, WebPDecoderOptions options) - Decode WebP data (rawWebP) to bitmap using 'options'.
-/// Bitmap GetThumbnailFast(byte[] rawWebP, int width, int height) - Get a thumbnail from WebP data (rawWebP) with dimensions 'width x height'. Fast mode.
-/// Bitmap GetThumbnailQuality(byte[] rawWebP, int width, int height) - Fast get a thumbnail from WebP data (rawWebP) with dimensions 'width x height'. Quality mode.
-/// 
-/// Encode Functions:
-/// Save(Bitmap bmp, string pathFileName, int quality) - Save bitmap with quality lost to WebP file. Opcionally select 'quality'.
-/// byte[] EncodeLossy(Bitmap bmp, int quality) - Encode bitmap with quality lost to WebP byte array. Opcionally select 'quality'.
-/// byte[] EncodeLossy(Bitmap bmp, int quality, int speed, bool info) - Encode bitmap with quality lost to WebP byte array. Select 'quality', 'speed' and optionally select 'info'.
-/// byte[] EncodeLossless(Bitmap bmp) - Encode bitmap without quality lost to WebP byte array. 
-/// byte[] EncodeLossless(Bitmap bmp, int speed, bool info = false) - Encode bitmap without quality lost to WebP byte array. Select 'speed'. 
-/// byte[] EncodeNearLossless(Bitmap bmp, int quality, int speed = 9, bool info = false) - Encode bitmap with a near lossless method to WebP byte array. Select 'quality', 'speed' and optionally select 'info'.
-/// 
-/// Another functions:
-/// string GetVersion() - Get the library version
-/// GetInfo(byte[] rawWebP, out int width, out int height, out bool has_alpha, out bool has_animation, out string format) - Get information of WEBP data
-/// float[] PictureDistortion(Bitmap source, Bitmap reference, int metric_type) - Get PSNR, SSIM or LSIM distortion metric between two pictures
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-using System.Drawing.Imaging;
+﻿using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Security;
 

@@ -2,7 +2,6 @@
 
 public partial class MoveForm : Form, ILocaleTranspose
 {
-	public string Destination { get; private set; }
 	public string Filename { get; private set; } = string.Empty;
 
 	private static string s_last_location = string.Empty;
@@ -21,7 +20,6 @@ public partial class MoveForm : Form, ILocaleTranspose
 			BodyAsTitle = true,
 		};
 
-		Destination = Settings.RecentlyPath;
 		ControlDu.DoubleBuffered(MoveList, true);
 
 		LocaleTranspose();
@@ -49,7 +47,6 @@ public partial class MoveForm : Form, ILocaleTranspose
 			}
 
 			s_last_location = s;
-			Destination = s;
 			Filename = Path.Combine(s, Filename);
 		}
 	}
@@ -184,11 +181,13 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 	private void MoveList_SubItemClick(object sender, SubItemEventArgs e)
 	{
+		/*
 		if (e.SubItemIndex != 1)
 			return;
 
 		// 여기서 안하고 메뉴로 한다
 		//MoveList.EditSubItem(e.Item, e.SubItemIndex);
+		*/
 	}
 
 	private void MoveList_SubItemBeginEdit(object sender, SubItemEventArgs e)
@@ -333,11 +332,11 @@ public partial class MoveForm : Form, ILocaleTranspose
 		DestLocationText.Text = item.SubItems[2].Text;
 	}
 
-	private static bool OpenFolderDialog(string path, out string ret, bool shownewfolder = false)
+	private static bool OpenFolderDialog(string path, out string ret, bool showNewFolder = false)
 	{
 		FolderBrowserDialog dlg = new()
 		{
-			ShowNewFolderButton = shownewfolder,
+			ShowNewFolderButton = showNewFolder,
 			SelectedPath = path,
 		};
 
