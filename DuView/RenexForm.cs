@@ -20,6 +20,8 @@ public partial class RenexForm : Form, ILocaleTranspose
 			MoveTopToMaximize = false,
 			BodyAsTitle = true,
 		};
+
+		LocaleTranspose();
 	}
 
 	private void RenexForm_Load(object sender, EventArgs e)
@@ -28,8 +30,6 @@ public partial class RenexForm : Form, ILocaleTranspose
 			SearchButton.Enabled = false;
 
 		ActiveControl = TitleText;
-
-		LocaleTranspose();
 	}
 
 	public void LocaleTranspose()
@@ -39,7 +39,8 @@ public partial class RenexForm : Form, ILocaleTranspose
 
 	private void RenexForm_FormClosing(object sender, FormClosingEventArgs e)
 	{
-
+		if (DialogResult == DialogResult.OK)
+			MakeFilename();
 	}
 
 	private void RenexForm_MouseDown(object sender, MouseEventArgs e)

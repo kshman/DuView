@@ -47,6 +47,9 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		_notify_timer = new() { Interval = 5000 };
 		_notify_timer.Tick += NotifyTimerTick;
+
+		//
+		LocaleTranspose();
 	}
 	#endregion
 
@@ -60,9 +63,6 @@ public partial class ReadForm : Form, ILocaleTranspose
 		//
 		if (!string.IsNullOrEmpty(_init_filename))
 			OpenBook(_init_filename);
-
-		//
-		LocaleTranspose();
 	}
 
 	public void LocaleTranspose()
@@ -1146,7 +1146,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (!NotifyLabel.Visible)
 		{
 			// 보이게 함
-			NotifyLabel.Location = new Point(NotifyLabel.Location.X, (BookCanvas.Height - NotifyLabel.Height) / 2);
+			NotifyLabel.Location = NotifyLabel.Location with
+			{
+				Y = (BookCanvas.Height - NotifyLabel.Height) / 2
+			};
 
 			NotifyLabel.Text = mesg;
 			ControlDu.EffectFadeIn(NotifyLabel);

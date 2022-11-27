@@ -70,11 +70,12 @@ LANG=English
 1311=Bro&wse
 1312=&Add location
 1313=Select move location
-1314=Location
-1315=Index
+1314=Index
+1315=Alias
 1316=&Move
 1317=&Change location
 1318=&Delete this location
+1319=Path
 
 # 기타(1800)
 1800=Cac&he

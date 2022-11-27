@@ -20,7 +20,7 @@ internal static class Settings
 	private static int s_max_recently = 1000;
 
 	// -- 이동
-	private static readonly List<string> s_move = new();
+	private static readonly List<KeyValuePair<string, string>> s_move = new();
 
 	// -- 뷰
 	private static bool s_view_zoom = true;
@@ -127,12 +127,23 @@ internal static class Settings
 				s_use_click_page = rk.GetBool("MouseUseClickPage", s_use_click_page);
 
 				//
-				for (int i = 0; ; i++)
+				for (var i = 0; ; i++)
 				{
 					var s = rk.GetDecodingString($"MoveKeep{i}");
 					if (string.IsNullOrEmpty(s))
 						break;
-					s_move.Add(s);
+					var n = s.LastIndexOf("@:", StringComparison.Ordinal);
+					if (n == -1)
+					{
+						var di = new DirectoryInfo(s);
+						s_move.Add(new KeyValuePair<string, string>(s, di.Name));
+					}
+					else
+					{
+						var sk = s[..n];
+						var sv = s[(n + 2)..];
+						s_move.Add(new KeyValuePair<string, string>(sk, sv));
+					}
 				}
 			}
 		}
@@ -394,22 +405,28 @@ internal static class Settings
 	}
 
 	//
-	public static string? GetMoveLocation(int index)
+	public static (string path, string desc) GetMoveLocation(int index)
 	{
-		return index < s_move.Count ? s_move[index] : null;
+		if (index < 0 || index >= s_move.Count)
+			return (string.Empty, string.Empty);
+
+		var move = s_move[index];
+		return (move.Key, move.Value);
 	}
 
 	//
-	public static void AddMoveLocation(string value)
+	public static void AddMoveLocation(string path, string desc)
 	{
-		s_move.Add(value);
+		s_move.Add(new KeyValuePair<string, string>(path, desc));
 	}
 
 	//
-	public static void SetMoveLocation(int index, string value)
+	public static void SetMoveLocation(int index, string path, string desc)
 	{
-		if (index < s_move.Count && !value.Equals(s_move[index]))
-			s_move[index] = value;
+		if (index < 0 || index >= s_move.Count)
+			return;
+
+		s_move[index] = new KeyValuePair<string, string>(path, desc);
 	}
 
 	//
@@ -420,7 +437,24 @@ internal static class Settings
 	}
 
 	//
-	public static string[] GetMoveLocations()
+	public static bool ReIndexMoveLocation(int from, int to)
+	{
+		if (from < 0 || from >= s_move.Count ||
+			to < 0 || to >= s_move.Count)
+			return false;
+
+		var m = s_move[from];
+		s_move.RemoveAt(from);
+
+		if (from < to)
+			to--;
+		s_move.Insert(to, m);
+
+		return true;
+	}
+
+	//
+	public static KeyValuePair<string, string>[] GetMoveLocations()
 	{
 		return s_move.ToArray();
 	}
@@ -431,7 +465,13 @@ internal static class Settings
 		using var rk = new RegKey(c_keyname, true);
 
 		for (var i = 0; i < s_move.Count; i++)
-			rk.SetEncodingString($"MoveKeep{i}", s_move[i]);
+		{
+			var m = s_move[i];
+			if (string.IsNullOrEmpty(m.Key))
+				continue;
+			rk.SetEncodingString($"MoveKeep{i}",
+				string.IsNullOrWhiteSpace(m.Value) ? m.Key : $"{m.Key}@:{m.Value}");
+		}
 
 		rk.SetEncodingString($"MoveKeep{s_move.Count}", string.Empty);
 	}

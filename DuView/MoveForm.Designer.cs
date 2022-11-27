@@ -30,9 +30,10 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MoveForm));
-			this.MoveList = new System.Windows.Forms.ListView();
+			this.MoveList = new Du.WinForms.BadakListView();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.MoveMenuStrip = new Du.WinForms.BadakContextMenuStrip(this.components);
 			this.MoveAddMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.MoveChangeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,13 +51,15 @@
 			// 
 			// MoveList
 			// 
+			this.MoveList.AllowItemReorder = true;
 			this.MoveList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.MoveList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.MoveList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
-            this.columnHeader2});
+            this.columnHeader2,
+            this.columnHeader3});
 			this.MoveList.ContextMenuStrip = this.MoveMenuStrip;
 			this.MoveList.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.MoveList.FullRowSelect = true;
@@ -78,11 +81,17 @@
 			// columnHeader1
 			// 
 			this.columnHeader1.Text = "1314";
-			this.columnHeader1.Width = 380;
+			this.columnHeader1.Width = 80;
 			// 
 			// columnHeader2
 			// 
 			this.columnHeader2.Text = "1315";
+			this.columnHeader2.Width = 220;
+			// 
+			// columnHeader3
+			// 
+			this.columnHeader3.Text = "1319";
+			this.columnHeader3.Width = 150;
 			// 
 			// MoveMenuStrip
 			// 
@@ -253,7 +262,7 @@
 
 		#endregion
 
-		private ListView MoveList;
+		private BadakListView MoveList;
 		private Button BrowseButton;
 		private Button OkDoItButton;
 		private Button NoCancelButton;
@@ -268,5 +277,6 @@
 		private TextBox DestLocationText;
 		private ToolStripMenuItem MoveChangeMenuItem;
 		private ToolStripSeparator toolStripSeparator1;
+		private ColumnHeader columnHeader3;
 	}
 }

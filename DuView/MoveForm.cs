@@ -21,12 +21,14 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 		Destination = Settings.RecentlyPath;
 		ControlDu.DoubleBuffered(MoveList, true);
+
+		MoveList.ItemReordered += MoveList_ItemReordered;
+
+		LocaleTranspose();
 	}
 
 	private void MoveForm_Load(object sender, EventArgs e)
 	{
-		LocaleTranspose();
-
 		RefreshMoveList();
 	}
 
@@ -101,10 +103,9 @@ public partial class MoveForm : Form, ILocaleTranspose
 		var loc = DestLocationText.Text;
 		if (string.IsNullOrEmpty(loc) || !Directory.Exists(loc))
 		{
-			if (Directory.Exists(Settings.RecentlyPath))
-				loc = Settings.RecentlyPath;
-			else
-				loc = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			loc = Directory.Exists(Settings.RecentlyPath) ?
+				Settings.RecentlyPath :
+				Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 		}
 
 		if (!OpenFolderDialog(loc, out var folder))
@@ -120,14 +121,14 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 	private void MoveMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
 	{
-		bool enable = MoveList.SelectedItems.Count == 1;
+		var enable = MoveList.SelectedItems.Count == 1;
 		MoveDeleteMenuItem.Enabled = enable;
 		MoveChangeMenuItem.Enabled = enable;
 	}
 
 	private void MoveList_Resize(object sender, EventArgs e)
 	{
-		MoveList.Columns[0].Width = -1;
+		//MoveList.Columns[0].Width = -1;
 	}
 
 	private void MoveList_SelectedIndexChanged(object sender, EventArgs e)
@@ -135,7 +136,17 @@ public partial class MoveForm : Form, ILocaleTranspose
 		if (MoveList.SelectedItems.Count != 1)
 			return;
 
-		DestLocationText.Text = MoveList.SelectedItems[0].Text;
+		DestLocationText.Text = MoveList.SelectedItems[0].SubItems[2].Text;
+	}
+
+	private void MoveList_ItemReordered(object? sender, ItemReorderDragEventArgs e)
+	{
+		if (e.BeforeIndex < 0 || e.AfterIndex < 0 || e.BeforeIndex == e.AfterIndex)
+			return;
+
+		Settings.ReIndexMoveLocation(e.BeforeIndex, e.AfterIndex);
+		RefreshMoveList(false);
+		EnsureMoveItem(e.AfterIndex > e.BeforeIndex ? e.AfterIndex - 1 : e.AfterIndex);
 	}
 
 	private void MoveAddMenuItem_Click(object sender, EventArgs e)
@@ -146,18 +157,19 @@ public partial class MoveForm : Form, ILocaleTranspose
 		if (EnsureMoveItem(folder))
 			return;
 
-		Settings.AddMoveLocation(folder);
+		var di = new DirectoryInfo(folder);
+		Settings.AddMoveLocation(folder, di.Name);
 
 		var index = MoveList.Items.Count;
 		var li = new ListViewItem(new[]
 		{
+			(index + 1).ToString(),
+			di.Name,
 			folder,
-			index.ToString(),
 		}, 0);
-		li.Tag = index;
 		MoveList.Items.Add(li);
 
-		MoveList.Columns[0].Width = -1;
+		//MoveList.Columns[0].Width = -1;
 
 		EnsureMoveItem(index);
 	}
@@ -167,20 +179,21 @@ public partial class MoveForm : Form, ILocaleTranspose
 		if (MoveList.SelectedItems.Count != 1)
 			return;
 
-		var loc = MoveList.SelectedItems[0].Text;
+		var loc = MoveList.SelectedItems[0].SubItems[2].Text;
 		if (!OpenFolderDialog(loc, out var folder))
 			return;
 
 		if (EnsureMoveItem(folder))
 			return;
 
-		var index = (int)MoveList.SelectedItems[0].Tag;
-		if (index < MoveList.Items.Count)
-		{
-			Settings.SetMoveLocation(index, folder);
-			MoveList.SelectedItems[0].Text = folder;
-			EnsureMoveItem(index);
-		}
+		var index = Convert.ToInt32(MoveList.SelectedItems[0].Text) - 1;
+		if (index >= MoveList.Items.Count)
+			return;
+
+		var di = new DirectoryInfo(folder);
+		Settings.SetMoveLocation(index, folder, di.Name);
+		MoveList.SelectedItems[0].SubItems[2].Text = folder;
+		EnsureMoveItem(index);
 	}
 
 	private void MoveDeleteMenuItem_Click(object sender, EventArgs e)
@@ -188,51 +201,50 @@ public partial class MoveForm : Form, ILocaleTranspose
 		if (MoveList.SelectedItems.Count != 1)
 			return;
 
-		var index = (int)MoveList.SelectedItems[0].Tag;
-		if (index < MoveList.Items.Count)
-		{
-			Settings.DeleteMoveLocation(index);
-			RefreshMoveList();
-		}
+		var index = Convert.ToInt32(MoveList.SelectedItems[0].Text) - 1;
+		if (index >= MoveList.Items.Count)
+			return;
+
+		Settings.DeleteMoveLocation(index);
+		RefreshMoveList();
 	}
 
-	private void RefreshMoveList()
+	private void RefreshMoveList(bool ensure = true)
 	{
 		// 먼저 목록 만들고
 		MoveList.BeginUpdate();
 		MoveList.Items.Clear();
 		var lst = Settings.GetMoveLocations();
-		for (int i = 0; i < lst.Length; i++)
+		for (var i = 0; i < lst.Length; i++)
 		{
 			var li = new ListViewItem(new[]
 			{
-				lst[i],
-				i.ToString(),
+				(i + 1).ToString(),
+				lst[i].Value,
+				lst[i].Key,
 			}, 0);
-			li.Tag = i;
 			MoveList.Items.Add(li);
 		}
 		MoveList.EndUpdate();
 
-		MoveList.Columns[0].Width = -1;
+		//MoveList.Columns[2].Width = -1;
 
 		// 선택
-		if (!EnsureMoveItem(s_last_location) && lst.Length > 0)
+		if (ensure && !EnsureMoveItem(s_last_location) && lst.Length > 0)
 			EnsureMoveItem(0);
 	}
 
 	private bool EnsureMoveItem(string loc)
 	{
-		if (!string.IsNullOrEmpty(loc))
+		if (string.IsNullOrEmpty(loc))
+			return false;
+
+		for (var i = 0; i < MoveList.Items.Count; i++)
 		{
-			for (int i = 0; i < MoveList.Items.Count; i++)
-			{
-				if (loc.Equals(MoveList.Items[i].Text))
-				{
-					EnsureMoveItem(i);
-					return true;
-				}
-			}
+			if (!loc.Equals(MoveList.Items[i].SubItems[2].Text))
+				continue;
+			EnsureMoveItem(i);
+			return true;
 		}
 
 		return false;
@@ -240,16 +252,15 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 	private void EnsureMoveItem(int index)
 	{
-		if (index < MoveList.Items.Count)
-		{
-			var item = MoveList.Items[index];
+		if (index >= MoveList.Items.Count)
+			return;
 
-			item.Focused = true;
-			item.Selected = true;
-			item.EnsureVisible();
+		var item = MoveList.Items[index];
+		item.Focused = true;
+		item.Selected = true;
+		item.EnsureVisible();
 
-			DestLocationText.Text = item.Text;
-		}
+		DestLocationText.Text = item.SubItems[2].Text;
 	}
 
 	private static bool OpenFolderDialog(string path, out string ret, bool shownewfolder = false)

@@ -18,6 +18,8 @@ public partial class PageSelectForm : Form, ILocaleTranspose
 		};
 
 		ControlDu.DoubleBuffered(PageList, true);
+
+		LocaleTranspose();
 	}
 
 	private void PageSelectForm_Load(object sender, EventArgs e)

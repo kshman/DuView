@@ -39,6 +39,8 @@ public partial class OptionForm : Form, ILocaleTranspose
 		// 크레디트
 		foreach (var cs in Credits)
 			CreditScroll.Items.Add(cs);
+
+		LocaleTranspose();
 	}
 
 	private void OptionForm_Load(object sender, EventArgs e)
@@ -107,6 +109,7 @@ public partial class OptionForm : Form, ILocaleTranspose
 		CacheSizeValue.Value = Settings.MaxPageCache;
 		ExternalRunText.Text = Settings.ExternalRun;
 		ReloadExternalExitCheck.Checked = Settings.ReloadAfterExternal;
+		FirefoxRunText.Text = Settings.FirefoxRun;
 
 		// 로캘
 		var lcl = _locales.ToList().IndexOf(Settings.Language) + 1;

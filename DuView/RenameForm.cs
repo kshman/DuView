@@ -16,6 +16,9 @@ public partial class RenameForm : Form, ILocaleTranspose
 			MoveTopToMaximize = false,
 			BodyAsTitle = true,
 		};
+
+		//
+		LocaleTranspose();
 	}
 
 	private void RenameForm_Load(object sender, EventArgs e)
@@ -26,9 +29,6 @@ public partial class RenameForm : Form, ILocaleTranspose
 			OpenAgainRadio.Checked = true;
 
 		ActiveControl = RenameText;
-
-		//
-		LocaleTranspose();
 	}
 
 	public void LocaleTranspose()
