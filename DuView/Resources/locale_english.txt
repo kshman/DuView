@@ -76,6 +76,7 @@ LANG=English
 1317=&Change location
 1318=&Delete this location
 1319=Path
+1320=&Set alias
 
 # 기타(1800)
 1800=Cac&he

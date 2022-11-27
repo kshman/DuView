@@ -5,8 +5,10 @@ public partial class MoveForm : Form, ILocaleTranspose
 	public string Destination { get; private set; }
 	public string Filename { get; private set; } = string.Empty;
 
-	private readonly BadakFormWorker _bfw;
 	private static string s_last_location = string.Empty;
+
+	private readonly BadakFormWorker _bfw;
+	private bool _child_focus;
 
 	public MoveForm()
 	{
@@ -21,8 +23,6 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 		Destination = Settings.RecentlyPath;
 		ControlDu.DoubleBuffered(MoveList, true);
-
-		MoveList.ItemReordered += MoveList_ItemReordered;
 
 		LocaleTranspose();
 	}
@@ -90,12 +90,36 @@ public partial class MoveForm : Form, ILocaleTranspose
 		return ShowDialog(owner);
 	}
 
+	private void MoveForm_KeyDown(object sender, KeyEventArgs e)
+	{
+		if (e.KeyCode== Keys.Escape)
+		{
+			if (!_child_focus)
+			{
+				NoCancelButton_Click(sender, e);
+				e.SuppressKeyPress = true;
+			}
+		}
+		else if (e.KeyCode== Keys.Enter)
+		{
+			if (!_child_focus)
+			{
+				OkDoItButton_Click(sender, e);
+				e.SuppressKeyPress = true;
+			}
+		}
+	}
+
 	private void OkDoItButton_Click(object sender, EventArgs e)
 	{
+		DialogResult = DialogResult.OK;
+		Close();
 	}
 
 	private void NoCancelButton_Click(object sender, EventArgs e)
 	{
+		DialogResult = DialogResult.Cancel;
+		Close();
 	}
 
 	private void BrowseButton_Click(object sender, EventArgs e)
@@ -124,6 +148,7 @@ public partial class MoveForm : Form, ILocaleTranspose
 		var enable = MoveList.SelectedItems.Count == 1;
 		MoveDeleteMenuItem.Enabled = enable;
 		MoveChangeMenuItem.Enabled = enable;
+		MoveSetAliasMenuItem.Enabled = enable;
 	}
 
 	private void MoveList_Resize(object sender, EventArgs e)
@@ -139,6 +164,14 @@ public partial class MoveForm : Form, ILocaleTranspose
 		DestLocationText.Text = MoveList.SelectedItems[0].SubItems[2].Text;
 	}
 
+	private void MoveList_DoubleClick(object sender, EventArgs e)
+	{
+		if (MoveList.SelectedItems.Count != 1)
+			return;
+
+		OkDoItButton_Click(sender, e);
+	}
+
 	private void MoveList_ItemReordered(object? sender, ItemReorderDragEventArgs e)
 	{
 		if (e.BeforeIndex < 0 || e.AfterIndex < 0 || e.BeforeIndex == e.AfterIndex)
@@ -147,6 +180,35 @@ public partial class MoveForm : Form, ILocaleTranspose
 		Settings.ReIndexMoveLocation(e.BeforeIndex, e.AfterIndex);
 		RefreshMoveList(false);
 		EnsureMoveItem(e.AfterIndex > e.BeforeIndex ? e.AfterIndex - 1 : e.AfterIndex);
+	}
+
+	private void MoveList_SubItemClick(object sender, SubItemEventArgs e)
+	{
+		if (e.SubItemIndex != 1)
+			return;
+
+		// 여기서 안하고 메뉴로 한다
+		//MoveList.EditSubItem(e.Item, e.SubItemIndex);
+	}
+
+	private void MoveList_SubItemBeginEdit(object sender, SubItemEventArgs e)
+	{
+		_child_focus = true;
+	}
+
+	private void MoveList_SubItemEndEdit(object sender, SubItemEndEditEventArgs e)
+	{
+		_child_focus = false;
+
+		if (e.Cancel)
+			return;
+
+		if (e.SubItemIndex != 1)
+			return;
+
+		var item = e.Item;
+		var index = Convert.ToInt32(item.Text) - 1;
+		Settings.SetMoveLocation(index, item.SubItems[2].Text, item.SubItems[1].Text);
 	}
 
 	private void MoveAddMenuItem_Click(object sender, EventArgs e)
@@ -207,6 +269,14 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 		Settings.DeleteMoveLocation(index);
 		RefreshMoveList();
+	}
+
+	private void MoveSetAliasMenuItem_Click(object sender, EventArgs e)
+	{
+		if (MoveList.SelectedItems.Count != 1)
+			return;
+
+		MoveList.EditSubItem(MoveList.SelectedItems[0], 1);
 	}
 
 	private void RefreshMoveList(bool ensure = true)

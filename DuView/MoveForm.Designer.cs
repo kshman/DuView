@@ -37,6 +37,7 @@
 			this.MoveMenuStrip = new Du.WinForms.BadakContextMenuStrip(this.components);
 			this.MoveAddMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.MoveChangeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.MoveSetAliasMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.MoveDeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.MoveImageList = new System.Windows.Forms.ImageList(this.components);
@@ -75,7 +76,12 @@
 			this.MoveList.TabIndex = 0;
 			this.MoveList.UseCompatibleStateImageBehavior = false;
 			this.MoveList.View = System.Windows.Forms.View.Details;
+			this.MoveList.ItemReordered += new Du.WinForms.ItemReorderDragHandler(this.MoveList_ItemReordered);
+			this.MoveList.SubItemClick += new Du.WinForms.SubItemEventHandler(this.MoveList_SubItemClick);
+			this.MoveList.SubItemBeginEdit += new Du.WinForms.SubItemEventHandler(this.MoveList_SubItemBeginEdit);
+			this.MoveList.SubItemEndEdit += new Du.WinForms.SubItemEndEditingEventHandler(this.MoveList_SubItemEndEdit);
 			this.MoveList.SelectedIndexChanged += new System.EventHandler(this.MoveList_SelectedIndexChanged);
+			this.MoveList.DoubleClick += new System.EventHandler(this.MoveList_DoubleClick);
 			this.MoveList.Resize += new System.EventHandler(this.MoveList_Resize);
 			// 
 			// columnHeader1
@@ -98,10 +104,11 @@
 			this.MoveMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MoveAddMenuItem,
             this.MoveChangeMenuItem,
+            this.MoveSetAliasMenuItem,
             this.toolStripSeparator1,
             this.MoveDeleteMenuItem});
 			this.MoveMenuStrip.Name = "MoveMenuStrip";
-			this.MoveMenuStrip.Size = new System.Drawing.Size(103, 76);
+			this.MoveMenuStrip.Size = new System.Drawing.Size(103, 98);
 			this.MoveMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.MoveMenuStrip_Opening);
 			// 
 			// MoveAddMenuItem
@@ -119,6 +126,14 @@
 			this.MoveChangeMenuItem.Size = new System.Drawing.Size(102, 22);
 			this.MoveChangeMenuItem.Text = "1317";
 			this.MoveChangeMenuItem.Click += new System.EventHandler(this.MoveChangeMenuItem_Click);
+			// 
+			// MoveSetAliasMenuItem
+			// 
+			this.MoveSetAliasMenuItem.ForeColor = System.Drawing.Color.White;
+			this.MoveSetAliasMenuItem.Name = "MoveSetAliasMenuItem";
+			this.MoveSetAliasMenuItem.Size = new System.Drawing.Size(102, 22);
+			this.MoveSetAliasMenuItem.Text = "1320";
+			this.MoveSetAliasMenuItem.Click += new System.EventHandler(this.MoveSetAliasMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
@@ -227,11 +242,9 @@
 			// 
 			// MoveForm
 			// 
-			this.AcceptButton = this.OkDoItButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
-			this.CancelButton = this.NoCancelButton;
 			this.ClientSize = new System.Drawing.Size(500, 550);
 			this.ControlBox = false;
 			this.Controls.Add(this.DestLocationText);
@@ -242,6 +255,7 @@
 			this.Controls.Add(this.BrowseButton);
 			this.Controls.Add(this.MoveList);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.KeyPreview = true;
 			this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -251,6 +265,7 @@
 			this.Text = "MoveForm";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MoveForm_FormClosing);
 			this.Load += new System.EventHandler(this.MoveForm_Load);
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MoveForm_KeyDown);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MoveForm_MouseDown);
 			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MoveForm_MouseMove);
 			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MoveForm_MouseUp);
@@ -278,5 +293,6 @@
 		private ToolStripMenuItem MoveChangeMenuItem;
 		private ToolStripSeparator toolStripSeparator1;
 		private ColumnHeader columnHeader3;
+		private ToolStripMenuItem MoveSetAliasMenuItem;
 	}
 }
