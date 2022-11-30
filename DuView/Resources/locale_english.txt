@@ -40,6 +40,8 @@ LANG=English
 127=&Search
 128=Move book
 129=Fail to move book!
+130=Pass Code:
+131=Password locked
 
 # 보기(1100)
 1100=&View
@@ -150,4 +152,11 @@ LANG=English
 2440=Use double click to maximize/minimize
 2441=Use click to changing prev/next page
 2442=Use extended renamer
+2443=Password
+2444=Use password code
+2445=Run DuView
+2446=Open option
+2447=Open last book
+2448=Move book
+2449=Rename book
 

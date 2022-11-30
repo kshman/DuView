@@ -54,6 +54,16 @@ public static class Types
 	}
 
 	//
+	public enum PassCodeUsage
+	{
+		Run,
+		Option,
+		LastBook,
+		MoveBook,
+		RenameBook,
+	}
+
+	//
 	public record BookEntryInfo
 	{
 		public string? Name { get; init; }

@@ -61,6 +61,15 @@ namespace DuView.Properties {
         }
         
         /// <summary>
+        ///   DuView is a book viewer\n\n\n\n서시\n윤동주\n\n\n죽는 날까지 하늘을 우러러\n한 점 부끄럼이 없기를,\n잎새에 이는 바람에도\n나는 괴로워했다.\n\n\n별을 노래하는 마음으로\n모든 죽어 가는 것을 사랑해야지\n그리고 나한테 주어진 길을\n걸어가야겠다.\n\n\n오늘 밤에도 별이 바람에 스치운다.\n\n\n\n\nSupported by kshman\n,과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CreditsWithSeosi {
+            get {
+                return ResourceManager.GetString("CreditsWithSeosi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
         internal static System.Drawing.Bitmap folder_blue {
@@ -129,32 +138,41 @@ namespace DuView.Properties {
         ///99=(기능없음)
         ///
         ///101=이미지 복사
-        ///102=클립보드로 복사했습니다!
-        ///103=클립보드에 넣을 수 없습니다!
+        ///102=클립보드로 복사했어요!
+        ///103=클립보드에 넣을 수 없어요!
         ///104=책이나 이미지를 고르세요
         ///105=압축 파일|*.zip|모든 파일|*.*
         ///106=책 열기
-        ///107=열 수 없는 압축 파일입니다!
+        ///107=열 수 없는 압축 파일이예요!
         ///108=디렉토리를 열 수 없어요!
         ///109=이전 책이 없어요!
         ///110=다음 책이 없어요!
         ///111=책 보기
         ///112=이미지 그리기 오류!
-        ///113=파일은 압축 파일입니다
+        ///113=파일은 압축 파일이예요
         ///114=책 지우기
-        ///115=책을 지울 수 없었습니다
-        ///116=디렉토리입니다
-        ///117=책을 열 수 없습니다
+        ///115=책을 지울 수 없었어요
+        ///116=디렉토리예요
+        ///117=책을 열 수 없어요
         ///118=찾아보기
         ///119=실행 파일|*.exe
         ///120=적절한 파일을 고르세요
-        ///121=외부 실행 파일이 없거나 실패했습니다
+        ///121=외부 실행 파일이 없거나 실패했어요
         ///122=책 이름 바꾸기
-        ///123=책 이[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///123=책 이름을 바꿀 [나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string locale_korean {
             get {
                 return ResourceManager.GetString("locale_korean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   2022-11-30 21:14과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string LocaleLastCheck {
+            get {
+                return ResourceManager.GetString("LocaleLastCheck", resourceCulture);
             }
         }
         

@@ -33,7 +33,7 @@ internal static class Settings
 	// -- 캐시
 	private static int s_max_page_cache = 230; // 1048576곱해야함
 
-	// -- 기본
+	// -- 일반
 	private static bool s_run_only_once_instance = true;
 	private static bool s_esc_to_exit = true;
 	private static bool s_use_magnetic_window;
@@ -49,6 +49,12 @@ internal static class Settings
 	// -- 마우스
 	private static bool s_use_doubleclick_state;
 	private static bool s_use_click_page;
+
+	// -- 보안
+	private static bool s_use_pass;
+	private static bool s_unlock_pass;
+	private static string s_pass_code = string.Empty;
+	private static string s_pass_usages = string.Empty;
 
 	// -- 기타
 
@@ -125,6 +131,11 @@ internal static class Settings
 				//
 				s_use_doubleclick_state = rk.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
 				s_use_click_page = rk.GetBool("MouseUseClickPage", s_use_click_page);
+
+				//
+				s_use_pass = rk.GetBool("UsePassCode", s_use_pass);
+				s_pass_code = rk.GetString("PassCode") ?? s_pass_code;
+				s_pass_usages = rk.GetString("PassUsage") ?? s_pass_usages;
 
 				//
 				for (var i = 0; ; i++)
@@ -374,7 +385,7 @@ internal static class Settings
 			return 0;
 
 		var s = Converter.EncodingString(onlyfilename);
-		return s_recently.Get(s);
+		return s != null ? s_recently.Get(s) : 0;
 	}
 
 	//
@@ -384,6 +395,8 @@ internal static class Settings
 			return;
 
 		var s = Converter.EncodingString(onlyfilename);
+		if (s == null)
+			return;
 
 		if (page > 0)
 		{
@@ -689,6 +702,96 @@ internal static class Settings
 		}
 	}
 	#endregion // 마우스
+
+	#region 보안
+	//
+	public static bool UsePassCode
+	{
+		get => s_use_pass;
+		set
+		{
+			if (value == s_use_pass)
+				return;
+
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetBool("UsePassCode", s_use_pass = value);
+		}
+	}
+
+	//
+	public static bool UnlockedPassCode
+	{
+		get => s_unlock_pass;
+		set => s_unlock_pass = value;
+	}
+
+	//
+	public static string PassCode
+	{
+		get => Converter.DecompressString(s_pass_code) ?? string.Empty;
+		set
+		{
+			var pw = value.Length > 0 ? Converter.CompressString(value) ?? string.Empty : string.Empty;
+			if (s_pass_code.Equals(pw))
+				return;
+
+			using var rk = new RegKey(c_keyname, true);
+			rk.SetString("PassCode", s_pass_code = pw);
+		}
+	}
+
+	//
+	public static string PassUsage => s_pass_usages;
+
+	//
+	public static void CommitPassUsage(IEnumerable<Types.PassCodeUsage> usages)
+	{
+		var s = string.Join(',', usages);
+		if (s.Equals(s_pass_usages))
+			return;
+
+		using var rk = new RegKey(c_keyname, true);
+		rk.SetString("PassUsage", s);
+	}
+
+	//
+	public static Types.PassCodeUsage[] GetPassUsageArray()
+	{
+		var ss = s_pass_usages.Split(',');
+		if (ss.Length == 0)
+			return Array.Empty<Types.PassCodeUsage>();
+
+		List<Types.PassCodeUsage> l = new();
+		foreach (var s in ss)
+		{
+			if (Enum.TryParse<Types.PassCodeUsage>(s, out var u) && !l.Contains(u))
+				l.Add(u);
+		}
+		return l.ToArray();
+	}
+
+	//
+	public static bool TestPassUsage(Types.PassCodeUsage usage)
+	{
+		return s_pass_usages.Contains(usage.ToString());
+	}
+
+	//
+	public static bool TestPassUsage(string usage)
+	{
+		return s_pass_usages.Contains(usage);
+	}
+
+	//
+	public static bool UnlockPass(string value)
+	{
+		var pw = value.Length > 0 ? Converter.CompressString(value) ?? string.Empty : string.Empty;
+		if (!pw.Equals(s_pass_code))
+			return false;
+		s_unlock_pass = true;
+		return true;
+	}
+	#endregion
 
 	#region 기타
 	#endregion // 기타

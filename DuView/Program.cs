@@ -48,7 +48,8 @@ namespace DuView
 				if (!string.IsNullOrEmpty(filename))
 				{
 					var enc = Converter.EncodingString(filename);
-					FormDu.SendCopyDataString(h, enc);
+					if (enc != null)
+						FormDu.SendCopyDataString(h, enc);
 				}
 			}
 

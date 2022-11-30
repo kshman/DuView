@@ -22,6 +22,12 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private Types.BookDirection _book_direction = Types.BookDirection.Next;
 
+	private bool _passmode;
+	private Action? _passaction;
+
+	private readonly System.Windows.Forms.Timer _mouse_timer;
+	private bool _mouse_hide;
+
 	#region 만들기
 	public ReadForm(string filename)
 	{
@@ -45,8 +51,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 		_select = new PageSelectForm();
 		_option = new OptionForm();
 
-		_notify_timer = new() { Interval = 5000 };
+		_notify_timer = new System.Windows.Forms.Timer { Interval = 5000 };
 		_notify_timer.Tick += NotifyTimerTick;
+
+		_mouse_timer = new System.Windows.Forms.Timer { Interval = 5000 };
+		_mouse_timer.Tick += MouseTimerTick;
 
 		//
 		LocaleTranspose();
@@ -157,6 +166,18 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void ReadForm_KeyDown(object sender, KeyEventArgs e)
 	{
+		if (_passmode)
+		{
+			switch (e.KeyCode)
+			{
+				case Keys.Escape:
+					EscapePassMode();
+					break;
+			}
+
+			return;
+		}
+
 		switch (e.KeyCode)
 		{
 			// 끝
@@ -270,6 +291,14 @@ public partial class ReadForm : Form, ILocaleTranspose
 					_bfw.Maximize();
 				break;
 
+			case Keys.L:
+				if (e.Control)
+					LockPassCode();
+				break;
+			case Keys.Oemtilde:
+				LockPassCode();
+				break;
+
 #if DEBUG && true
 			default:
 				System.Diagnostics.Debug.WriteLine($"키코드: {e.KeyCode}");
@@ -356,6 +385,8 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		if (_bfw.BodyAsTitle)
 			_bfw.DragOnMove(e);
+
+		TestMouseHide();
 	}
 
 	private void BookCanvas_MouseWheel(object? sender, MouseEventArgs e)
@@ -365,6 +396,8 @@ public partial class ReadForm : Form, ILocaleTranspose
 			PageGoPrev();
 		else if (e.Delta < 0)
 			PageGoNext();
+
+		TestMouseHide();
 	}
 
 	private void BookCanvas_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -467,7 +500,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book != null && Book.FileName == Settings.LastFileName)
 			return;
 
-		OpenBook(Settings.LastFileName);
+		PromptPassModeIfNeed(Types.PassCodeUsage.LastBook, () => OpenBook(Settings.LastFileName));
 	}
 
 	private void FileOpenExternalMenuItem_Click(object sender, EventArgs e)
@@ -526,12 +559,15 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void FileOptionMenuItem_Click(object sender, EventArgs e)
 	{
-		TopMost = false;
-		_option.ShowDialog(this, 0);
-		TopMost = Settings.GeneralAlwaysTop;
+		PromptPassModeIfNeed(Types.PassCodeUsage.Option, () =>
+		{
+			TopMost = false;
+			_option.ShowDialog(this, 0);
+			TopMost = Settings.GeneralAlwaysTop;
 
-		Book?.PrepareImages();
-		DrawBook();
+			Book?.PrepareImages();
+			DrawBook();
+		});
 	}
 
 	private void PageControlMenuItem_Click(object sender, EventArgs e)
@@ -806,43 +842,46 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		string? filename;
-
-		if (Settings.ExtendedRenamer)
+		PromptPassModeIfNeed(Types.PassCodeUsage.RenameBook, () =>
 		{
-			var dlg = new RenexForm();
-			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+			string? filename;
+
+			if (Settings.ExtendedRenamer)
+			{
+				var dlg = new RenexForm();
+				if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+					return;
+
+				filename = dlg.Filename;
+			}
+			else
+			{
+				var dlg = new RenameForm();
+				if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+					return;
+
+				filename = dlg.Filename;
+			}
+
+			if (string.IsNullOrEmpty(filename) || Book.OnlyFileName.Equals(filename))
 				return;
 
-			filename = dlg.Filename;
-		}
-		else
-		{
-			var dlg = new RenameForm();
-			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+			// 설정에 다음 파일을 열면 다음 파일을 아니면 바뀐 이름 책을 열게함
+			var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
+			var nextfilename = Settings.RenameOpenNext ? Book.FindNextFileAny(dir) : null;
+
+			// 시작
+			if (!Book.RenameFile(filename, out var fullpath))
+			{
+				ShowNotification(123, 3000);
 				return;
+			}
 
-			filename = dlg.Filename;
-		}
+			Book.CurrentPage = 0;
+			CloseBook();
 
-		if (string.IsNullOrEmpty(filename) || Book.OnlyFileName.Equals(filename))
-			return;
-
-		// 설정에 다음 파일을 열면 다음 파일을 아니면 바뀐 이름 책을 열게함
-		var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
-		var nextfilename = Settings.RenameOpenNext ? Book.FindNextFileAny(dir) : null;
-
-		// 시작
-		if (!Book.RenameFile(filename, out var fullpath))
-		{
-			ShowNotification(123, 3000);
-			return;
-		}
-
-		Book.CurrentPage = 0;
-		CloseBook();
-
-		OpenBook(nextfilename ?? fullpath);
+			OpenBook(nextfilename ?? fullpath);
+		});
 	}
 
 	private void MoveBook()
@@ -850,29 +889,32 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		var dlg = new MoveForm();
-		if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
-			return;
-
-		var filename = dlg.Filename;
-		var nextfilename = Book.FindNextFileAny(Types.BookDirection.Next);
-
-		//
-		if (!Book.MoveFile(filename))
+		PromptPassModeIfNeed(Types.PassCodeUsage.MoveBook, () =>
 		{
-			ShowNotification(129, 3000);
-			return;
-		}
+			var dlg = new MoveForm();
+			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
+				return;
 
-		CloseBook();
+			var filename = dlg.Filename;
+			var nextfilename = Book.FindNextFileAny(Types.BookDirection.Next);
 
-		if (string.IsNullOrEmpty(nextfilename))
-			ShowNotification(106, 110);
-		else
-		{
-			_book_direction = Types.BookDirection.Next;
-			OpenBook(nextfilename);
-		}
+			//
+			if (!Book.MoveFile(filename))
+			{
+				ShowNotification(129, 3000);
+				return;
+			}
+
+			CloseBook();
+
+			if (string.IsNullOrEmpty(nextfilename))
+				ShowNotification(106, 110);
+			else
+			{
+				_book_direction = Types.BookDirection.Next;
+				OpenBook(nextfilename);
+			}
+		});
 	}
 	#endregion
 
@@ -1178,6 +1220,78 @@ public partial class ReadForm : Form, ILocaleTranspose
 		_notify_timer.Stop();
 		ControlDu.EffectFadeOut(NotifyLabel);
 	}
+
+	private void TestMouseHide()
+	{
+		if (_mouse_hide)
+		{
+			_mouse_hide = false;
+			Cursor.Show();
+		}
+
+		if (Book != null)
+			_mouse_timer.Start();
+	}
+
+	private void MouseTimerTick(object? sender, EventArgs e)
+	{
+		_mouse_timer.Stop();
+
+		if (!_mouse_hide)
+		{
+			_mouse_hide = true;
+			Cursor.Hide();
+		}
+	}
 	#endregion // 도움
+
+	#region 패스 모드
+	private void PromptPassModeIfNeed(Types.PassCodeUsage usage, Action action)
+	{
+		if (!Settings.UsePassCode || Settings.UnlockedPassCode || !Settings.TestPassUsage(usage))
+		{
+			action.Invoke();
+			return;
+		}
+
+		_passaction = action;
+		_passmode = true;
+
+		PassText.Text = string.Empty;
+		PassPanel.Location = new Point((Width - PassPanel.Width) / 2, (Height - PassPanel.Height) / 2);
+		PassPanel.Visible = true;
+
+		PassText.Focus();
+	}
+
+	private void EscapePassMode()
+	{
+		_passmode = false;
+
+		PassPanel.Visible = false;
+	}
+
+	private void LockPassCode()
+	{
+		if (Settings.UsePassCode && Settings.UnlockedPassCode)
+		{
+			Settings.UnlockedPassCode = false;
+			ShowNotification(131);
+		}
+	}
+
+	private void PassText_TextChanged(object sender, EventArgs e)
+	{
+		if (!_passmode)
+			return;
+
+		if (!Settings.UnlockPass(PassText.Text))
+			return;
+
+		EscapePassMode();
+
+		_passaction?.Invoke();
+	}
+	#endregion
 }
 

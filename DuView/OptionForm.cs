@@ -1,26 +1,14 @@
-﻿namespace DuView;
+﻿using System.Text;
+using DuView.Properties;
+
+namespace DuView;
 
 public partial class OptionForm : Form, ILocaleTranspose
 {
 	private readonly BadakFormWorker _bfw;
 	private readonly IEnumerable<string> _locales = Locale.GetLocaleList();
 
-	private static readonly string[] Credits =
-	{
-		"DuView is a book viewer\n\n\n",
-		"서시\n윤동주\n\n",
-		"죽는 날까지 하늘을 우러러",
-		"한 점 부끄럼이 없기를,",
-		"잎새에 이는 바람에도",
-		"나는 괴로워했다.\n\n",
-		"별을 노래하는 마음으로",
-		"모든 죽어 가는 것을 사랑해야지",
-		"그리고 나한테 주어진 길을",
-		"걸어가야겠다.\n\n",
-		"오늘 밤에도 별이 바람에 스치운다.\n\n",
-		"\n\nSupported by kshman\n",
-	};
-
+	#region 컨스트럭터랑 폼 이벤트
 	public OptionForm()
 	{
 		InitializeComponent();
@@ -37,14 +25,24 @@ public partial class OptionForm : Form, ILocaleTranspose
 		((Control)PadPage).Enabled = false;
 
 		// 크레디트
-		foreach (var cs in Credits)
-			CreditScroll.Items.Add(cs);
+		foreach (var cs in Resources.CreditsWithSeosi.Split("\\n"))
+			CreditScroll.Items.Add(cs.Length != 0 ? cs : " ");
 
 		LocaleTranspose();
 	}
 
+	private readonly int[] c_password_usage_items = { 2445, 2446, 2447, 2448, 2449 };
+
 	private void OptionForm_Load(object sender, EventArgs e)
 	{
+		// 보안
+		PasswordUsageList.BeginUpdate();
+		PasswordUsageList.Items.Clear();
+		foreach (var c in c_password_usage_items)
+			PasswordUsageList.Items.Add(Locale.Text(c));
+		PasswordUsageList.EndUpdate();
+
+		// 로캘
 		LocalesList.BeginUpdate();
 		LocalesList.Items.Clear();
 		LocalesList.Items.Add(Locale.Text(126));
@@ -60,14 +58,21 @@ public partial class OptionForm : Form, ILocaleTranspose
 
 	private void OptionForm_FormClosing(object sender, FormClosingEventArgs e)
 	{
-		// 일반
+		// 기본
 		Settings.MaxPageCache = (int)CacheSizeValue.Value;
 
 		if (ExternalRunText.TextLength > 0)
 			Settings.ExternalRun = ExternalRunText.Text;
 
-		if (FirefoxRunText.TextLength > 0)
-			Settings.FirefoxRun = FirefoxRunText.Text;
+		if (ExternalRunText.TextLength > 0)
+			Settings.FirefoxRun = ExternalBrowserText.Text;
+
+		// 보안
+		Settings.PassCode = PasswordText.Text;
+		List<Types.PassCodeUsage> passusages = new();
+		foreach (int ul in PasswordUsageList.SelectedIndices)
+			passusages.Add((Types.PassCodeUsage)ul);
+		Settings.CommitPassUsage(passusages);
 	}
 
 	private void OptionForm_MouseDown(object sender, MouseEventArgs e)
@@ -99,17 +104,30 @@ public partial class OptionForm : Form, ILocaleTranspose
 
 	private void OptionForm_Shown(object sender, EventArgs e)
 	{
-		// 기본
+		// 일반
 		RunOnceCheck.Checked = Settings.GeneralRunOnce;
 		EscExitCheck.Checked = Settings.GeneralEscExit;
 		UseMagneticCheck.Checked = Settings.GeneralUseMagnetic;
 		ConfirmDeleteCheck.Checked = Settings.GeneralConfirmDelete;
 		AlwayTopCheck.Checked = Settings.GeneralAlwaysTop;
 		UpdateNotifyCheck.Checked = Settings.GeneralUpdateNotify;
+		ExtendedRenamerCheck.Checked = Settings.ExtendedRenamer;
 		CacheSizeValue.Value = Settings.MaxPageCache;
 		ExternalRunText.Text = Settings.ExternalRun;
 		ReloadExternalExitCheck.Checked = Settings.ReloadAfterExternal;
-		FirefoxRunText.Text = Settings.FirefoxRun;
+		ExternalBrowserText.Text = Settings.FirefoxRun;
+
+		// 키보드/마우스
+		UseClickToPageCheck.Checked = Settings.MouseUseClickPage;
+		UseDoubleClickStateCheck.Checked = Settings.MouseUseDoubleClickState;
+
+		// 보안
+		UsePasswordCheck.Checked = Settings.UsePassCode;
+		PasswordText.Text = Settings.PassCode;
+		PasswordText.Enabled = Settings.UsePassCode;
+		PasswordUsageList.Enabled = Settings.UsePassCode;
+		foreach (var u in Settings.GetPassUsageArray())
+			PasswordUsageList.SelectedIndices.Add((int)u);
 
 		// 로캘
 		var lcl = _locales.ToList().IndexOf(Settings.Language) + 1;
@@ -129,8 +147,9 @@ public partial class OptionForm : Form, ILocaleTranspose
 
 		return ShowDialog(owner);
 	}
+	#endregion
 
-	#region 기본
+	#region 탭: 일반
 	private void RunOnceCheck_CheckedChanged(object sender, EventArgs e)
 	{
 		Settings.GeneralRunOnce = RunOnceCheck.Checked;
@@ -189,7 +208,7 @@ public partial class OptionForm : Form, ILocaleTranspose
 		};
 
 		if (dlg.ShowDialog() == DialogResult.OK)
-			FirefoxRunText.Text = dlg.FileName;
+			ExternalRunText.Text = dlg.FileName;
 	}
 
 	private void ExtendedRenamerCheck_CheckedChanged(object sender, EventArgs e)
@@ -198,6 +217,7 @@ public partial class OptionForm : Form, ILocaleTranspose
 	}
 	#endregion // 기본
 
+	#region 탭: 키보드/마우스
 	private void UseDoubleClickStateCheck_CheckedChanged(object sender, EventArgs e)
 	{
 		Settings.MouseUseDoubleClickState = UseDoubleClickStateCheck.Checked;
@@ -207,7 +227,28 @@ public partial class OptionForm : Form, ILocaleTranspose
 	{
 		Settings.MouseUseClickPage = UseClickToPageCheck.Checked;
 	}
+	#endregion
 
+	#region 탭: 보안
+	private void UsePasswordCheck_CheckedChanged(object sender, EventArgs e)
+	{
+		Settings.UsePassCode = UsePasswordCheck.Checked;
+		PasswordText.Enabled = UsePasswordCheck.Checked;
+		PasswordUsageList.Enabled = UsePasswordCheck.Checked;
+	}
+
+	private void PasswordText_TextChanged(object sender, EventArgs e)
+	{
+		// 헐 필요없나
+	}
+
+	private void PasswordUsageList_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		// 헐 필요없나
+	}
+	#endregion
+
+	#region 탭: 언어
 	private void LocalesList_SelectedIndexChanged(object sender, EventArgs e)
 	{
 		if (LocalesList.SelectedIndex == 0)
@@ -218,4 +259,5 @@ public partial class OptionForm : Form, ILocaleTranspose
 				Settings.Language = s;
 		}
 	}
+	#endregion
 }

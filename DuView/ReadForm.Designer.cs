@@ -65,6 +65,7 @@
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.FileDeleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
+			this.FileMoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileRefreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileOptionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -105,11 +106,14 @@
 			this.OptionPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ExitPopupItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.NotifyLabel = new System.Windows.Forms.Label();
-			this.FileMoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.PassPanel = new System.Windows.Forms.Panel();
+			this.PassText = new System.Windows.Forms.TextBox();
+			this.PassLabel = new System.Windows.Forms.Label();
 			this.TopPanel.SuspendLayout();
 			this.MenuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.BookCanvas)).BeginInit();
 			this.ContextPopup.SuspendLayout();
+			this.PassPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TopPanel
@@ -185,7 +189,7 @@
             this.MaxCacheMenuItem});
 			this.MenuStrip.Location = new System.Drawing.Point(3, 3);
 			this.MenuStrip.Name = "MenuStrip";
-			this.MenuStrip.Size = new System.Drawing.Size(332, 24);
+			this.MenuStrip.Size = new System.Drawing.Size(212, 24);
 			this.MenuStrip.TabIndex = 1;
 			this.MenuStrip.Text = "95";
 			// 
@@ -393,7 +397,7 @@
 			this.FileOpenMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOpenMenuItem.Name = "FileOpenMenuItem";
 			this.FileOpenMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.FileOpenMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileOpenMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileOpenMenuItem.Text = "1301";
 			this.FileOpenMenuItem.Click += new System.EventHandler(this.FileOpenMenuItem_Click);
 			// 
@@ -403,7 +407,7 @@
 			this.FileOpenLastMenuItem.Name = "FileOpenLastMenuItem";
 			this.FileOpenLastMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
-			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileOpenLastMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileOpenLastMenuItem.Text = "1302";
 			this.FileOpenLastMenuItem.Click += new System.EventHandler(this.FileOpenLastMenuItem_Click);
 			// 
@@ -412,7 +416,7 @@
 			this.FileOpenExternalMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOpenExternalMenuItem.Name = "FileOpenExternalMenuItem";
 			this.FileOpenExternalMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F11;
-			this.FileOpenExternalMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileOpenExternalMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileOpenExternalMenuItem.Text = "1309";
 			this.FileOpenExternalMenuItem.Click += new System.EventHandler(this.FileOpenExternalMenuItem_Click);
 			// 
@@ -421,21 +425,21 @@
 			this.FileCloseMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileCloseMenuItem.Name = "FileCloseMenuItem";
 			this.FileCloseMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-			this.FileCloseMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileCloseMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileCloseMenuItem.Text = "1303";
 			this.FileCloseMenuItem.Click += new System.EventHandler(this.FileCloseMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(173, 6);
 			// 
 			// FileRenameMenuItem
 			// 
 			this.FileRenameMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileRenameMenuItem.Name = "FileRenameMenuItem";
 			this.FileRenameMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-			this.FileRenameMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileRenameMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileRenameMenuItem.Text = "1310";
 			this.FileRenameMenuItem.Click += new System.EventHandler(this.FileRenameMenuItem_Click);
 			// 
@@ -444,35 +448,44 @@
 			this.FileCopyImageMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileCopyImageMenuItem.Name = "FileCopyImageMenuItem";
 			this.FileCopyImageMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.FileCopyImageMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileCopyImageMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileCopyImageMenuItem.Text = "1304";
 			this.FileCopyImageMenuItem.Click += new System.EventHandler(this.FileCopyImageMenuItem_Click);
 			// 
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(173, 6);
 			// 
 			// FileDeleteMenuItem
 			// 
 			this.FileDeleteMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileDeleteMenuItem.Name = "FileDeleteMenuItem";
 			this.FileDeleteMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.FileDeleteMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileDeleteMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileDeleteMenuItem.Text = "1307";
 			this.FileDeleteMenuItem.Click += new System.EventHandler(this.FileDeleteMenuItem_Click);
 			// 
 			// toolStripSeparator14
 			// 
 			this.toolStripSeparator14.Name = "toolStripSeparator14";
-			this.toolStripSeparator14.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator14.Size = new System.Drawing.Size(173, 6);
+			// 
+			// FileMoveMenuItem
+			// 
+			this.FileMoveMenuItem.ForeColor = System.Drawing.Color.White;
+			this.FileMoveMenuItem.Name = "FileMoveMenuItem";
+			this.FileMoveMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
+			this.FileMoveMenuItem.Size = new System.Drawing.Size(176, 22);
+			this.FileMoveMenuItem.Text = "1316";
+			this.FileMoveMenuItem.Click += new System.EventHandler(this.FileMoveMenuItem_Click);
 			// 
 			// FileRefreshMenuItem
 			// 
 			this.FileRefreshMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileRefreshMenuItem.Name = "FileRefreshMenuItem";
 			this.FileRefreshMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.FileRefreshMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileRefreshMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileRefreshMenuItem.Text = "1305";
 			this.FileRefreshMenuItem.Click += new System.EventHandler(this.FileRefreshMenuItem_Click);
 			// 
@@ -481,7 +494,7 @@
 			this.FileOptionMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileOptionMenuItem.Name = "FileOptionMenuItem";
 			this.FileOptionMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.FileOptionMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileOptionMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileOptionMenuItem.Text = "1308";
 			this.FileOptionMenuItem.Click += new System.EventHandler(this.FileOptionMenuItem_Click);
 			// 
@@ -489,7 +502,7 @@
 			// 
 			this.FileExitMenuItem.ForeColor = System.Drawing.Color.White;
 			this.FileExitMenuItem.Name = "FileExitMenuItem";
-			this.FileExitMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.FileExitMenuItem.Size = new System.Drawing.Size(176, 22);
 			this.FileExitMenuItem.Text = "1306";
 			this.FileExitMenuItem.Click += new System.EventHandler(this.FileExitMenuItem_Click);
 			// 
@@ -817,7 +830,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.NotifyLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
 			this.NotifyLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.NotifyLabel.Font = new System.Drawing.Font("맑은 고딕", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.NotifyLabel.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
 			this.NotifyLabel.ForeColor = System.Drawing.Color.White;
 			this.NotifyLabel.Location = new System.Drawing.Point(25, 160);
 			this.NotifyLabel.Name = "NotifyLabel";
@@ -827,14 +840,42 @@
 			this.NotifyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.NotifyLabel.Visible = false;
 			// 
-			// FileMoveMenuItem
+			// PassPanel
 			// 
-			this.FileMoveMenuItem.ForeColor = System.Drawing.Color.White;
-			this.FileMoveMenuItem.Name = "FileMoveMenuItem";
-			this.FileMoveMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
-			this.FileMoveMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.FileMoveMenuItem.Text = "1316";
-			this.FileMoveMenuItem.Click += new System.EventHandler(this.FileMoveMenuItem_Click);
+			this.PassPanel.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.PassPanel.BackColor = System.Drawing.Color.SlateBlue;
+			this.PassPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.PassPanel.Controls.Add(this.PassText);
+			this.PassPanel.Controls.Add(this.PassLabel);
+			this.PassPanel.Location = new System.Drawing.Point(585, 367);
+			this.PassPanel.Name = "PassPanel";
+			this.PassPanel.Size = new System.Drawing.Size(203, 71);
+			this.PassPanel.TabIndex = 6;
+			this.PassPanel.Visible = false;
+			// 
+			// PassText
+			// 
+			this.PassText.BackColor = System.Drawing.Color.Sienna;
+			this.PassText.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.PassText.ForeColor = System.Drawing.Color.White;
+			this.PassText.Location = new System.Drawing.Point(3, 28);
+			this.PassText.MaxLength = 12;
+			this.PassText.Name = "PassText";
+			this.PassText.PasswordChar = '●';
+			this.PassText.Size = new System.Drawing.Size(195, 33);
+			this.PassText.TabIndex = 1;
+			this.PassText.TextChanged += new System.EventHandler(this.PassText_TextChanged);
+			// 
+			// PassLabel
+			// 
+			this.PassLabel.AutoSize = true;
+			this.PassLabel.Font = new System.Drawing.Font("Segoe UI", 14.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+			this.PassLabel.ForeColor = System.Drawing.Color.White;
+			this.PassLabel.Location = new System.Drawing.Point(3, 0);
+			this.PassLabel.Name = "PassLabel";
+			this.PassLabel.Size = new System.Drawing.Size(45, 25);
+			this.PassLabel.TabIndex = 0;
+			this.PassLabel.Text = "130";
 			// 
 			// ReadForm
 			// 
@@ -843,6 +884,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(60)))));
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.PassPanel);
 			this.Controls.Add(this.NotifyLabel);
 			this.Controls.Add(this.BookCanvas);
 			this.Controls.Add(this.TopPanel);
@@ -867,6 +909,8 @@
 			this.MenuStrip.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.BookCanvas)).EndInit();
 			this.ContextPopup.ResumeLayout(false);
+			this.PassPanel.ResumeLayout(false);
+			this.PassPanel.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -949,5 +993,8 @@
 		private ToolStripMenuItem FileRenameMenuItem;
 		private ToolStripMenuItem RenamePopupItem;
 		private ToolStripMenuItem FileMoveMenuItem;
+		private Panel PassPanel;
+		private TextBox PassText;
+		private Label PassLabel;
 	}
 }
