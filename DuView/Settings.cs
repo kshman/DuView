@@ -5,6 +5,7 @@ namespace DuView;
 internal static class Settings
 {
 	private const string c_keyname = @"PuruLive\DuView";
+	private static SettingsLineDb s_lines = default!;
 
 	private static string s_language = string.Empty;
 
@@ -58,14 +59,25 @@ internal static class Settings
 
 	// -- 기타
 
+	//
+	public static string StartupPath => Application.StartupPath;
+
+	//
+	public static string SettingsPath => Path.Combine(StartupPath, "DuView.config");
+
+	//
+	public static string RecentlyPath => Path.Combine(StartupPath, "DuView.recently");
+
 	// 시작할 때 앞
 	public static void WhenBeforeStart()
 	{
-		using var rk = new RegKey(c_keyname);
-		if (rk.IsOpen)
-		{
-			s_run_only_once_instance = rk.GetBool("GeneralRunOnce", s_run_only_once_instance);
-		}
+		var lines = SettingsLineDb.FromFile(SettingsPath);
+		if (lines is null)
+			return;
+
+		s_lines = lines;
+
+		s_run_only_once_instance = s_lines.GetBool("GeneralRunOnce", s_run_only_once_instance);
 	}
 
 	// 시작할 때 뒤
@@ -211,12 +223,6 @@ internal static class Settings
 			rk.SetString("Window", $"{s_bound.X},{s_bound.Y},{s_bound.Width},{s_bound.Height}");
 		}
 	}
-
-	//
-	public static string StartupPath => Application.StartupPath;
-
-	//
-	public static string RecentlyPath => Path.Combine(StartupPath, "DuView.recently");
 
 	//
 	public static string Language

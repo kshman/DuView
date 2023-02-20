@@ -29,6 +29,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	private bool _mouse_hide;
 
 	#region 만들기
+
 	public ReadForm(string filename)
 	{
 		Self = this;
@@ -60,9 +61,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 		//
 		LocaleTranspose();
 	}
-	#endregion
+
+	#endregion 만들기
 
 	#region 폼 명령
+
 	private void ReadForm_Load(object sender, EventArgs e)
 	{
 		Settings.WhenMainLoad(this);
@@ -83,7 +86,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void ReadForm_FormClosing(object sender, FormClosingEventArgs e)
 	{
-
+		//
 	}
 
 	private void ReadForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -295,6 +298,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				if (e.Control)
 					LockPassCode();
 				break;
+
 			case Keys.Oemtilde:
 				LockPassCode();
 				break;
@@ -306,9 +310,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 #endif
 		}
 	}
-	#endregion
+
+	#endregion 폼 명령
 
 	#region 패널 명령
+
 	private void TopPanel_MouseDown(object sender, MouseEventArgs e)
 	{
 		_bfw.DragOnDown(e);
@@ -323,9 +329,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 	{
 		_bfw.DragOnMove(e);
 	}
-	#endregion
+
+	#endregion 패널 명령
 
 	#region 캔바스 명령
+
 	private void BookCanvas_MouseDown(object sender, MouseEventArgs e)
 	{
 		if (Settings.MouseUseClickPage && Book != null)
@@ -347,7 +355,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			_bfw.DragOnDown(e);
 		else
 		{
-			// 마우스 두번 눌림 
+			// 마우스 두번 눌림
 			if (e.Clicks == 2)
 			{
 				if (Book != null)
@@ -402,10 +410,13 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void BookCanvas_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 	{
+		//
 	}
-	#endregion
+
+	#endregion 캔바스 명령
 
 	#region 메뉴 아이템
+
 	private void ApplyUiSetting()
 	{
 		UpdateViewZoom(Settings.ViewZoom);
@@ -583,9 +594,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 	{
 		DeleteBookOrItem();
 	}
-	#endregion
+
+	#endregion 메뉴 아이템
 
 	#region 파일 처리
+
 	// 책 닫기 공통
 	private void CleanBook()
 	{
@@ -598,7 +611,9 @@ public partial class ReadForm : Form, ILocaleTranspose
 			_select.ResetBook();
 
 			// 강제GC
+#if false
 			GC.Collect();
+#endif
 		}
 
 		ResetFocus();
@@ -766,12 +781,9 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (!Book.CanDeleteFile(out var reason))
 			return;
 
-		if (!string.IsNullOrEmpty(reason) && Settings.GeneralConfirmDelete)
-		{
-			if (MessageBox.Show(this, reason, Locale.Text(114), MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-				return;
-		}
-
+		if (!string.IsNullOrEmpty(reason) && Settings.GeneralConfirmDelete &&
+			MessageBox.Show(this, reason, Locale.Text(114), MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+			return;
 
 		var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
 		var nextfilename = Book.FindNextFileAny(dir);
@@ -916,9 +928,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 			}
 		});
 	}
-	#endregion
+
+	#endregion 파일 처리
 
 	#region 그리기
+
 	// 로고 그리기
 	private static void DrawLogo(Graphics g, int w, int h)
 	{
@@ -933,20 +947,17 @@ public partial class ReadForm : Form, ILocaleTranspose
 		}
 	}
 
-	/*
-	private static void OnAnimateFrameChanged(object? sender, EventArgs e)
-	{
-		Self?.InternalAnimateFrame();
-	}
+	//private static void OnAnimateFrameChanged(object? sender, EventArgs e)
+	//{
+	//	Self?.InternalAnimateFrame();
+	//}
 
-	private void InternalAnimateFrame()
-	{
-		if (_bmp != null)
-		{
-
-		}
-	}
-	*/
+	//private void InternalAnimateFrame()
+	//{
+	//	if (_bmp != null)
+	//	{
+	//	}
+	//}
 
 	// 가로로 차게 이미지 그리기
 	private static void DrawBitmapFitWidth(Graphics g, Image bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
@@ -1067,9 +1078,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		BookCanvas.Image = _bmp;
 	}
-	#endregion
+
+	#endregion 그리기
 
 	#region 책 조작
+
 	// 조작하기
 	private void PageControl(Types.Controls ctrl)
 	{
@@ -1118,6 +1131,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				OpenNextBook();
 
 				break;
+
 			case Types.Controls.Select:
 				PageSelect();
 				break;
@@ -1180,9 +1194,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 			DrawBook();
 		}
 	}
-	#endregion
+
+	#endregion 책 조작
 
 	#region 도움
+
 	private void ShowNotification(string mesg, int timeout = 2000)
 	{
 		if (!NotifyLabel.Visible)
@@ -1229,13 +1245,18 @@ public partial class ReadForm : Form, ILocaleTranspose
 			Cursor.Show();
 		}
 
+#if false
 		if (Book != null)
 			_mouse_timer.Start();
+#endif
 	}
 
 	private void MouseTimerTick(object? sender, EventArgs e)
 	{
 		_mouse_timer.Stop();
+
+		if (!Focused)
+			return;
 
 		if (!_mouse_hide)
 		{
@@ -1243,9 +1264,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 			Cursor.Hide();
 		}
 	}
-	#endregion // 도움
+
+	#endregion 도움
 
 	#region 패스 모드
+
 	private void PromptPassModeIfNeed(Types.PassCodeUsage usage, Action action)
 	{
 		if (!Settings.UsePassCode || Settings.UnlockedPassCode || !Settings.TestPassUsage(usage))
@@ -1292,6 +1315,6 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		_passaction?.Invoke();
 	}
-	#endregion
-}
 
+	#endregion 패스 모드
+}

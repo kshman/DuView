@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationIcon>purutu.ico</ApplicationIcon>
+    <ApplicationIcon>DuView.ico</ApplicationIcon>
     <Company>PuruLive</Company>
     <Copyright>Copyright © PuruLive 2021</Copyright>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="purutu.ico" />
+    <Content Include="DuView.ico" />
   </ItemGroup>
 
   <ItemGroup>
