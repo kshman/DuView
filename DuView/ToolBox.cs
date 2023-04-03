@@ -1,12 +1,25 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using InterpolationMode = System.Drawing.Drawing2D.InterpolationMode;
 
 namespace DuView;
 
 public static class ToolBox
 {
+	//
+	public static bool EmptyString(this string? v) =>
+		string.IsNullOrEmpty(v);
+
+	//
+	public static bool WhiteString(this string? v) =>
+		string.IsNullOrWhiteSpace(v);
+
+	//
+	public static bool TestHave([NotNullWhen(true)] this string? v, bool testWhites = false) =>
+		testWhites ? !string.IsNullOrWhiteSpace(v) : !string.IsNullOrEmpty(v);
+
 	// 알 수 있는 로캘 얻기
-	public static string GetKnownCultureLocale(CultureInfo culture)
+	public static string GetKnownCultureLocale(this CultureInfo culture)
 	{
 		var name = culture.Name;
 		string locale;
@@ -24,9 +37,9 @@ public static class ToolBox
 	}
 
 	// 열 수 있는 이미지
-	public static bool IsValidImageFile(string extension)
+	public static bool IsValidImageFile(this string extension)
 	{
-		return extension switch
+		return extension.ToLower() switch
 		{
 			".png" or ".jpg" or ".jpeg" or ".bmp" or ".tga" or ".webp" or ".gif" => true,
 			_ => false,

@@ -1,5 +1,4 @@
-﻿using System.Text;
-using DuView.Properties;
+﻿using DuView.Properties;
 
 namespace DuView;
 
@@ -64,16 +63,17 @@ public partial class OptionForm : Form, ILocaleTranspose
 		if (ExternalRunText.TextLength > 0)
 			Settings.ExternalRun = ExternalRunText.Text;
 
-		if (ExternalRunText.TextLength > 0)
+		if (ExternalBrowserText.TextLength > 0)
 			Settings.FirefoxRun = ExternalBrowserText.Text;
 
 		// 보안
 		Settings.PassCode = PasswordText.Text;
-		List<Types.PassCodeUsage> passusages = new();
-		foreach (int ul in PasswordUsageList.SelectedIndices)
-			passusages.Add((Types.PassCodeUsage)ul);
+		var passusages = (from int ul in PasswordUsageList.SelectedIndices select (Types.PassCodeUsage)ul).ToList();
 		Settings.CommitPassUsage(passusages);
-	}
+
+		// 일단 저장할까
+		Settings.SaveSettings();
+ 	}
 
 	private void OptionForm_MouseDown(object sender, MouseEventArgs e)
 	{
@@ -139,13 +139,13 @@ public partial class OptionForm : Form, ILocaleTranspose
 
 	}
 
-	public DialogResult ShowDialog(IWin32Window owner, int dummy)
+	public void ShowDialog(IWin32Window owner, int dummy)
 	{
 		_ = dummy;
 
 		Opacity = 0;
 
-		return ShowDialog(owner);
+		ShowDialog(owner);
 	}
 	#endregion
 
@@ -208,7 +208,7 @@ public partial class OptionForm : Form, ILocaleTranspose
 		};
 
 		if (dlg.ShowDialog() == DialogResult.OK)
-			ExternalRunText.Text = dlg.FileName;
+			ExternalBrowserText.Text=dlg.FileName;
 	}
 
 	private void ExtendedRenamerCheck_CheckedChanged(object sender, EventArgs e)
