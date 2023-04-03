@@ -9,6 +9,8 @@ public partial class MoveForm : Form, ILocaleTranspose
 	private readonly BadakFormWorker _bfw;
 	private bool _child_focus;
 
+	private bool _save_settings;
+
 	public MoveForm()
 	{
 		InitializeComponent();
@@ -48,6 +50,12 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 			s_last_location = s;
 			Filename = Path.Combine(s, Filename);
+		}
+
+		if (_save_settings)
+		{
+			Settings.KeepMoveLocation();
+			Settings.SaveSettings();
 		}
 	}
 
@@ -89,7 +97,7 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 	private void MoveForm_KeyDown(object sender, KeyEventArgs e)
 	{
-		if (e.KeyCode== Keys.Escape)
+		if (e.KeyCode == Keys.Escape)
 		{
 			if (!_child_focus)
 			{
@@ -97,7 +105,7 @@ public partial class MoveForm : Form, ILocaleTranspose
 				e.SuppressKeyPress = true;
 			}
 		}
-		else if (e.KeyCode== Keys.Enter)
+		else if (e.KeyCode == Keys.Enter)
 		{
 			if (!_child_focus)
 			{
@@ -177,6 +185,8 @@ public partial class MoveForm : Form, ILocaleTranspose
 		Settings.ReIndexMoveLocation(e.BeforeIndex, e.AfterIndex);
 		RefreshMoveList(false);
 		EnsureMoveItem(e.AfterIndex > e.BeforeIndex ? e.AfterIndex - 1 : e.AfterIndex);
+
+		_save_settings = true;
 	}
 
 	private void MoveList_SubItemClick(object sender, SubItemEventArgs e)
@@ -208,6 +218,8 @@ public partial class MoveForm : Form, ILocaleTranspose
 		var item = e.Item;
 		var index = Convert.ToInt32(item.Text) - 1;
 		Settings.SetMoveLocation(index, item.SubItems[2].Text, item.SubItems[1].Text);
+
+		_save_settings = true;
 	}
 
 	private void MoveAddMenuItem_Click(object sender, EventArgs e)
@@ -233,6 +245,8 @@ public partial class MoveForm : Form, ILocaleTranspose
 		//MoveList.Columns[0].Width = -1;
 
 		EnsureMoveItem(index);
+
+		_save_settings = true;
 	}
 
 	private void MoveChangeMenuItem_Click(object sender, EventArgs e)
@@ -255,6 +269,8 @@ public partial class MoveForm : Form, ILocaleTranspose
 		Settings.SetMoveLocation(index, folder, di.Name);
 		MoveList.SelectedItems[0].SubItems[2].Text = folder;
 		EnsureMoveItem(index);
+
+		_save_settings = true;
 	}
 
 	private void MoveDeleteMenuItem_Click(object sender, EventArgs e)
@@ -268,6 +284,8 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 		Settings.DeleteMoveLocation(index);
 		RefreshMoveList();
+
+		_save_settings = true;
 	}
 
 	private void MoveSetAliasMenuItem_Click(object sender, EventArgs e)

@@ -70,7 +70,10 @@ public partial class OptionForm : Form, ILocaleTranspose
 		Settings.PassCode = PasswordText.Text;
 		var passusages = (from int ul in PasswordUsageList.SelectedIndices select (Types.PassCodeUsage)ul).ToList();
 		Settings.CommitPassUsage(passusages);
-	}
+
+		// 일단 저장할까
+		Settings.SaveSettings();
+ 	}
 
 	private void OptionForm_MouseDown(object sender, MouseEventArgs e)
 	{
