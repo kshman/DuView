@@ -2,15 +2,16 @@
 
 namespace DuView;
 
-public  class SettingsLineDb : LineStringDb<string>
+public class SettingsLineDb : LineStringDb<string>
 {
 	private SettingsLineDb()
 	{ }
 
-	public static SettingsLineDb? FromFile(string filename)
+	public static SettingsLineDb FromFile(string filename)
 	{
 		var l = new SettingsLineDb();
-		return l.AddFromFile(filename, Encoding.UTF8, new StringToStringConverter()) ? l : null;
+		l.AddFromFile(filename, Encoding.UTF8, new StringToStringConverter());
+		return l;
 	}
 
 	public string? GetString(string name, string? defaultValue = null) =>
@@ -36,5 +37,25 @@ public  class SettingsLineDb : LineStringDb<string>
 	{
 		var s = Try(name, out var ret) ? ret : defaultValue;
 		return string.IsNullOrWhiteSpace(s) ? null : Converter.DecodingString(s);
+	}
+
+	public void SetString(string name, string? value)
+	{
+		if (value == null)
+			Remove(name);
+		else
+			Set(name, value);
+	}
+
+	public void SetInt(string name, int value) =>
+		Set(name, value.ToString());
+
+	public void SetBool(string name, bool value) =>
+		Set(name, value ? "true" : "false");
+
+	public void SetEncodedString(string name, string? value)
+	{
+		var s = value == null ? null : Converter.EncodingString(value);
+		SetString(name, s);
 	}
 }

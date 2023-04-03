@@ -95,6 +95,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		Settings.KeepMoveLocation();
 		Settings.KeepLocationSize(WindowState, Location, Size);
+		Settings.SaveSettings();
 		Settings.SaveFileInfos();
 	}
 
@@ -658,7 +659,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 			if (ToolBox.IsArchiveType(ext))             // 압축 버전
 				bk = OpenArchive(fi, ext);
-			else if (ToolBox.IsValidImageFile(ext))     // 단독 이미지 버전
+			else if (ext.IsValidImageFile())     // 단독 이미지 버전
 				bk = null;
 			else
 				bk = null;

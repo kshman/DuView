@@ -97,7 +97,7 @@ internal class BookZip : BookBase
 			try
 			{
 				var fi = new FileInfo(e.FullName);
-				if (ToolBox.IsValidImageFile(fi.Extension.ToLower()))
+				if (fi.Extension.IsValidImageFile())
 					entries.Add(e);
 			}
 			catch

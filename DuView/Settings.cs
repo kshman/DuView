@@ -4,8 +4,7 @@ namespace DuView;
 
 internal static class Settings
 {
-	private const string c_keyname = @"PuruLive\DuView";
-	private static SettingsLineDb s_lines = default!;
+	private static SettingsLineDb? s_lines;
 
 	private static string s_language = string.Empty;
 
@@ -68,106 +67,105 @@ internal static class Settings
 	//
 	public static string RecentlyPath => Path.Combine(StartupPath, "DuView.recently");
 
+	//
+	private static SettingsLineDb ReadSettings()
+	{
+		s_lines ??= SettingsLineDb.FromFile(SettingsPath);
+		return s_lines;
+	}
+
 	// 시작할 때 앞
 	public static void WhenBeforeStart()
 	{
-		var lines = SettingsLineDb.FromFile(SettingsPath);
-		if (lines is null)
-			return;
+		var lines = ReadSettings();
 
-		s_lines = lines;
-
-		s_run_only_once_instance = s_lines.GetBool("GeneralRunOnce", s_run_only_once_instance);
+		s_run_only_once_instance = lines.GetBool("GeneralRunOnce", s_run_only_once_instance);
 	}
 
 	// 시작할 때 뒤
 	public static void WhenAfterStart()
 	{
-		using (var rk = new RegKey(c_keyname))
+		var lines = ReadSettings();
+
+		var v = lines.GetString("Window");
+		if (v.TestHave())
 		{
-			if (rk.IsOpen)
+			var ss = v.Split(',');
+			if (ss.Length == 4)
 			{
-				var v = rk.GetString("Window");
-				if (!string.IsNullOrEmpty(v))
-				{
-					var ss = v.Split(',');
-					if (ss.Length == 4)
-					{
-						s_bound = new Rectangle(
-							int.Parse(ss[0]),
-							int.Parse(ss[1]),
-							int.Parse(ss[2]),
-							int.Parse(ss[3]));
-					}
-				}
+				s_bound = new Rectangle(
+					int.Parse(ss[0]),
+					int.Parse(ss[1]),
+					int.Parse(ss[2]),
+					int.Parse(ss[3]));
+			}
+		}
 
-				//
-				s_language = rk.GetString("Language", s_language) ?? string.Empty;
+		//
+		s_language = lines.GetString("Language", s_language) ?? string.Empty;
 
-				s_magnetic_dock_size = rk.GetInt("MagneticDockSize", s_magnetic_dock_size);
+		s_magnetic_dock_size = lines.GetInt("MagneticDockSize", s_magnetic_dock_size);
 
-				//
-				v = rk.GetDecodingString("LastFolder");
-				if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
-					s_last_folder = v;
+		//
+		v = lines.GetDecodedString("LastFolder");
+		if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
+			s_last_folder = v;
 
-				v = rk.GetDecodingString("LastFileName");
-				if (!string.IsNullOrEmpty(v) && File.Exists(v))
-					s_last_filename = v;
+		v = lines.GetDecodedString("LastFileName");
+		if (!string.IsNullOrEmpty(v) && File.Exists(v))
+			s_last_filename = v;
 
-				s_max_recently = rk.GetInt("MaxRecently", s_max_recently);
+		s_max_recently = lines.GetInt("MaxRecently", s_max_recently);
 
-				//
-				s_view_zoom = rk.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
-				s_view_mode = (Types.ViewMode)rk.GetInt("ViewMode", (int)s_view_mode);
-				s_view_quality = (Types.ViewQuality)rk.GetInt("ViewQuality", (int)s_view_quality);
+		//
+		s_view_zoom = lines.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
+		s_view_mode = (Types.ViewMode)lines.GetInt("ViewMode", (int)s_view_mode);
+		s_view_quality = (Types.ViewQuality)lines.GetInt("ViewQuality", (int)s_view_quality);
 
-				//
-				s_rename_open_next = rk.GetBool("RenameOpenNext", s_rename_open_next);
+		//
+		s_rename_open_next = lines.GetBool("RenameOpenNext", s_rename_open_next);
 
-				//
-				s_max_page_cache = rk.GetInt("MaxPageCache", s_max_page_cache);
+		//
+		s_max_page_cache = lines.GetInt("MaxPageCache", s_max_page_cache);
 
-				//
-				s_esc_to_exit = rk.GetBool("GeneralEscExit", s_esc_to_exit);
-				s_use_magnetic_window = rk.GetBool("GeneralUseMagnetic", s_use_magnetic_window);
-				s_confirm_when_delete_file = rk.GetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
-				s_always_on_top = rk.GetBool("GeneralAlwaysTop", s_always_on_top);
-				s_use_update_notification = rk.GetBool("GeneralUpdateNotify", s_use_update_notification);
-				s_external_run = rk.GetString("ExternalRun") ?? s_external_run;
-				s_reload_after_external = rk.GetBool("ReloadAfterExternalExit", s_reload_after_external);
-				s_keep_book_direction = rk.GetBool("KeepBookDirection", s_keep_book_direction);
-				s_firefox_run = rk.GetString("FirefoxRun") ?? s_firefox_run;
-				s_extened_renamer = rk.GetBool("ExtendedRenamer", s_extened_renamer);
+		//
+		s_esc_to_exit = lines.GetBool("GeneralEscExit", s_esc_to_exit);
+		s_use_magnetic_window = lines.GetBool("GeneralUseMagnetic", s_use_magnetic_window);
+		s_confirm_when_delete_file = lines.GetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
+		s_always_on_top = lines.GetBool("GeneralAlwaysTop", s_always_on_top);
+		s_use_update_notification = lines.GetBool("GeneralUpdateNotify", s_use_update_notification);
+		s_external_run = lines.GetString("ExternalRun") ?? s_external_run;
+		s_reload_after_external = lines.GetBool("ReloadAfterExternalExit", s_reload_after_external);
+		s_keep_book_direction = lines.GetBool("KeepBookDirection", s_keep_book_direction);
+		s_firefox_run = lines.GetString("FirefoxRun") ?? s_firefox_run;
+		s_extened_renamer = lines.GetBool("ExtendedRenamer", s_extened_renamer);
 
-				//
-				s_use_doubleclick_state = rk.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
-				s_use_click_page = rk.GetBool("MouseUseClickPage", s_use_click_page);
+		//
+		s_use_doubleclick_state = lines.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
+		s_use_click_page = lines.GetBool("MouseUseClickPage", s_use_click_page);
 
-				//
-				s_use_pass = rk.GetBool("UsePassCode", s_use_pass);
-				s_pass_code = rk.GetString("PassCode") ?? s_pass_code;
-				s_pass_usages = rk.GetString("PassUsage") ?? s_pass_usages;
+		//
+		s_use_pass = lines.GetBool("UsePassCode", s_use_pass);
+		s_pass_code = lines.GetString("PassCode") ?? s_pass_code;
+		s_pass_usages = lines.GetString("PassUsage") ?? s_pass_usages;
 
-				//
-				for (var i = 0; ; i++)
-				{
-					var s = rk.GetDecodingString($"MoveKeep{i}");
-					if (string.IsNullOrEmpty(s))
-						break;
-					var n = s.LastIndexOf("@:", StringComparison.Ordinal);
-					if (n == -1)
-					{
-						var di = new DirectoryInfo(s);
-						s_move.Add(new KeyValuePair<string, string>(s, di.Name));
-					}
-					else
-					{
-						var sk = s[..n];
-						var sv = s[(n + 2)..];
-						s_move.Add(new KeyValuePair<string, string>(sk, sv));
-					}
-				}
+		//
+		for (var i = 0; ; i++)
+		{
+			var s = lines.GetDecodedString($"MoveKeep{i}");
+			if (string.IsNullOrEmpty(s))
+				break;
+			var n = s.LastIndexOf("@:", StringComparison.Ordinal);
+			if (n == -1)
+			{
+				var di = new DirectoryInfo(s);
+				s_move.Add(new KeyValuePair<string, string>(s, di.Name));
+			}
+			else
+			{
+				var sk = s[..n];
+				var sv = s[(n + 2)..];
+				s_move.Add(new KeyValuePair<string, string>(sk, sv));
 			}
 		}
 
@@ -180,16 +178,16 @@ internal static class Settings
 	//
 	public static void InitLocale()
 	{
-		if (!s_init_locale)
-		{
-			Locale.AddLocale("en", Properties.Resources.locale_english);
-			Locale.AddLocale("ko", Properties.Resources.locale_korean);
-			Locale.SetDefaultLocale();
+		if (s_init_locale)
+			return;
 
-			SetLocale(s_language);
+		Locale.AddLocale("en", Properties.Resources.locale_english);
+		Locale.AddLocale("ko", Properties.Resources.locale_korean);
+		Locale.SetDefaultLocale();
 
-			s_init_locale = true;
-		}
+		SetLocale(s_language);
+
+		s_init_locale = true;
 	}
 
 	//
@@ -198,7 +196,7 @@ internal static class Settings
 		if (!Locale.HasLocale(locale))
 		{
 			var culture = Thread.CurrentThread.CurrentUICulture;
-			locale = ToolBox.GetKnownCultureLocale(culture);
+			locale = culture.GetKnownCultureLocale();
 		}
 
 		if (locale != Locale.CurrentLocale)
@@ -215,13 +213,13 @@ internal static class Settings
 	//
 	public static void KeepLocationSize(FormWindowState state, Point location, Size size)
 	{
-		if (state == FormWindowState.Normal)
-		{
-			s_bound = new Rectangle(location, size);
+		if (state != FormWindowState.Normal)
+			return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetString("Window", $"{s_bound.X},{s_bound.Y},{s_bound.Width},{s_bound.Height}");
-		}
+		s_bound = new Rectangle(location, size);
+
+		var lines = ReadSettings();
+		lines.SetString("Window", $"{s_bound.X},{s_bound.Y},{s_bound.Width},{s_bound.Height}");
 	}
 
 	//
@@ -230,29 +228,29 @@ internal static class Settings
 		get => s_language;
 		set
 		{
-			if (value != s_language)
+			if (value == s_language)
+				return;
+
+			s_language = value;
+
+			if (!Locale.HasLocale(value))
 			{
-				s_language = value;
+				var culture = Thread.CurrentThread.CurrentUICulture;
+				s_language = culture.GetKnownCultureLocale();
 
-				if (!Locale.HasLocale(value))
-				{
-					var culture = Thread.CurrentThread.CurrentUICulture;
-					s_language = ToolBox.GetKnownCultureLocale(culture);
+				if (s_language != Locale.CurrentLocale)
+					Locale.SetLocale(s_language);
 
-					if (s_language != Locale.CurrentLocale)
-						Locale.SetLocale(s_language);
+				var lines = ReadSettings();
+				lines.Remove("Language");
+			}
+			else
+			{
+				if (s_language != Locale.CurrentLocale)
+					Locale.SetLocale(s_language);
 
-					using var rk = new RegKey(c_keyname, true);
-					rk.DeleteValue("Language");
-				}
-				else
-				{
-					if (s_language != Locale.CurrentLocale)
-						Locale.SetLocale(s_language);
-
-					using var rk = new RegKey(c_keyname, true);
-					rk.SetString("Language", value);
-				}
+				var lines = ReadSettings();
+				lines.SetString("Language", value);
 			}
 		}
 	}
@@ -263,13 +261,13 @@ internal static class Settings
 		get => s_magnetic_dock_size;
 		set
 		{
-			if (value != s_magnetic_dock_size)
-			{
-				s_magnetic_dock_size = value;
+			if (value == s_magnetic_dock_size)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("MagneticDockSize", value);
-			}
+			s_magnetic_dock_size = value;
+
+			var lines = ReadSettings();
+			lines.SetInt("MagneticDockSize", value);
 		}
 	}
 
@@ -279,13 +277,13 @@ internal static class Settings
 		get => s_last_folder;
 		set
 		{
-			if (!value.Equals(s_last_folder))
-			{
-				s_last_folder = value;
+			if (value.Equals(s_last_folder))
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetEncodingString("LastFolder", value);
-			}
+			s_last_folder = value;
+
+			var lines = ReadSettings();
+			lines.SetEncodedString("LastFolder", value);
 		}
 	}
 
@@ -295,13 +293,13 @@ internal static class Settings
 		get => s_last_filename;
 		set
 		{
-			if (!value.Equals(s_last_filename))
-			{
-				s_last_filename = value;
+			if (value.Equals(s_last_filename))
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetEncodingString("LastFileName", value);
-			}
+			s_last_filename = value;
+
+			var lines = ReadSettings();
+			lines.SetEncodedString("LastFileName", value);
 		}
 	}
 
@@ -311,13 +309,13 @@ internal static class Settings
 		get => s_view_zoom;
 		set
 		{
-			if (value != s_view_zoom)
-			{
-				s_view_zoom = value;
+			if (value == s_view_zoom)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("ViewZoom", value ? 1 : 0);
-			}
+			s_view_zoom = value;
+
+			var lines = ReadSettings();
+			lines.SetInt("ViewZoom", value ? 1 : 0);
 		}
 	}
 
@@ -327,13 +325,13 @@ internal static class Settings
 		get => s_view_mode;
 		set
 		{
-			if (value != s_view_mode)
-			{
-				s_view_mode = value;
+			if (value == s_view_mode)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("ViewMode", (int)value);
-			}
+			s_view_mode = value;
+
+			var lines = ReadSettings();
+			lines.SetInt("ViewMode", (int)value);
 		}
 	}
 
@@ -343,13 +341,13 @@ internal static class Settings
 		get => s_view_quality;
 		set
 		{
-			if (value != s_view_quality)
-			{
-				s_view_quality = value;
+			if (value == s_view_quality)
+				return;
 
-				using var rk = new RegKey(c_keyname, true);
-				rk.SetInt("ViewQuality", (int)value);
-			}
+			s_view_quality = value;
+
+			var lines = ReadSettings();
+			lines.SetInt("ViewQuality", (int)value);
 		}
 	}
 
@@ -365,8 +363,8 @@ internal static class Settings
 			if (value == s_max_page_cache)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetInt("MaxPageCache", s_max_page_cache = value);
+			var lines = ReadSettings();
+			lines.SetInt("MaxPageCache", s_max_page_cache = value);
 		}
 	}
 
@@ -379,8 +377,8 @@ internal static class Settings
 			if (value == s_max_recently)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetInt("MaxRecently", s_max_recently = value);
+			var lines = ReadSettings();
+			lines.SetInt("MaxRecently", s_max_recently = value);
 		}
 	}
 
@@ -481,18 +479,31 @@ internal static class Settings
 	//
 	public static void KeepMoveLocation()
 	{
-		using var rk = new RegKey(c_keyname, true);
+		var lines = ReadSettings();
 
 		for (var i = 0; i < s_move.Count; i++)
 		{
 			var m = s_move[i];
 			if (string.IsNullOrEmpty(m.Key))
 				continue;
-			rk.SetEncodingString($"MoveKeep{i}",
+			lines.SetEncodedString($"MoveKeep{i}",
 				string.IsNullOrWhiteSpace(m.Value) ? m.Key : $"{m.Key}@:{m.Value}");
 		}
 
-		rk.SetEncodingString($"MoveKeep{s_move.Count}", string.Empty);
+		lines.SetEncodedString($"MoveKeep{s_move.Count}", string.Empty);
+	}
+
+	//
+	public static void SaveSettings()
+	{
+		var lines = ReadSettings();
+
+		var rfn = SettingsPath;
+		lines.Save(rfn, Encoding.UTF8, new []
+		{
+			"DuView settings",
+			$"Created: {DateTime.Now}"
+		});
 	}
 
 	//
@@ -518,8 +529,8 @@ internal static class Settings
 			if (value == s_rename_open_next)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("RenameOpenNext", s_rename_open_next = value);
+			var lines = ReadSettings();
+			lines.SetBool("RenameOpenNext", s_rename_open_next = value);
 		}
 	}
 
@@ -533,8 +544,8 @@ internal static class Settings
 			if (value == s_run_only_once_instance)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("GeneralRunOnce", s_run_only_once_instance = value);
+			var lines = ReadSettings();
+			lines.SetBool("GeneralRunOnce", s_run_only_once_instance = value);
 		}
 	}
 
@@ -547,8 +558,8 @@ internal static class Settings
 			if (value == s_esc_to_exit)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("GeneralEscExit", s_esc_to_exit = value);
+			var lines = ReadSettings();
+			lines.SetBool("GeneralEscExit", s_esc_to_exit = value);
 		}
 	}
 
@@ -561,8 +572,8 @@ internal static class Settings
 			if (value == s_use_magnetic_window)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("GeneralUseMagnetic", s_use_magnetic_window = value);
+			var lines = ReadSettings();
+			lines.SetBool("GeneralUseMagnetic", s_use_magnetic_window = value);
 		}
 	}
 
@@ -575,8 +586,8 @@ internal static class Settings
 			if (value == s_confirm_when_delete_file)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("GeneralConfirmDelete", s_confirm_when_delete_file = value);
+			var lines = ReadSettings();
+			lines.SetBool("GeneralConfirmDelete", s_confirm_when_delete_file = value);
 		}
 	}
 
@@ -589,8 +600,8 @@ internal static class Settings
 			if (value == s_always_on_top)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("GeneralAlwaysTop", s_always_on_top = value);
+			var lines = ReadSettings();
+			lines.SetBool("GeneralAlwaysTop", s_always_on_top = value);
 		}
 	}
 
@@ -603,8 +614,8 @@ internal static class Settings
 			if (value == s_use_update_notification)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("GeneralUpdateNotify", s_use_update_notification = value);
+			var lines = ReadSettings();
+			lines.SetBool("GeneralUpdateNotify", s_use_update_notification = value);
 		}
 	}
 
@@ -617,8 +628,8 @@ internal static class Settings
 			if (value.Equals(s_external_run))
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetString("ExternalRun", s_external_run = value);
+			var lines = ReadSettings();
+			lines.SetString("ExternalRun", s_external_run = value);
 		}
 	}
 
@@ -631,8 +642,8 @@ internal static class Settings
 			if (value == s_reload_after_external)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("ReloadAfterExternalExit", s_reload_after_external = value);
+			var lines = ReadSettings();
+			lines.SetBool("ReloadAfterExternalExit", s_reload_after_external = value);
 		}
 	}
 
@@ -645,8 +656,8 @@ internal static class Settings
 			if (value == s_keep_book_direction)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("KeepBookDirection", s_keep_book_direction = value);
+			var lines = ReadSettings();
+			lines.SetBool("KeepBookDirection", s_keep_book_direction = value);
 		}
 	}
 
@@ -659,8 +670,8 @@ internal static class Settings
 			if (value.Equals(s_firefox_run))
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetString("FirefoxRun", s_firefox_run = value);
+			var lines = ReadSettings();
+			lines.SetString("FirefoxRun", s_firefox_run = value);
 		}
 	}
 
@@ -673,8 +684,8 @@ internal static class Settings
 			if (value == s_extened_renamer)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("ExtendedRenamer", s_extened_renamer = value);
+			var lines = ReadSettings();
+			lines.SetBool("ExtendedRenamer", s_extened_renamer = value);
 		}
 	}
 	#endregion // 기본
@@ -689,8 +700,8 @@ internal static class Settings
 			if (value == s_use_doubleclick_state)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("MouseUseDoubleClick", s_use_doubleclick_state = value);
+			var lines = ReadSettings();
+			lines.SetBool("MouseUseDoubleClick", s_use_doubleclick_state = value);
 		}
 	}
 
@@ -703,8 +714,8 @@ internal static class Settings
 			if (value == s_use_click_page)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("MouseUseClickPage", s_use_click_page = value);
+			var lines = ReadSettings();
+			lines.SetBool("MouseUseClickPage", s_use_click_page = value);
 		}
 	}
 	#endregion // 마우스
@@ -719,8 +730,8 @@ internal static class Settings
 			if (value == s_use_pass)
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetBool("UsePassCode", s_use_pass = value);
+			var lines = ReadSettings();
+			lines.SetBool("UsePassCode", s_use_pass = value);
 		}
 	}
 
@@ -741,8 +752,8 @@ internal static class Settings
 			if (s_pass_code.Equals(pw))
 				return;
 
-			using var rk = new RegKey(c_keyname, true);
-			rk.SetString("PassCode", s_pass_code = pw);
+			var lines = ReadSettings();
+			lines.SetString("PassCode", s_pass_code = pw);
 		}
 	}
 
@@ -756,8 +767,8 @@ internal static class Settings
 		if (s.Equals(s_pass_usages))
 			return;
 
-		using var rk = new RegKey(c_keyname, true);
-		rk.SetString("PassUsage", s);
+		var lines = ReadSettings();
+		lines.SetString("PassUsage", s);
 	}
 
 	//

@@ -24,7 +24,7 @@ internal class BookFolder : BookBase
 		var entries =
 			(from fi in di.EnumerateFiles()
 			 where fi.Exists
-			 where ToolBox.IsValidImageFile(fi.Extension.ToLower())
+			 where fi.Extension.IsValidImageFile()
 			 select new Types.BookEntryInfo()
 			 {
 				 Name = fi.FullName,
