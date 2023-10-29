@@ -353,7 +353,7 @@
             this.PageSelectMenuItem.ForeColor = System.Drawing.Color.White;
             this.PageSelectMenuItem.Name = "PageSelectMenuItem";
             this.PageSelectMenuItem.Size = new System.Drawing.Size(122, 22);
-            this.PageSelectMenuItem.Tag = DuView.Types.Controls.Select;
+            this.PageSelectMenuItem.Tag = DuView.Types.BookControl.Select;
             this.PageSelectMenuItem.Text = "1201";
             this.PageSelectMenuItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -603,7 +603,7 @@
             this.CtrlPrevPopupItem.ForeColor = System.Drawing.Color.White;
             this.CtrlPrevPopupItem.Name = "CtrlPrevPopupItem";
             this.CtrlPrevPopupItem.Size = new System.Drawing.Size(102, 22);
-            this.CtrlPrevPopupItem.Tag = DuView.Types.Controls.Previous;
+            this.CtrlPrevPopupItem.Tag = DuView.Types.BookControl.Previous;
             this.CtrlPrevPopupItem.Text = "2201";
             this.CtrlPrevPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -612,7 +612,7 @@
             this.CtrlNextPopupItem.ForeColor = System.Drawing.Color.White;
             this.CtrlNextPopupItem.Name = "CtrlNextPopupItem";
             this.CtrlNextPopupItem.Size = new System.Drawing.Size(102, 22);
-            this.CtrlNextPopupItem.Tag = DuView.Types.Controls.Next;
+            this.CtrlNextPopupItem.Tag = DuView.Types.BookControl.Next;
             this.CtrlNextPopupItem.Text = "2202";
             this.CtrlNextPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -621,7 +621,7 @@
             this.CtrlHomePopupItem.ForeColor = System.Drawing.Color.White;
             this.CtrlHomePopupItem.Name = "CtrlHomePopupItem";
             this.CtrlHomePopupItem.Size = new System.Drawing.Size(102, 22);
-            this.CtrlHomePopupItem.Tag = DuView.Types.Controls.First;
+            this.CtrlHomePopupItem.Tag = DuView.Types.BookControl.First;
             this.CtrlHomePopupItem.Text = "2203";
             this.CtrlHomePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -630,7 +630,7 @@
             this.CtrlEndPopupItem.ForeColor = System.Drawing.Color.White;
             this.CtrlEndPopupItem.Name = "CtrlEndPopupItem";
             this.CtrlEndPopupItem.Size = new System.Drawing.Size(102, 22);
-            this.CtrlEndPopupItem.Tag = DuView.Types.Controls.Last;
+            this.CtrlEndPopupItem.Tag = DuView.Types.BookControl.Last;
             this.CtrlEndPopupItem.Text = "2204";
             this.CtrlEndPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -644,7 +644,7 @@
             this.CtrlPrev10PopupItem.ForeColor = System.Drawing.Color.White;
             this.CtrlPrev10PopupItem.Name = "CtrlPrev10PopupItem";
             this.CtrlPrev10PopupItem.Size = new System.Drawing.Size(102, 22);
-            this.CtrlPrev10PopupItem.Tag = DuView.Types.Controls.SeekPrevious10;
+            this.CtrlPrev10PopupItem.Tag = DuView.Types.BookControl.SeekPrevious10;
             this.CtrlPrev10PopupItem.Text = "2205";
             this.CtrlPrev10PopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -653,7 +653,7 @@
             this.CtrlNext10PopupItem.ForeColor = System.Drawing.Color.White;
             this.CtrlNext10PopupItem.Name = "CtrlNext10PopupItem";
             this.CtrlNext10PopupItem.Size = new System.Drawing.Size(102, 22);
-            this.CtrlNext10PopupItem.Tag = DuView.Types.Controls.SeekNext10;
+            this.CtrlNext10PopupItem.Tag = DuView.Types.BookControl.SeekNext10;
             this.CtrlNext10PopupItem.Text = "2206";
             this.CtrlNext10PopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -667,7 +667,7 @@
             this.CtrlPrevFilePopupItem.ForeColor = System.Drawing.Color.White;
             this.CtrlPrevFilePopupItem.Name = "CtrlPrevFilePopupItem";
             this.CtrlPrevFilePopupItem.Size = new System.Drawing.Size(102, 22);
-            this.CtrlPrevFilePopupItem.Tag = DuView.Types.Controls.ScanPrevious;
+            this.CtrlPrevFilePopupItem.Tag = DuView.Types.BookControl.ScanPrevious;
             this.CtrlPrevFilePopupItem.Text = "2207";
             this.CtrlPrevFilePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -676,7 +676,7 @@
             this.CtrlNextFilePopupItem.ForeColor = System.Drawing.Color.White;
             this.CtrlNextFilePopupItem.Name = "CtrlNextFilePopupItem";
             this.CtrlNextFilePopupItem.Size = new System.Drawing.Size(102, 22);
-            this.CtrlNextFilePopupItem.Tag = DuView.Types.Controls.ScanNext;
+            this.CtrlNextFilePopupItem.Tag = DuView.Types.BookControl.ScanNext;
             this.CtrlNextFilePopupItem.Text = "2208";
             this.CtrlNextFilePopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -685,7 +685,7 @@
             this.PagesPopupItem.ForeColor = System.Drawing.Color.White;
             this.PagesPopupItem.Name = "PagesPopupItem";
             this.PagesPopupItem.Size = new System.Drawing.Size(102, 22);
-            this.PagesPopupItem.Tag = DuView.Types.Controls.Select;
+            this.PagesPopupItem.Tag = DuView.Types.BookControl.Select;
             this.PagesPopupItem.Text = "1201";
             this.PagesPopupItem.Click += new System.EventHandler(this.PageControlMenuItem_Click);
             // 
@@ -802,8 +802,9 @@
             this.CopyImagePopupItem.Name = "CopyImagePopupItem";
             this.CopyImagePopupItem.Size = new System.Drawing.Size(102, 22);
             this.CopyImagePopupItem.Text = "1304";
+            this.CopyImagePopupItem.Click += new System.EventHandler(this.FileCopyImageMenuItem_Click);
             // 
-            // toolStripSeparator8
+			// toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
             this.toolStripSeparator8.Size = new System.Drawing.Size(99, 6);

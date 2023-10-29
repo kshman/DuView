@@ -249,7 +249,7 @@ public static class ToolBox
 	}
 
 	//
-	public static void LocaleTextOnCollection(ToolStripItemCollection collection)
+	private static void LocaleTextOnCollection(ToolStripItemCollection collection)
 	{
 		foreach (var c in collection)
 		{

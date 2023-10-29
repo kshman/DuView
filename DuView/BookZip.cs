@@ -28,14 +28,13 @@ internal class BookZip : BookBase
 	{
 		base.Dispose(disposing);
 
-		if (disposing)
-		{
-			if (_zip != null)
-			{
-				_zip.Dispose();
-				_zip = null;
-			}
-		}
+		if (!disposing) 
+			return;
+		if (_zip == null) 
+			return;
+
+		_zip.Dispose();
+		_zip = null;
 	}
 
 	//

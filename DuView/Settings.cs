@@ -15,6 +15,7 @@ internal static class Settings
 	// -- 최근
 	private static string s_last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 	private static string s_last_filename = string.Empty;
+	private static string s_remember_filename = string.Empty;
 
 	private static ResizableLineDb? s_recently;
 	private static int s_max_recently = 1000;
@@ -115,6 +116,10 @@ internal static class Settings
 		if (!string.IsNullOrEmpty(v) && File.Exists(v))
 			s_last_filename = v;
 
+		v = lines.GetDecodedString("RememberFileName");
+		if (!string.IsNullOrEmpty(v) && File.Exists(v))
+			s_remember_filename = v;
+
 		s_max_recently = lines.GetInt("MaxRecently", s_max_recently);
 
 		//
@@ -152,9 +157,12 @@ internal static class Settings
 		//
 		for (var i = 0; ; i++)
 		{
-			var s = lines.GetDecodedString($"MoveKeep{i}");
+			var s = lines.GetString($"MoveKeep{i}");
 			if (string.IsNullOrEmpty(s))
 				break;
+			var d = Converter.DecodingString(s);
+			if (!string.IsNullOrEmpty(d))
+				s = d;
 			var n = s.LastIndexOf("@:", StringComparison.Ordinal);
 			if (n == -1)
 			{
@@ -300,6 +308,22 @@ internal static class Settings
 
 			var lines = ReadSettings();
 			lines.SetEncodedString("LastFileName", value);
+		}
+	}
+
+	//
+	public static string RememberFileName
+	{
+		get => s_remember_filename;
+		set
+		{
+			if (value.Equals(s_remember_filename))
+				return;
+
+			s_remember_filename = value;
+
+			var lines = ReadSettings();
+			lines.SetEncodedString("RememberFileName", value);
 		}
 	}
 
@@ -485,12 +509,13 @@ internal static class Settings
 		{
 			var m = s_move[i];
 			if (string.IsNullOrEmpty(m.Key))
-				continue;
-			lines.SetEncodedString($"MoveKeep{i}",
+				break;
+			// lines.SetEncodedString
+			lines.SetString($"MoveKeep{i}", 
 				string.IsNullOrWhiteSpace(m.Value) ? m.Key : $"{m.Key}@:{m.Value}");
 		}
 
-		lines.SetEncodedString($"MoveKeep{s_move.Count}", string.Empty);
+		lines.SetString($"MoveKeep{s_move.Count}", string.Empty);
 	}
 
 	//
