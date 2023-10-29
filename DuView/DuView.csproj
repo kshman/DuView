@@ -51,10 +51,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="libwebp_x64.dll">
+    <None Update="libwebp.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="libwebp_x86.dll">
+    <None Update="libwebpdecoder.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="libwebpdemux.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

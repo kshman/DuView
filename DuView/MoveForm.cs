@@ -52,11 +52,11 @@ public partial class MoveForm : Form, ILocaleTranspose
 			Filename = Path.Combine(s, Filename);
 		}
 
-		if (_save_settings)
-		{
-			Settings.KeepMoveLocation();
-			Settings.SaveSettings();
-		}
+		if (!_save_settings) 
+			return;
+
+		Settings.KeepMoveLocation();
+		Settings.SaveSettings();
 	}
 
 	private void MoveForm_MouseDown(object sender, MouseEventArgs e)
@@ -97,20 +97,25 @@ public partial class MoveForm : Form, ILocaleTranspose
 
 	private void MoveForm_KeyDown(object sender, KeyEventArgs e)
 	{
-		if (e.KeyCode == Keys.Escape)
+		switch (e.KeyCode)
 		{
-			if (!_child_focus)
+			case Keys.Escape:
 			{
-				NoCancelButton_Click(sender, e);
-				e.SuppressKeyPress = true;
+				if (!_child_focus)
+				{
+					NoCancelButton_Click(sender, e);
+					e.SuppressKeyPress = true;
+				}
+				break;
 			}
-		}
-		else if (e.KeyCode == Keys.Enter)
-		{
-			if (!_child_focus)
+			case Keys.Enter:
 			{
-				OkDoItButton_Click(sender, e);
-				e.SuppressKeyPress = true;
+				if (!_child_focus)
+				{
+					OkDoItButton_Click(sender, e);
+					e.SuppressKeyPress = true;
+				}
+				break;
 			}
 		}
 	}

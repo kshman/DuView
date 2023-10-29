@@ -42,6 +42,7 @@ LANG=English
 129=Fail to move book!
 130=Pass Code:
 131=Password locked
+132=Set current file as remember!
 
 # 보기(1100)
 1100=&View

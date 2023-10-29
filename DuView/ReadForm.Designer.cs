@@ -802,8 +802,9 @@
             this.CopyImagePopupItem.Name = "CopyImagePopupItem";
             this.CopyImagePopupItem.Size = new System.Drawing.Size(102, 22);
             this.CopyImagePopupItem.Text = "1304";
+            this.CopyImagePopupItem.Click += new System.EventHandler(this.FileCopyImageMenuItem_Click);
             // 
-            // toolStripSeparator8
+			// toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
             this.toolStripSeparator8.Size = new System.Drawing.Size(99, 6);

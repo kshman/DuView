@@ -40,6 +40,19 @@ internal class BookFolder : BookBase
 	}
 
 	//
+	public int GetPageNumber(string filename)
+	{
+		for (var i = 0; i < _entries.Count; i++)
+		{
+			var entry = _entries[i] as Types.BookEntryInfo;
+			if (entry?.Name == filename)
+				return i;
+		}
+
+		return -1;
+	}
+
+	//
 	protected override void Dispose(bool disposing)
 	{
 		base.Dispose(disposing);

@@ -2,8 +2,6 @@
 
 public partial class ReadForm : Form, ILocaleTranspose
 {
-	public static ReadForm? Self { get; private set; }
-
 	private BookBase? Book { get; set; }
 
 	private Bitmap? _bmp;
@@ -32,8 +30,6 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	public ReadForm(string filename)
 	{
-		Self = this;
-
 		InitializeComponent();
 
 		//
@@ -289,6 +285,15 @@ public partial class ReadForm : Form, ILocaleTranspose
 				MoveBook();
 				break;
 
+			case Keys.OemQuotes: // Oem7
+				if (e.Control)
+					SetRememberBook();
+				break;
+			case Keys.OemSemicolon: // Oem1
+				if (e.Control)
+					OpenRememberBook();
+				break;
+
 			// 기능
 			case Keys.F:
 				if (!e.Alt) // ALT가 눌리면 ALT+F가 호출되야 하기 때문에
@@ -357,19 +362,19 @@ public partial class ReadForm : Form, ILocaleTranspose
 		else
 		{
 			// 마우스 두번 눌림
-			if (e.Clicks == 2)
+			if (e.Clicks != 2)
+				return;
+
+			if (Book != null)
 			{
-				if (Book != null)
-				{
-					// 책이 있음 최대화
-					if (Settings.MouseUseDoubleClickState)
-						_bfw.Maximize();
-				}
-				else
-				{
-					// 책이 없으면 책 열기
-					OpenDialogForBook();
-				}
+				// 책이 있음 최대화
+				if (Settings.MouseUseDoubleClickState)
+					_bfw.Maximize();
+			}
+			else
+			{
+				// 책이 없으면 책 열기
+				OpenDialogForBook();
 			}
 		}
 	}
@@ -421,7 +426,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	private void ApplyUiSetting()
 	{
 		UpdateViewZoom(Settings.ViewZoom);
-		UpdateViewMode(Settings.ViewMode);
+		UpdateViewMode(CurrentViewMode);
 		UpdateViewQuality(Settings.ViewQuality);
 
 		TopMost = Settings.GeneralAlwaysTop;
@@ -452,11 +457,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		ViewMenuItem.Image = s_viewmode_icon[(int)mode];
 
-		if (redraw)
-		{
-			Book?.PrepareImages();
-			DrawBook();
-		}
+		if (!redraw) 
+			return;
+
+		Book?.PrepareImages();
+		DrawBook();
 	}
 
 	private void UpdateViewQuality(Types.ViewQuality quality, bool redraw = true)
@@ -481,20 +486,20 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void ViewQualityMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem { Tag: { } } i)
-		{
-			var q = (Types.ViewQuality)i.Tag;
-			UpdateViewQuality(q);
-		}
+		if (sender is not ToolStripMenuItem { Tag: { } } i) 
+			return;
+
+		var q = (Types.ViewQuality)i.Tag;
+		UpdateViewQuality(q);
 	}
 
 	private void ViewModeMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem { Tag: { } } i)
-		{
-			var m = (Types.ViewMode)i.Tag;
-			UpdateViewMode(m);
-		}
+		if (sender is not ToolStripMenuItem { Tag: { } } i) 
+			return;
+
+		var m = (Types.ViewMode)i.Tag;
+		UpdateViewMode(m);
 	}
 
 	private void FileExitMenuItem_Click(object sender, EventArgs e)
@@ -539,11 +544,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 	{
 		try
 		{
-			if (Book is { PageLeft: { } })
-			{
-				Clipboard.SetImage(Book.PageLeft);
-				ShowNotification(101, 102);
-			}
+			if (Book is not { PageLeft: { } }) 
+				return;
+
+			Clipboard.SetImage(Book.PageLeft);
+			ShowNotification(101, 102);
 		}
 		catch
 		{
@@ -584,11 +589,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void PageControlMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is ToolStripMenuItem { Tag: { } } i)
-		{
-			var c = (Types.Controls)i.Tag;
-			PageControl(c);
-		}
+		if (sender is not ToolStripMenuItem { Tag: not null } i) 
+			return;
+
+		var c = (Types.Controls)i.Tag;
+		PageControl(c);
 	}
 
 	private void FileDeleteMenuItem_Click(object sender, EventArgs e)
@@ -623,13 +628,13 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 책 닫기
 	private void CloseBook()
 	{
-		if (Book != null)
-		{
-			CleanBook();
+		if (Book == null) 
+			return;
 
-			TitleLabel.Text = Text = Locale.Text(0);
-			DrawBook();
-		}
+		CleanBook();
+
+		TitleLabel.Text = Text = Locale.Text(0);
+		DrawBook();
 	}
 
 	// 책 고르기 다이얼로그
@@ -649,7 +654,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 책 열기
 	private void OpenBook(string filename, int page = -1)
 	{
-		BookBase? bk;
+		BookBase? bk = null;
 
 		if (File.Exists(filename))
 		{
@@ -659,21 +664,25 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 			if (ToolBox.IsArchiveType(ext))             // 압축 버전
 				bk = OpenArchive(fi, ext);
-			else if (ext.IsValidImageFile())     // 단독 이미지 버전
-				bk = null;
-			else
-				bk = null;
+			else if (ext.IsValidImageFile()) // 단독 이미지 버전
+			{
+				var di = fi.Directory;
+				if (di != null)
+				{
+					bk = OpenFolder(di);
+					if (bk is BookFolder folder)
+					{
+						page = folder.GetPageNumber(fi.FullName);
+						folder.ViewMode = Types.ViewMode.FitHeight;
+					}
+				}
+			}
 		}
 		else if (Directory.Exists(filename))
 		{
 			// 디렉토리
 			var di = new DirectoryInfo(filename);
 			bk = OpenFolder(di);
-		}
-		else
-		{
-			// 멍미...
-			bk = null;
 		}
 
 		if (bk != null)
@@ -728,7 +737,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	{
 		Settings.LastFolder = di.Parent?.FullName ?? string.Empty;
 
-		BookFolder? bk = BookFolder.FromFolder(di);
+		var bk = BookFolder.FromFolder(di);
 
 		if (bk == null)
 		{
@@ -821,23 +830,23 @@ public partial class ReadForm : Form, ILocaleTranspose
 			return;
 		}
 
-		if (Book != null)
-		{
-			_extern_run_filename = Book.FileName;
-			_extern_run_window_state = WindowState;
+		if (Book == null) 
+			return;
 
-			WindowState = FormWindowState.Minimized;
-			CloseBook();
+		_extern_run_filename = Book.FileName;
+		_extern_run_window_state = WindowState;
 
-			var ps = new System.Diagnostics.Process();
-			ps.StartInfo.FileName = Settings.ExternalRun;
-			ps.StartInfo.Arguments = _extern_run_filename;
-			ps.StartInfo.UseShellExecute = false;
-			ps.StartInfo.CreateNoWindow = true;
-			ps.EnableRaisingEvents = true;
-			ps.Exited += (_, _) => ExternalRun_Exited();
-			ps.Start();
-		}
+		WindowState = FormWindowState.Minimized;
+		CloseBook();
+
+		var ps = new System.Diagnostics.Process();
+		ps.StartInfo.FileName = Settings.ExternalRun;
+		ps.StartInfo.Arguments = _extern_run_filename;
+		ps.StartInfo.UseShellExecute = false;
+		ps.StartInfo.CreateNoWindow = true;
+		ps.EnableRaisingEvents = true;
+		ps.Exited += (_, _) => ExternalRun_Exited();
+		ps.Start();
 	}
 
 	private void ExternalRun_Exited()
@@ -928,6 +937,25 @@ public partial class ReadForm : Form, ILocaleTranspose
 				OpenBook(nextfilename);
 			}
 		});
+	}
+
+	private void SetRememberBook()
+	{
+		if (Book == null)
+			return;
+
+		Settings.RememberFileName = Book.FileName;
+		ShowNotification(132);
+	}
+
+	private void OpenRememberBook()
+	{
+		var filename = Settings.RememberFileName;
+		if (string.IsNullOrEmpty(filename) || !File.Exists(filename))
+			return;
+
+		CloseBook();
+		OpenBook(filename);
 	}
 
 	#endregion 파일 처리
@@ -1040,7 +1068,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				DrawLogo(g, w, h);
 			else
 			{
-				if (Settings.ViewMode == Types.ViewMode.FitWidth)
+				if (CurrentViewMode == Types.ViewMode.FitWidth)
 				{
 					if (Book.PageLeft != null)
 						DrawBitmapFitWidth(g, _bmp, Book.PageLeft);
@@ -1145,41 +1173,41 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 쪽 이동
 	private void PageGoTo(int page)
 	{
-		if (Book != null && Book.MovePage(page))
-		{
-			Book.PrepareImages();
-			DrawBook();
-		}
+		if (Book == null || !Book.MovePage(page)) 
+			return;
+
+		Book.PrepareImages();
+		DrawBook();
 	}
 
 	// 지정한 만큼 쪽 이동
 	private void PageGoDelta(int delta)
 	{
-		if (Book != null && Book.MovePage(Book.CurrentPage + delta))
-		{
-			Book.PrepareImages();
-			DrawBook();
-		}
+		if (Book == null || !Book.MovePage(Book.CurrentPage + delta)) 
+			return;
+
+		Book.PrepareImages();
+		DrawBook();
 	}
 
 	// 이전 쪽으로
 	private void PageGoPrev()
 	{
-		if (Book != null && Book.MovePrev())
-		{
-			Book.PrepareImages();
-			DrawBook();
-		}
+		if (Book == null || !Book.MovePrev()) 
+			return;
+
+		Book.PrepareImages();
+		DrawBook();
 	}
 
 	// 다음 쪽으로
 	private void PageGoNext()
 	{
-		if (Book != null && Book.MoveNext())
-		{
-			Book.PrepareImages();
-			DrawBook();
-		}
+		if (Book == null || !Book.MoveNext()) 
+			return;
+
+		Book.PrepareImages();
+		DrawBook();
 	}
 
 	// 쪽 선택
@@ -1188,11 +1216,22 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		if (_select.ShowDialog(this, Book.CurrentPage) == DialogResult.OK)
+		if (_select.ShowDialog(this, Book.CurrentPage) != DialogResult.OK) 
+			return;
+
+		Book.CurrentPage = _select.SelectedPage;
+		Book.PrepareImages();
+		DrawBook();
+	}
+
+	// 뷰 모드
+	private Types.ViewMode CurrentViewMode
+	{
+		get
 		{
-			Book.CurrentPage = _select.SelectedPage;
-			Book.PrepareImages();
-			DrawBook();
+			if (Book == null || Book.ViewMode == Types.ViewMode.Follow)
+				return Settings.ViewMode;
+			return Book.ViewMode;
 		}
 	}
 
@@ -1240,11 +1279,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void TestMouseHide()
 	{
-		if (_mouse_hide)
-		{
-			_mouse_hide = false;
-			Cursor.Show();
-		}
+		if (!_mouse_hide) 
+			return;
+
+		_mouse_hide = false;
+		Cursor.Show();
 
 #if false
 		if (Book != null)
@@ -1259,11 +1298,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (!Focused)
 			return;
 
-		if (!_mouse_hide)
-		{
-			_mouse_hide = true;
-			Cursor.Hide();
-		}
+		if (_mouse_hide) 
+			return;
+
+		_mouse_hide = true;
+		Cursor.Hide();
 	}
 
 	#endregion 도움
@@ -1297,11 +1336,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void LockPassCode()
 	{
-		if (Settings.UsePassCode && Settings.UnlockedPassCode)
-		{
-			Settings.UnlockedPassCode = false;
-			ShowNotification(131);
-		}
+		if (!Settings.UsePassCode || !Settings.UnlockedPassCode) 
+			return;
+
+		Settings.UnlockedPassCode = false;
+		ShowNotification(131);
 	}
 
 	private void PassText_TextChanged(object sender, EventArgs e)

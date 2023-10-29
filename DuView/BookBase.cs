@@ -1,11 +1,11 @@
-﻿using WebPWrapper;
+﻿using DuView.WebPWrapper;
 
 namespace DuView;
 
 public abstract class BookBase : IDisposable
 {
-	public string FileName { get; private set; }
-	public string OnlyFileName { get; private set; }
+	public string FileName { get; private set; } = string.Empty;
+	public string OnlyFileName { get; private set; } = string.Empty;
 
 	public int CurrentPage { get; set; }
 	public int TotalPage => _entries.Count;
@@ -15,16 +15,11 @@ public abstract class BookBase : IDisposable
 
 	public long CacheSize { get; private set; }
 
+	public Types.ViewMode ViewMode { get; set; } = Types.ViewMode.Follow;
+
 	//
 	protected readonly List<object> _entries = new();
 	private readonly Dictionary<int, MemoryStream> _cache = new();
-
-	//
-	protected BookBase()
-	{
-		FileName = string.Empty;
-		OnlyFileName = string.Empty;
-	}
 
 	//
 	protected abstract MemoryStream? ReadEntry(object entry);
@@ -59,13 +54,13 @@ public abstract class BookBase : IDisposable
 	//
 	protected virtual void Dispose(bool disposing)
 	{
-		if (disposing)
-		{
-			_entries.Clear();
-			_cache.Clear();
-			PageLeft?.Dispose();
-			PageRight?.Dispose();
-		}
+		if (!disposing) 
+			return;
+
+		_entries.Clear();
+		_cache.Clear();
+		PageLeft?.Dispose();
+		PageRight?.Dispose();
 	}
 
 	//
@@ -78,10 +73,9 @@ public abstract class BookBase : IDisposable
 
 		if ((CacheSize + size) > Settings.MaxActualPageCache && _cache.Count > 0)
 		{
-			var first = _cache.ElementAt(0);
-			var value = first.Value;
+			var (key, value) = _cache.ElementAt(0);
 
-			_cache.Remove(first.Key);
+			_cache.Remove(key);
 			CacheSize -= value.Length;
 
 			value.Dispose();
@@ -102,47 +96,47 @@ public abstract class BookBase : IDisposable
 	{
 		Image? img = null;
 
-		if (pageno >= 0 && pageno < TotalPage)
+		if (pageno < 0 || pageno >= TotalPage) 
+			return img ?? Properties.Resources.ouch_noimg;
+
+		var en = _entries[pageno];
+		var storecache = false;
+
+		if (!TryCache(pageno, out MemoryStream? ms))
 		{
-			var en = _entries[pageno];
-			var storecache = false;
+			// 캐시에 없으면 파일 처리
+			ms = ReadEntry(en);
+			storecache = true;
+		}
 
-			if (!TryCache(pageno, out MemoryStream? ms))
+		if (ms == null) 
+			return img ?? Properties.Resources.ouch_noimg;
+
+		try
+		{
+			// 일단 이미지로 읽어보자
+			img = Image.FromStream(ms);
+		}
+		catch (Exception)
+		{
+			// 지원하는 형식인지 확인하자
+			ms.Position = 0;
+			var raw = ms.ToArray();
+			// WEBP?
+			try
 			{
-				// 캐시에 없으면 파일 처리
-				ms = ReadEntry(en);
-				storecache = true;
+				if (WebP.IsWebP(raw))
+					img = WebP.Decode(raw);
 			}
-
-			if (ms != null)
+			catch
 			{
-				try
-				{
-					// 일단 이미지로 읽어보자
-					img = Image.FromStream(ms);
-				}
-				catch (Exception)
-				{
-					// 지원하는 형식인지 확인하자
-					ms.Position = 0;
-					var raw = ms.ToArray();
-					// WEBP?
-					try
-					{
-						if (WebP.IsWebP(raw))
-							img = WebP.Decode(raw);
-					}
-					catch
-					{
-						// 애니메이션 WEBP는 안댄다...
-						img = null;
-					}
-				}
-
-				if (storecache && img != null)
-					CacheStream(pageno, ms);
+				// 애니메이션 WEBP는 안댄다...
+				img = null;
 			}
 		}
+
+		if (storecache && img != null)
+			CacheStream(pageno, ms);
 
 		return img ?? Properties.Resources.ouch_noimg;
 	}
@@ -153,62 +147,67 @@ public abstract class BookBase : IDisposable
 		PageLeft?.Dispose();
 		PageRight?.Dispose();
 
-		var mode = Settings.ViewMode;
+		var mode = ViewMode == Types.ViewMode.Follow ? Settings.ViewMode : ViewMode;
 
-		if (mode is Types.ViewMode.FitWidth or Types.ViewMode.FitHeight)
+		switch (mode)
 		{
-			PageLeft = ReadPage(CurrentPage);
-			PageRight = null;
-		}
-		else if (mode is Types.ViewMode.LeftToRight or Types.ViewMode.RightToLeft)
-		{
-			var left = ReadPage(CurrentPage);
+			case Types.ViewMode.FitWidth or Types.ViewMode.FitHeight:
+				PageLeft = ReadPage(CurrentPage);
+				PageRight = null;
+				break;
 
-			if (left == null)
+			case Types.ViewMode.LeftToRight or Types.ViewMode.RightToLeft:
 			{
-				// 머여
-			}
-			else
-			{
-				Image? right = null;
+				var left = ReadPage(CurrentPage);
 
-				if (left.Tag is not string entryname || !ToolBox.IsAnimatedImageFile(entryname, false))
+				if (left == null)
 				{
-					if (left.Width > left.Height)
-					{
-						// 폭이 넓으면 1장만
-					}
-					else
-					{
-						if (CurrentPage + 1 < TotalPage)
-						{
-							right = ReadPage(CurrentPage + 1);
-							if (right != null && right.Width > right.Height)
-							{
-								// 다른쪽도 넓으면 1장만 나오게 함
-								right = null;
-							}
-						}
-					}
-				}   // 엔트리 애니메이션 체크
-
-				if (mode == Types.ViewMode.LeftToRight)
-				{
-					PageLeft = left;
-					PageRight = right;
+					// 머여
 				}
 				else
 				{
-					PageLeft = right;
-					PageRight = left;
+					Image? right = null;
+
+					if (left.Tag is not string entryname || !ToolBox.IsAnimatedImageFile(entryname, false))
+					{
+						if (left.Width > left.Height)
+						{
+							// 폭이 넓으면 1장만
+						}
+						else
+						{
+							if (CurrentPage + 1 < TotalPage)
+							{
+								right = ReadPage(CurrentPage + 1);
+								if (right != null && right.Width > right.Height)
+								{
+									// 다른쪽도 넓으면 1장만 나오게 함
+									right = null;
+								}
+							}
+						}
+					}   // 엔트리 애니메이션 체크
+
+					if (mode == Types.ViewMode.LeftToRight)
+					{
+						PageLeft = left;
+						PageRight = right;
+					}
+					else
+					{
+						PageLeft = right;
+						PageRight = left;
+					}
 				}
+
+				break;
 			}
-		}
-		else
-		{
-			// 멍미
-			PageLeft = null;
-			PageRight = null;
+
+			default:
+				// 멍미
+				PageLeft = null;
+				PageRight = null;
+				break;
 		}
 	}
 
@@ -284,17 +283,7 @@ public abstract class BookBase : IDisposable
 	{
 		var prev = CurrentPage;
 
-#if true
-		// 하... Math.Clamp 는 Net6 전용이네
 		CurrentPage = Math.Clamp(page, 0, TotalPage - 1);
-#else
-		if (page < 0)
-			CurrentPage = 0;
-		else if (page >= TotalPage)
-			CurrentPage = TotalPage - 1;
-		else
-			CurrentPage = page;
-#endif
 
 		return prev != CurrentPage;
 	}

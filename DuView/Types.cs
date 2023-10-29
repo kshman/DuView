@@ -8,7 +8,8 @@ public static class Types
 		FitWidth = 0,
 		FitHeight = 1,
 		LeftToRight = 2,
-		RightToLeft = 3
+		RightToLeft = 3,
+		Follow = 255,
 	}
 
 	// 보기 품질
