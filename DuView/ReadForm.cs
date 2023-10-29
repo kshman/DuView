@@ -1,4 +1,6 @@
-﻿namespace DuView;
+﻿using DuView.Types;
+
+namespace DuView;
 
 public partial class ReadForm : Form, ILocaleTranspose
 {
@@ -18,7 +20,12 @@ public partial class ReadForm : Form, ILocaleTranspose
 	private string? _extern_run_filename;
 	private FormWindowState _extern_run_window_state;
 
-	private Types.BookDirection _book_direction = Types.BookDirection.Next;
+	private BookDirection _book_direction = BookDirection.Next;
+
+	private PageImage? _animate;
+	private int _animFrame;
+	private int _lastAnimDuration;
+	private CancellationTokenSource? _animCancel;
 
 	private bool _passmode;
 	private Action? _passaction;
@@ -194,47 +201,47 @@ public partial class ReadForm : Form, ILocaleTranspose
 			// 페이지
 			case Keys.Up:
 			case Keys.Oemcomma:
-				PageControl(Types.Controls.SeekMinusOne);
+				PageControl(BookControl.SeekMinusOne);
 				break;
 
 			case Keys.Down:
 			case Keys.OemPeriod:
 			case Keys.OemQuestion:
-				PageControl(Types.Controls.SeekPlusOne);
+				PageControl(BookControl.SeekPlusOne);
 				break;
 
 			case Keys.Left:
-				PageControl(e.Shift ? Types.Controls.SeekMinusOne : Types.Controls.Previous);
+				PageControl(e.Shift ? BookControl.SeekMinusOne : BookControl.Previous);
 				break;
 
 			case Keys.Right:
 			case Keys.NumPad0:
 			case Keys.Space:
-				PageControl(e.Shift ? Types.Controls.SeekPlusOne : Types.Controls.Next);
+				PageControl(e.Shift ? BookControl.SeekPlusOne : BookControl.Next);
 				break;
 
 			case Keys.Home:
-				PageControl(Types.Controls.First);
+				PageControl(BookControl.First);
 				break;
 
 			case Keys.End:
-				PageControl(Types.Controls.Last);
+				PageControl(BookControl.Last);
 				break;
 
 			case Keys.PageUp:
-				PageControl(Types.Controls.SeekPrevious10);
+				PageControl(BookControl.SeekPrevious10);
 				break;
 
 			case Keys.PageDown:
 			case Keys.Back:
-				PageControl(Types.Controls.SeekNext10);
+				PageControl(BookControl.SeekNext10);
 				break;
 
 			case Keys.Enter:
 				if (e.Control)
 					_bfw.Maximize();
 				else
-					PageControl(Types.Controls.Select);
+					PageControl(BookControl.Select);
 				break;
 
 			// 보기
@@ -243,28 +250,28 @@ public partial class ReadForm : Form, ILocaleTranspose
 				break;
 
 			case Keys.D1:
-				UpdateViewMode(Types.ViewMode.FitWidth);
+				UpdateViewMode(ViewMode.FitWidth);
 				break;
 
 			case Keys.D3:
-				UpdateViewMode(Types.ViewMode.LeftToRight);
+				UpdateViewMode(ViewMode.LeftToRight);
 				break;
 
 			case Keys.D4:
-				UpdateViewMode(Types.ViewMode.RightToLeft);
+				UpdateViewMode(ViewMode.RightToLeft);
 				break;
 
 			case Keys.D5:
-				UpdateViewQuality(Types.ViewQuality.Default);
+				UpdateViewQuality(ViewQuality.Default);
 				break;
 
 			case Keys.Tab:
 				if (Book != null)   // 혼란 방지: 책이 있을때만
 				{
-					if (Settings.ViewMode == Types.ViewMode.LeftToRight)
-						UpdateViewMode(Types.ViewMode.RightToLeft);
-					else if (Settings.ViewMode == Types.ViewMode.RightToLeft)
-						UpdateViewMode(Types.ViewMode.LeftToRight);
+					if (Settings.ViewMode == ViewMode.LeftToRight)
+						UpdateViewMode(ViewMode.RightToLeft);
+					else if (Settings.ViewMode == ViewMode.RightToLeft)
+						UpdateViewMode(ViewMode.LeftToRight);
 				}
 				break;
 
@@ -346,13 +353,13 @@ public partial class ReadForm : Form, ILocaleTranspose
 		{
 			if (_click_bound[0].Contains(e.Location))
 			{
-				PageControl(Types.Controls.Previous);
+				PageControl(BookControl.Previous);
 				return;
 			}
 
 			if (_click_bound[1].Contains(e.Location))
 			{
-				PageControl(Types.Controls.Next);
+				PageControl(BookControl.Next);
 				return;
 			}
 		}
@@ -448,32 +455,32 @@ public partial class ReadForm : Form, ILocaleTranspose
 		Properties.Resources.viewmode_r2l,
 	};
 
-	private void UpdateViewMode(Types.ViewMode mode, bool redraw = true)
+	private void UpdateViewMode(ViewMode mode, bool redraw = true)
 	{
 		Settings.ViewMode = mode;
-		ViewFitMenuItem.Checked = mode == Types.ViewMode.FitWidth;
-		ViewLeftRightMenuItem.Checked = mode == Types.ViewMode.LeftToRight;
-		ViewRightLeftMenuItem.Checked = mode == Types.ViewMode.RightToLeft;
+		ViewFitMenuItem.Checked = mode == ViewMode.FitWidth;
+		ViewLeftRightMenuItem.Checked = mode == ViewMode.LeftToRight;
+		ViewRightLeftMenuItem.Checked = mode == ViewMode.RightToLeft;
 
 		ViewMenuItem.Image = s_viewmode_icon[(int)mode];
 
-		if (!redraw) 
+		if (!redraw)
 			return;
 
 		Book?.PrepareImages();
 		DrawBook();
 	}
 
-	private void UpdateViewQuality(Types.ViewQuality quality, bool redraw = true)
+	private void UpdateViewQuality(ViewQuality quality, bool redraw = true)
 	{
 		Settings.ViewQuality = quality;
-		QualityLowPopupItem.Checked = VwqLowMenuItem.Checked = quality == Types.ViewQuality.Low;
-		QualityDefaultPopupItem.Checked = VwqDefaultMenuItem.Checked = quality == Types.ViewQuality.Default;
-		QualityBilinearPopupItem.Checked = VwqBilinearMenuItem.Checked = quality == Types.ViewQuality.Bilinear;
-		QualityBicubicPopupItem.Checked = VwqBicubicMenuItem.Checked = quality == Types.ViewQuality.Bicubic;
-		QualityHighPopupItem.Checked = VwqHighMenuItem.Checked = quality == Types.ViewQuality.High;
-		QualityHqBilinearPopupItem.Checked = VwqHqBilinearMenuItem.Checked = quality == Types.ViewQuality.HqBilinear;
-		QualityHqBicubicPopupItem.Checked = VwqHqBicubicMenuItem.Checked = quality == Types.ViewQuality.HqBicubic;
+		QualityLowPopupItem.Checked = VwqLowMenuItem.Checked = quality == ViewQuality.Low;
+		QualityDefaultPopupItem.Checked = VwqDefaultMenuItem.Checked = quality == ViewQuality.Default;
+		QualityBilinearPopupItem.Checked = VwqBilinearMenuItem.Checked = quality == ViewQuality.Bilinear;
+		QualityBicubicPopupItem.Checked = VwqBicubicMenuItem.Checked = quality == ViewQuality.Bicubic;
+		QualityHighPopupItem.Checked = VwqHighMenuItem.Checked = quality == ViewQuality.High;
+		QualityHqBilinearPopupItem.Checked = VwqHqBilinearMenuItem.Checked = quality == ViewQuality.HqBilinear;
+		QualityHqBicubicPopupItem.Checked = VwqHqBicubicMenuItem.Checked = quality == ViewQuality.HqBicubic;
 
 		if (redraw)
 			DrawBook();
@@ -486,19 +493,19 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void ViewQualityMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is not ToolStripMenuItem { Tag: { } } i) 
+		if (sender is not ToolStripMenuItem { Tag: { } } i)
 			return;
 
-		var q = (Types.ViewQuality)i.Tag;
+		var q = (ViewQuality)i.Tag;
 		UpdateViewQuality(q);
 	}
 
 	private void ViewModeMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is not ToolStripMenuItem { Tag: { } } i) 
+		if (sender is not ToolStripMenuItem { Tag: { } } i)
 			return;
 
-		var m = (Types.ViewMode)i.Tag;
+		var m = (ViewMode)i.Tag;
 		UpdateViewMode(m);
 	}
 
@@ -517,7 +524,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book != null && Book.FileName == Settings.LastFileName)
 			return;
 
-		PromptPassModeIfNeed(Types.PassCodeUsage.LastBook, () => OpenBook(Settings.LastFileName));
+		PromptPassModeIfNeed(PassCodeUsage.LastBook, () => OpenBook(Settings.LastFileName));
 	}
 
 	private void FileOpenExternalMenuItem_Click(object sender, EventArgs e)
@@ -544,10 +551,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 	{
 		try
 		{
-			if (Book is not { PageLeft: { } }) 
+			if (Book is not { PageLeft: not null })
 				return;
 
-			Clipboard.SetImage(Book.PageLeft);
+			Clipboard.SetImage(Book.PageLeft.Image);
 			ShowNotification(101, 102);
 		}
 		catch
@@ -576,7 +583,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void FileOptionMenuItem_Click(object sender, EventArgs e)
 	{
-		PromptPassModeIfNeed(Types.PassCodeUsage.Option, () =>
+		PromptPassModeIfNeed(PassCodeUsage.Option, () =>
 		{
 			TopMost = false;
 			_option.ShowDialog(this, 0);
@@ -589,10 +596,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void PageControlMenuItem_Click(object sender, EventArgs e)
 	{
-		if (sender is not ToolStripMenuItem { Tag: not null } i) 
+		if (sender is not ToolStripMenuItem { Tag: not null } i)
 			return;
 
-		var c = (Types.Controls)i.Tag;
+		var c = (BookControl)i.Tag;
 		PageControl(c);
 	}
 
@@ -608,6 +615,8 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 책 닫기 공통
 	private void CleanBook()
 	{
+		StopAnimation();
+
 		if (Book != null)
 		{
 			Settings.SetRecentlyPage(Book);
@@ -628,7 +637,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 책 닫기
 	private void CloseBook()
 	{
-		if (Book == null) 
+		if (Book == null)
 			return;
 
 		CleanBook();
@@ -673,7 +682,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 					if (bk is BookFolder folder)
 					{
 						page = folder.GetPageNumber(fi.FullName);
-						folder.ViewMode = Types.ViewMode.FitHeight;
+						folder.ViewMode = ViewMode.FitHeight;
 					}
 				}
 			}
@@ -754,14 +763,14 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		var filename = Book.FindNextFile(Types.BookDirection.Previous);
+		var filename = Book.FindNextFile(BookDirection.Previous);
 		if (filename == null)
 		{
 			ShowNotification(106, 109);
 			return;
 		}
 
-		_book_direction = Types.BookDirection.Previous;
+		_book_direction = BookDirection.Previous;
 		OpenBook(filename);
 	}
 
@@ -771,14 +780,14 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		var filename = Book.FindNextFile(Types.BookDirection.Next);
+		var filename = Book.FindNextFile(BookDirection.Next);
 		if (filename == null)
 		{
 			ShowNotification(106, 110);
 			return;
 		}
 
-		_book_direction = Types.BookDirection.Next;
+		_book_direction = BookDirection.Next;
 		OpenBook(filename);
 	}
 
@@ -795,7 +804,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			MessageBox.Show(this, reason, Locale.Text(114), MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
 			return;
 
-		var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
+		var dir = Settings.KeepBookDirection ? _book_direction : BookDirection.Next;
 		var nextfilename = Book.FindNextFileAny(dir);
 
 		if (!Book.DeleteFile(out var closebook))
@@ -830,7 +839,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			return;
 		}
 
-		if (Book == null) 
+		if (Book == null)
 			return;
 
 		_extern_run_filename = Book.FileName;
@@ -864,7 +873,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		PromptPassModeIfNeed(Types.PassCodeUsage.RenameBook, () =>
+		PromptPassModeIfNeed(PassCodeUsage.RenameBook, () =>
 		{
 			string? filename;
 
@@ -889,7 +898,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				return;
 
 			// 설정에 다음 파일을 열면 다음 파일을 아니면 바뀐 이름 책을 열게함
-			var dir = Settings.KeepBookDirection ? _book_direction : Types.BookDirection.Next;
+			var dir = Settings.KeepBookDirection ? _book_direction : BookDirection.Next;
 			var nextfilename = Settings.RenameOpenNext ? Book.FindNextFileAny(dir) : null;
 
 			// 시작
@@ -911,14 +920,14 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		PromptPassModeIfNeed(Types.PassCodeUsage.MoveBook, () =>
+		PromptPassModeIfNeed(PassCodeUsage.MoveBook, () =>
 		{
 			var dlg = new MoveForm();
 			if (dlg.ShowDialog(this, Book.OnlyFileName) != DialogResult.OK)
 				return;
 
 			var filename = dlg.Filename;
-			var nextfilename = Book.FindNextFileAny(Types.BookDirection.Next);
+			var nextfilename = Book.FindNextFileAny(BookDirection.Next);
 
 			//
 			if (!Book.MoveFile(filename))
@@ -933,7 +942,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				ShowNotification(106, 110);
 			else
 			{
-				_book_direction = Types.BookDirection.Next;
+				_book_direction = BookDirection.Next;
 				OpenBook(nextfilename);
 			}
 		});
@@ -976,44 +985,136 @@ public partial class ReadForm : Form, ILocaleTranspose
 		}
 	}
 
-	//private static void OnAnimateFrameChanged(object? sender, EventArgs e)
-	//{
-	//	Self?.InternalAnimateFrame();
-	//}
-
-	//private void InternalAnimateFrame()
-	//{
-	//	if (_bmp != null)
-	//	{
-	//	}
-	//}
-
-	// 가로로 차게 이미지 그리기
-	private static void DrawBitmapFitWidth(Graphics g, Image bmp, Image img, HorizontalAlignment align = HorizontalAlignment.Center)
+	// GIF 애니메이션
+	private void OnGifAnimateFrameChanged(object? sender, EventArgs e)
 	{
-		if (img.Tag is string entryname && ToolBox.IsAnimatedImageFile(entryname, false))
+		Invalidate();
+	}
+
+	// WEBP 애니메이션
+	private void OnWebPAnimWorker(object? obj)
+	{
+		if (obj == null)
+			return;
+
+		var token = (CancellationToken)obj;
+
+		while (true)
 		{
-			//ImageAnimator.Animate(img, OnAnimateFrameChanged);
+			if (token.IsCancellationRequested)
+				break;
+			if (_animate?.Frames == null)
+				break;
+
+			var frame = _animate.Frames[_animFrame++];
+			if (_animFrame >= _animate.Frames.Count)
+				_animFrame = 0;
+
+			Invoke(Invalidate);
+
+			_lastAnimDuration = frame.Duration;
+			Thread.Sleep(frame.Duration);
+		}
+	}
+
+	// 
+	private Image UpdateAnimation(PageImage page)
+	{
+		if (!page.IsAnimate)
+			return page.Image;
+
+		if (page.Frames != null)
+		{
+			// WEBP
+			if (_animate != null && _animate != page)
+			{
+				if (_animCancel != null)
+				{
+					_animCancel.Cancel();
+					Thread.Sleep(_lastAnimDuration);
+					_animCancel.Dispose();
+					_animCancel = null;
+				}
+			}
+
+			if (_animate != page)
+			{
+				_animate = page;
+				_animFrame = 0;
+				_lastAnimDuration = 0;
+
+				_animCancel = new CancellationTokenSource();
+				ThreadPool.QueueUserWorkItem(OnWebPAnimWorker, _animCancel.Token);
+			}
+
+			return page.Frames[_animFrame].Bitmap ?? page.Image;
+		}
+		else
+		{
+			// GIF
+			if (_animate != null && _animate != page)
+				ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
+
+			if (_animate != page)
+			{
+				_animate = page;
+				ImageAnimator.Animate(_animate.Image, OnGifAnimateFrameChanged);
+			}
+
+			return page.Image;
+		}
+	}
+
+	//
+	private void StopAnimation()
+	{
+		if (_animate == null)
+			return;
+
+		if (_animate.Frames != null)
+		{
+			// WEBP
+			if (_animCancel != null)
+			{
+				_animCancel.Cancel();
+				Thread.Sleep(_lastAnimDuration);
+				_animCancel.Dispose();
+				_animCancel = null;
+			}
+		}
+		else
+		{
+			// GIF
+			ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
 		}
 
-		(int nw, int nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
+		_animate = null;
+	}
+
+	// 가로로 차게 이미지 그리기
+	private void DrawBitmapFitWidth(Graphics g, Image bmp, PageImage page, HorizontalAlignment align = HorizontalAlignment.Center)
+	{
+		var img = UpdateAnimation(page);
+		var (nw, nh) = ToolBox.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
 		var rt = ToolBox.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
 
 		g.DrawImage(img, rt, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
 	}
 
 	// 두장 그리기
-	private static void DrawBitmapHalfAndHalf(Graphics g, Image bmp, Image left, Image right)
+	private static void DrawBitmapHalfAndHalf(Graphics g, Image bmp, PageImage leftPage, PageImage rightPage)
 	{
 		var f = bmp.Width / 2;
 
 		// 왼쪽
+		var left = leftPage.Image;
 		var (w, h) = ToolBox.CalcDestSize(Settings.ViewZoom, f, bmp.Height, left.Width, left.Height);
 		var rt = ToolBox.CalcDestRect(f, bmp.Height, w, h, HorizontalAlignment.Right);
 
 		g.DrawImage(left, rt, 0, 0, left.Width, left.Height, GraphicsUnit.Pixel);
 
 		// 오른쪽
+		var right = rightPage.Image;
 		(w, h) = ToolBox.CalcDestSize(Settings.ViewZoom, f, bmp.Height, right.Width, right.Height);
 		rt = ToolBox.CalcDestRect(f, bmp.Height, w, h, HorizontalAlignment.Left);
 		rt.X += f;
@@ -1024,6 +1125,9 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 그리기
 	private void DrawBook()
 	{
+		// 애니메이션 부터
+		StopAnimation();
+
 		// 먼저 페이지 정보
 		if (Book == null)
 		{
@@ -1039,19 +1143,36 @@ public partial class ReadForm : Form, ILocaleTranspose
 			MaxCacheMenuItem.Text = $@"[{cache}]";
 		}
 
+		// 화면 크기 검사
+		var w = BookCanvas.Width;
+		var h = BookCanvas.Height;
+
+		if (w == 0 || h == 0)
+		{
+			//ShowNotification(112);
+			return;
+		}
+
+		Invalidate();
+	}
+
+	// 화면에 그리기
+	private void PaintBook()
+	{
 		// 창이 최소화면 그려션 안된다
 		if (WindowState == FormWindowState.Minimized)
 			return;
+
+		// 애니메이션
+		if (_animate != null)
+			ImageAnimator.UpdateFrames();
 
 		// 본격 그리기
 		var w = BookCanvas.Width;
 		var h = BookCanvas.Height;
 
 		if (w == 0 || h == 0)
-		{
-			ShowNotification(112);
 			return;
-		}
 
 		if (_bmp == null || _bmp.Width != w || _bmp.Height != h)
 		{
@@ -1068,7 +1189,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				DrawLogo(g, w, h);
 			else
 			{
-				if (CurrentViewMode == Types.ViewMode.FitWidth)
+				if (CurrentViewMode == ViewMode.FitWidth)
 				{
 					if (Book.PageLeft != null)
 						DrawBitmapFitWidth(g, _bmp, Book.PageLeft);
@@ -1105,63 +1226,75 @@ public partial class ReadForm : Form, ILocaleTranspose
 			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
 		}
 
+#if true
+		using (var g = BookCanvas.CreateGraphics())
+			g.DrawImage(_bmp, new Point(0, 0));
+#else
 		BookCanvas.Image = _bmp;
+#endif
 	}
 
+	// 그리기 오버라이드
+	/// <inheritdoc />
+	protected override void OnPaint(PaintEventArgs e)
+	{
+		PaintBook();
+		base.OnPaint(e);
+	}
 	#endregion 그리기
 
 	#region 책 조작
 
 	// 조작하기
-	private void PageControl(Types.Controls ctrl)
+	private void PageControl(BookControl ctrl)
 	{
 		if (Book == null)
 			return;
 
 		switch (ctrl)
 		{
-			case Types.Controls.Previous:
+			case BookControl.Previous:
 				PageGoPrev();
 				break;
 
-			case Types.Controls.Next:
+			case BookControl.Next:
 				PageGoNext();
 				break;
 
-			case Types.Controls.First:
+			case BookControl.First:
 				PageGoTo(0);
 				break;
 
-			case Types.Controls.Last:
+			case BookControl.Last:
 				PageGoTo(int.MaxValue);
 				break;
 
-			case Types.Controls.SeekPrevious10:
+			case BookControl.SeekPrevious10:
 				PageGoDelta(-10);
 				break;
 
-			case Types.Controls.SeekNext10:
+			case BookControl.SeekNext10:
 				PageGoDelta(10);
 				break;
 
-			case Types.Controls.SeekMinusOne:
+			case BookControl.SeekMinusOne:
 				PageGoDelta(-1);
 				break;
 
-			case Types.Controls.SeekPlusOne:
+			case BookControl.SeekPlusOne:
 				PageGoDelta(1);
 				break;
 
-			case Types.Controls.ScanPrevious:
+			case BookControl.ScanPrevious:
 				OpenPrevBook();
 				break;
 
-			case Types.Controls.ScanNext:
+			case BookControl.ScanNext:
 				OpenNextBook();
 
 				break;
 
-			case Types.Controls.Select:
+			case BookControl.Select:
 				PageSelect();
 				break;
 
@@ -1173,7 +1306,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 쪽 이동
 	private void PageGoTo(int page)
 	{
-		if (Book == null || !Book.MovePage(page)) 
+		if (Book == null || !Book.MovePage(page))
 			return;
 
 		Book.PrepareImages();
@@ -1183,7 +1316,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 지정한 만큼 쪽 이동
 	private void PageGoDelta(int delta)
 	{
-		if (Book == null || !Book.MovePage(Book.CurrentPage + delta)) 
+		if (Book == null || !Book.MovePage(Book.CurrentPage + delta))
 			return;
 
 		Book.PrepareImages();
@@ -1193,7 +1326,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 이전 쪽으로
 	private void PageGoPrev()
 	{
-		if (Book == null || !Book.MovePrev()) 
+		if (Book == null || !Book.MovePrev())
 			return;
 
 		Book.PrepareImages();
@@ -1203,7 +1336,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 다음 쪽으로
 	private void PageGoNext()
 	{
-		if (Book == null || !Book.MoveNext()) 
+		if (Book == null || !Book.MoveNext())
 			return;
 
 		Book.PrepareImages();
@@ -1216,7 +1349,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (Book == null)
 			return;
 
-		if (_select.ShowDialog(this, Book.CurrentPage) != DialogResult.OK) 
+		if (_select.ShowDialog(this, Book.CurrentPage) != DialogResult.OK)
 			return;
 
 		Book.CurrentPage = _select.SelectedPage;
@@ -1225,11 +1358,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 	}
 
 	// 뷰 모드
-	private Types.ViewMode CurrentViewMode
+	private ViewMode CurrentViewMode
 	{
 		get
 		{
-			if (Book == null || Book.ViewMode == Types.ViewMode.Follow)
+			if (Book == null || Book.ViewMode == ViewMode.Follow)
 				return Settings.ViewMode;
 			return Book.ViewMode;
 		}
@@ -1279,7 +1412,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void TestMouseHide()
 	{
-		if (!_mouse_hide) 
+		if (!_mouse_hide)
 			return;
 
 		_mouse_hide = false;
@@ -1298,7 +1431,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (!Focused)
 			return;
 
-		if (_mouse_hide) 
+		if (_mouse_hide)
 			return;
 
 		_mouse_hide = true;
@@ -1309,7 +1442,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	#region 패스 모드
 
-	private void PromptPassModeIfNeed(Types.PassCodeUsage usage, Action action)
+	private void PromptPassModeIfNeed(PassCodeUsage usage, Action action)
 	{
 		if (!Settings.UsePassCode || Settings.UnlockedPassCode || !Settings.TestPassUsage(usage))
 		{
@@ -1336,7 +1469,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 	private void LockPassCode()
 	{
-		if (!Settings.UsePassCode || !Settings.UnlockedPassCode) 
+		if (!Settings.UsePassCode || !Settings.UnlockedPassCode)
 			return;
 
 		Settings.UnlockedPassCode = false;

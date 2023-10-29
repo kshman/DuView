@@ -26,6 +26,48 @@ public static class WebP
 
 	/// <summary>Decode a WebP image</summary>
 	/// <param name="rawWebP">The data to uncompress</param>
+	/// <param name="imgWidth"></param>
+	/// <param name="imgHeight"></param>
+	/// <param name="hasAlpha"></param>
+	/// <returns>Bitmap with the WebP image</returns>
+	public static Bitmap Decode(byte[] rawWebP, int imgWidth, int imgHeight, bool hasAlpha)
+	{
+		Bitmap? bmp = null;
+		BitmapData? bmpData = null;
+		var pinnedWebP = GCHandle.Alloc(rawWebP, GCHandleType.Pinned);
+
+		try
+		{
+			//Create a BitmapData and Lock all pixels to be written
+			bmp = hasAlpha ? 
+				new Bitmap(imgWidth, imgHeight, PixelFormat.Format32bppArgb) : 
+				new Bitmap(imgWidth, imgHeight, PixelFormat.Format24bppRgb);
+			bmpData = bmp.LockBits(new Rectangle(0, 0, imgWidth, imgHeight), ImageLockMode.WriteOnly, bmp.PixelFormat);
+
+			//Uncompress the image
+			var outputSize = bmpData.Stride * imgHeight;
+			var ptrData = pinnedWebP.AddrOfPinnedObject();
+			if (bmp.PixelFormat == PixelFormat.Format24bppRgb)
+				UnsafeNativeMethods.WebPDecodeBGRInto(ptrData, (nuint)rawWebP.Length, bmpData.Scan0, outputSize, bmpData.Stride);
+			else
+				UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmpData.Scan0, outputSize, bmpData.Stride);
+
+			return bmp;
+		}
+		finally
+		{
+			//Unlock the pixels
+			if (bmpData != null)
+				bmp?.UnlockBits(bmpData);
+
+			//Free memory
+			if (pinnedWebP.IsAllocated)
+				pinnedWebP.Free();
+		}
+	}
+
+	/// <summary>Decode a WebP image</summary>
+	/// <param name="rawWebP">The data to uncompress</param>
 	/// <returns>Bitmap with the WebP image</returns>
 	public static Bitmap Decode(byte[] rawWebP)
 	{

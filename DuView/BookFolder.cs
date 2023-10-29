@@ -1,4 +1,6 @@
-﻿namespace DuView;
+﻿using DuView.Types;
+
+namespace DuView;
 
 internal class BookFolder : BookBase
 {
@@ -25,7 +27,7 @@ internal class BookFolder : BookBase
 			(from fi in di.EnumerateFiles()
 			 where fi.Exists
 			 where fi.Extension.IsValidImageFile()
-			 select new Types.BookEntryInfo()
+			 select new BookEntryInfo()
 			 {
 				 Name = fi.FullName,
 				 DateTime = fi.CreationTime,
@@ -44,7 +46,7 @@ internal class BookFolder : BookBase
 	{
 		for (var i = 0; i < _entries.Count; i++)
 		{
-			var entry = _entries[i] as Types.BookEntryInfo;
+			var entry = _entries[i] as BookEntryInfo;
 			if (entry?.Name == filename)
 				return i;
 		}
@@ -130,12 +132,12 @@ internal class BookFolder : BookBase
 		return false;
 	}
 
-	public override IEnumerable<Types.BookEntryInfo> GetEntriesInfo()
+	public override IEnumerable<BookEntryInfo> GetEntriesInfo()
 	{
-		var r = new Types.BookEntryInfo[_entries.Count];
+		var r = new BookEntryInfo[_entries.Count];
 
 		var n = 0;
-		foreach (var e in _entries.Cast<Types.BookEntryInfo>())
+		foreach (var e in _entries.Cast<BookEntryInfo>())
 			r[n++] = e;
 
 		return r;
@@ -143,13 +145,13 @@ internal class BookFolder : BookBase
 
 	protected override string? GetEntryName(object entry)
 	{
-		var e = (Types.BookEntryInfo)entry;
+		var e = (BookEntryInfo)entry;
 		return e.Name;
 	}
 
 	protected override MemoryStream? ReadEntry(object entry)
 	{
-		var e = (Types.BookEntryInfo)entry;
+		var e = (BookEntryInfo)entry;
 		if (e.Name == null)
 			return null;
 		else
@@ -161,7 +163,7 @@ internal class BookFolder : BookBase
 		}
 	}
 
-	public override string? FindNextFile(Types.BookDirection direction)
+	public override string? FindNextFile(BookDirection direction)
 	{
 		var si = new DirectoryInfo(FileName);
 		if (!si.Exists)
@@ -175,7 +177,7 @@ internal class BookFolder : BookBase
 		Array.Sort(drs, new ToolBox.DirectoryInfoComparer());
 
 		var at = Array.FindIndex(drs, x => x.FullName == FileName);
-		var want = direction == Types.BookDirection.Previous ? at - 1 : at + 1;
+		var want = direction == BookDirection.Previous ? at - 1 : at + 1;
 
 		return want < 0 ? null : want >= drs.Length ? null : drs[want].FullName;
 	}

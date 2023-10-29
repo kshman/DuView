@@ -1,4 +1,6 @@
-﻿using DuView.WebPWrapper;
+﻿using System.Drawing.Imaging;
+using DuView.Types;
+using DuView.WebPWrapper;
 
 namespace DuView;
 
@@ -10,12 +12,13 @@ public abstract class BookBase : IDisposable
 	public int CurrentPage { get; set; }
 	public int TotalPage => _entries.Count;
 
-	public Image? PageLeft { get; private set; }
-	public Image? PageRight { get; private set; }
+	public PageImage? PageLeft { get; private set; }
+	public PageImage? PageRight { get; private set; }
 
 	public long CacheSize { get; private set; }
 
-	public Types.ViewMode ViewMode { get; set; } = Types.ViewMode.Follow;
+	public ViewMode ViewMode { get; set; } = ViewMode.Follow;
+	private ViewMode ActualViewMode => ViewMode == ViewMode.Follow ? Settings.ViewMode : ViewMode;
 
 	//
 	protected readonly List<object> _entries = new();
@@ -24,7 +27,7 @@ public abstract class BookBase : IDisposable
 	//
 	protected abstract MemoryStream? ReadEntry(object entry);
 	protected abstract string? GetEntryName(object entry);
-	public abstract IEnumerable<Types.BookEntryInfo> GetEntriesInfo();
+	public abstract IEnumerable<BookEntryInfo> GetEntriesInfo();
 	public virtual bool CanDeleteFile(out string? reason) { reason = string.Empty; return true; }
 	public abstract bool DeleteFile(out bool close_book);
 	public abstract bool RenameFile(string new_filename, out string full_path);
@@ -54,7 +57,7 @@ public abstract class BookBase : IDisposable
 	//
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!disposing) 
+		if (!disposing)
 			return;
 
 		_entries.Clear();
@@ -92,53 +95,64 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	private Image? ReadPage(int pageno)
+	private PageImage ReadPage(int pageno)
 	{
-		Image? img = null;
-
-		if (pageno < 0 || pageno >= TotalPage) 
-			return img ?? Properties.Resources.ouch_noimg;
+		if (pageno < 0 || pageno >= TotalPage)
+			return new PageImage(Properties.Resources.ouch_noimg);
 
 		var en = _entries[pageno];
 		var storecache = false;
 
-		if (!TryCache(pageno, out MemoryStream? ms))
+		if (!TryCache(pageno, out var ms))
 		{
 			// 캐시에 없으면 파일 처리
 			ms = ReadEntry(en);
 			storecache = true;
 		}
 
-		if (ms == null) 
-			return img ?? Properties.Resources.ouch_noimg;
+		if (ms == null)
+			return new PageImage(Properties.Resources.ouch_noimg);
+
+		Image? img = null;
+		var isAnimate = false;
+		IEnumerable<WebP.FrameData>? frames = null;
 
 		try
 		{
 			// 일단 이미지로 읽어보자
 			img = Image.FromStream(ms);
+			isAnimate = Equals(img.RawFormat, ImageFormat.Gif);
 		}
-		catch (Exception)
+		catch (Exception e)
 		{
+			System.Diagnostics.Debug.WriteLine($"Not .NET image: {e.Message}");
+
 			// 지원하는 형식인지 확인하자
 			ms.Position = 0;
 			var raw = ms.ToArray();
+
 			// WEBP?
-			try
+			if (WebP.IsWebP(raw))
 			{
-				if (WebP.IsWebP(raw))
-					img = WebP.Decode(raw);
-			}
-			catch
-			{
-				// 애니메이션 WEBP는 안댄다...
-				img = null;
+				WebP.GetInfo(raw, out var width, out var height, out var alpha, out var animation, out _);
+				if (!animation)
+					img = WebP.Decode(raw, width, height, alpha);
+				else
+				{
+					// 애니메이션...
+					frames = WebP.AnimDecode(raw);
+				}
 			}
 		}
 
 		if (storecache && img != null)
 			CacheStream(pageno, ms);
 
-		return img ?? Properties.Resources.ouch_noimg;
+		if (frames != null)
+			return new PageImage(frames);
+		if (img != null)
+			return new PageImage(img, isAnimate);
+		return new PageImage(Properties.Resources.ouch_noimg);
 	}
 
 	//
@@ -147,57 +161,48 @@ public abstract class BookBase : IDisposable
 		PageLeft?.Dispose();
 		PageRight?.Dispose();
 
-		var mode = ViewMode == Types.ViewMode.Follow ? Settings.ViewMode : ViewMode;
-
-		switch (mode)
+		switch (ActualViewMode)
 		{
-			case Types.ViewMode.FitWidth or Types.ViewMode.FitHeight:
+			case ViewMode.FitWidth or ViewMode.FitHeight:
 				PageLeft = ReadPage(CurrentPage);
 				PageRight = null;
 				break;
 
-			case Types.ViewMode.LeftToRight or Types.ViewMode.RightToLeft:
+			case ViewMode.LeftToRight or ViewMode.RightToLeft:
 			{
 				var left = ReadPage(CurrentPage);
 
-				if (left == null)
-				{
-					// 머여
-				}
-				else
-				{
-					Image? right = null;
+				PageImage? right = null;
 
-					if (left.Tag is not string entryname || !ToolBox.IsAnimatedImageFile(entryname, false))
+				if (!left.IsAnimate)
+				{
+					if (left.Image.Width > left.Image.Height)
 					{
-						if (left.Width > left.Height)
-						{
-							// 폭이 넓으면 1장만
-						}
-						else
-						{
-							if (CurrentPage + 1 < TotalPage)
-							{
-								right = ReadPage(CurrentPage + 1);
-								if (right != null && right.Width > right.Height)
-								{
-									// 다른쪽도 넓으면 1장만 나오게 함
-									right = null;
-								}
-							}
-						}
-					}   // 엔트리 애니메이션 체크
-
-					if (mode == Types.ViewMode.LeftToRight)
-					{
-						PageLeft = left;
-						PageRight = right;
+						// 폭이 넓으면 1장만
 					}
 					else
 					{
-						PageLeft = right;
-						PageRight = left;
+						if (CurrentPage + 1 < TotalPage)
+						{
+							right = ReadPage(CurrentPage + 1);
+							if (right.Image.Width > right.Image.Height)
+							{
+								// 다른쪽도 넓으면 1장만 나오게 함
+								right = null;
+							}
+						}
 					}
+				}   // 엔트리 애니메이션 체크
+
+				if (ActualViewMode == ViewMode.LeftToRight)
+				{
+					PageLeft = left;
+					PageRight = right;
+				}
+				else
+				{
+					PageLeft = right;
+					PageRight = left;
 				}
 
 				break;
@@ -214,25 +219,25 @@ public abstract class BookBase : IDisposable
 	// 
 	public bool MoveNext()
 	{
-		var mode = Settings.ViewMode;
+		var mode = ActualViewMode;
 		var prev = CurrentPage;
 
 		if (PageLeft == null || PageRight == null)
 		{
 			// 이건 위험하지만 일단 쓰자
-			mode = Types.ViewMode.FitWidth;
+			mode = ViewMode.FitWidth;
 		}
 
 		switch (mode)
 		{
-			case Types.ViewMode.FitWidth:
-			case Types.ViewMode.FitHeight:
+			case ViewMode.FitWidth:
+			case ViewMode.FitHeight:
 				if (CurrentPage + 1 < TotalPage)
 					CurrentPage++;
 				break;
 
-			case Types.ViewMode.LeftToRight:
-			case Types.ViewMode.RightToLeft:
+			case ViewMode.LeftToRight:
+			case ViewMode.RightToLeft:
 				if (CurrentPage + 2 < TotalPage)
 					CurrentPage += 2;
 				break;
@@ -247,24 +252,24 @@ public abstract class BookBase : IDisposable
 	// 
 	public bool MovePrev()
 	{
-		var mode = Settings.ViewMode;
+		var mode = ActualViewMode;
 		var prev = CurrentPage;
 
 		if (PageLeft == null || PageRight == null)
 		{
 			// 이건 위험하지만 일단 쓰자
-			mode = Types.ViewMode.FitWidth;
+			mode = ViewMode.FitWidth;
 		}
 
 		switch (mode)
 		{
-			case Types.ViewMode.FitWidth:
-			case Types.ViewMode.FitHeight:
+			case ViewMode.FitWidth:
+			case ViewMode.FitHeight:
 				CurrentPage--;
 				break;
 
-			case Types.ViewMode.LeftToRight:
-			case Types.ViewMode.RightToLeft:
+			case ViewMode.LeftToRight:
+			case ViewMode.RightToLeft:
 				CurrentPage -= 2;
 				break;
 
@@ -289,25 +294,25 @@ public abstract class BookBase : IDisposable
 	}
 
 	//
-	public virtual string? FindNextFile(Types.BookDirection direction)
+	public virtual string? FindNextFile(BookDirection direction)
 	{
 		return null;
 	}
 
 	//
-	public string? FindNextFileAny(Types.BookDirection first_direction) => first_direction switch
+	public string? FindNextFileAny(BookDirection first_direction) => first_direction switch
 	{
-		Types.BookDirection.Next => FindNextFile(Types.BookDirection.Next) ??
-									FindNextFile(Types.BookDirection.Previous) ?? null,
-		Types.BookDirection.Previous => FindNextFile(Types.BookDirection.Previous) ??
-										FindNextFile(Types.BookDirection.Next) ?? null,
+		BookDirection.Next => FindNextFile(BookDirection.Next) ??
+									FindNextFile(BookDirection.Previous) ?? null,
+		BookDirection.Previous => FindNextFile(BookDirection.Previous) ??
+										FindNextFile(BookDirection.Next) ?? null,
 		_ => null
 	};
 
 	//
-	protected class BookEntryInfoComparer : IComparer<Types.BookEntryInfo>
+	protected class BookEntryInfoComparer : IComparer<BookEntryInfo>
 	{
-		public int Compare(Types.BookEntryInfo? x, Types.BookEntryInfo? y)
+		public int Compare(BookEntryInfo? x, BookEntryInfo? y)
 		{
 			return StringAsNumericComparer.StringAsNumericCompare(x?.Name, y?.Name);
 		}
