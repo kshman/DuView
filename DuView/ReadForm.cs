@@ -76,6 +76,8 @@ public partial class ReadForm : Form, ILocaleTranspose
 		ResetFocus();
 
 		//
+		PaintBook();
+
 		if (!string.IsNullOrEmpty(_init_filename))
 			OpenBook(_init_filename);
 	}
