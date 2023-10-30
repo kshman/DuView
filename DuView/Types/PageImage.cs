@@ -1,32 +1,32 @@
-﻿using DuView.WebPWrapper;
-
-namespace DuView.Types;
+﻿namespace DuView.Types;
 
 public class PageImage : IDisposable
 {
 	public Image Image { get; }
-	public bool IsAnimate { get; }
-	public List<WebP.FrameData>? Frames { get; }
+	public List<AnimatedFrame>? Frames { get; }
+
+	public int CurrentFrame { get; private set; }
+	public int LastDuration { get; private set; }
+
+	public bool HasAnimation => Frames != null;
 
 	public override string ToString()
 	{
-		return Frames != null ? 
-			$"WEBP {Frames.Count()} 프레임" : 
-			$"GDI이미지 {Image.RawFormat}";
+		return Frames != null ?
+			$"애니메이션: {Frames.Count} 프레임" :
+			$"이미지: {Image.RawFormat}";
 	}
 
-	public PageImage(Image image, bool isAnimate = false)
+	public PageImage(Image image)
 	{
 		Image = image;
-		IsAnimate = isAnimate;
 		Frames = null;
 	}
 
-	public PageImage(IEnumerable<WebP.FrameData>? frames)
+	public PageImage(List<AnimatedFrame> frames)
 	{
-		Image = new Bitmap(10, 10);
-		IsAnimate = true;
-		Frames = frames as List<WebP.FrameData>;
+		Image = new Bitmap(frames[0].Bitmap);
+		Frames = frames;
 	}
 
 	/// <inheritdoc />
@@ -34,4 +34,29 @@ public class PageImage : IDisposable
 	{
 		Image.Dispose();
 	}
+
+	//
+	public int Animate()
+	{
+		if (Frames == null)
+			return -1;
+
+		var frame = Frames[CurrentFrame++];
+		if (CurrentFrame >= Frames.Count)
+			CurrentFrame = 0;
+
+		LastDuration = frame.Duration;
+
+		return frame.Duration;
+	}
+
+	//
+	public void InitAnimation()
+	{
+		CurrentFrame = 0;
+		LastDuration = 0;
+	}
+
+	//
+	public Image GetImage() => Frames?[CurrentFrame].Bitmap ?? Image;
 }
