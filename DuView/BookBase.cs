@@ -114,14 +114,35 @@ public abstract class BookBase : IDisposable
 			return new PageImage(Properties.Resources.ouch_noimg);
 
 		Image? img = null;
-		var isAnimate = false;
-		IEnumerable<WebP.FrameData>? frames = null;
+		List<AnimatedFrame>? frames = null;
 
 		try
 		{
 			// 일단 이미지로 읽어보자
 			img = Image.FromStream(ms);
-			isAnimate = Equals(img.RawFormat, ImageFormat.Gif);
+
+			// 애니메이션 처리
+			if (Equals(img.RawFormat, ImageFormat.Gif) /*|| Equals(img.RawFormat, ImageFormat.Webp)*/)
+			{
+				var cnt = img.GetFrameCount(FrameDimension.Time);
+				if (cnt > 1)
+				{
+					var times = img.GetPropertyItem(0x5100)?.Value;
+					if (times != null)
+					{
+						frames = new List<AnimatedFrame>();
+						for (var i = 0; i < cnt; i++)
+						{
+							var dur = BitConverter.ToInt32(times, 4 * i);
+							frames.Add(new AnimatedFrame(new Bitmap(img), dur * 10));
+							img.SelectActiveFrame(FrameDimension.Time, i);
+						}
+
+						img.Dispose();
+						img = null;
+					}
+				}
+			}
 		}
 		catch (Exception e)
 		{
@@ -140,7 +161,7 @@ public abstract class BookBase : IDisposable
 				else
 				{
 					// 애니메이션...
-					frames = WebP.AnimDecode(raw);
+					frames = WebP.AnimDecode(raw) as List<AnimatedFrame>;
 				}
 			}
 		}
@@ -151,7 +172,7 @@ public abstract class BookBase : IDisposable
 		if (frames != null)
 			return new PageImage(frames);
 		if (img != null)
-			return new PageImage(img, isAnimate);
+			return new PageImage(img);
 		return new PageImage(Properties.Resources.ouch_noimg);
 	}
 
@@ -174,7 +195,7 @@ public abstract class BookBase : IDisposable
 
 				PageImage? right = null;
 
-				if (!left.IsAnimate)
+				if (!left.HasAnimation)
 				{
 					if (left.Image.Width > left.Image.Height)
 					{

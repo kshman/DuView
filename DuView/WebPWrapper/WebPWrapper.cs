@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
+using DuView.Types;
 
 namespace DuView.WebPWrapper;
 
@@ -78,7 +79,7 @@ public static class WebP
 		try
 		{
 			//Get image width and height
-			GetInfo(rawWebP, out var imgWidth, out var imgHeight, out var hasAlpha, out var hasAnimation, out var format);
+			GetInfo(rawWebP, out var imgWidth, out var imgHeight, out var hasAlpha, out _, out _);
 
 			//Create a BitmapData and Lock all pixels to be written
 			bmp = hasAlpha ? 
@@ -560,37 +561,20 @@ public static class WebP
 
 	#region | Public AnimDecoder Functions |
 
-	/// <summary>
-	/// Holds information about one frame.
-	/// </summary>
-	/// <remarks>
-	/// AnimLoad() / AnimDecode() return a list of FrameData objects.
-	/// </remarks>
-	public class FrameData
-	{
-		public Bitmap? Bitmap { get; set; }
-
-		public int Duration { get; set; }
-	}
-
 	/// <summary>Read and Decode an Animated WebP file</summary>
 	/// <param name="pathFileName">Animated WebP file to load</param>
 	/// <returns>Bitmaps of the Animated WebP frames</returns>
-	public static IEnumerable<FrameData> AnimLoad(string pathFileName)
+	public static IEnumerable<AnimatedFrame> AnimLoad(string pathFileName)
 	{
-		try
-		{
-			var rawWebP = File.ReadAllBytes(pathFileName);
+		var rawWebP = File.ReadAllBytes(pathFileName);
 
-			return AnimDecode(rawWebP);
-		}
-		catch (Exception) { throw; }
+		return AnimDecode(rawWebP);
 	}
 
 	/// <summary>Decode an Animated WebP image</summary>
 	/// <param name="rawWebP">The data to uncompress</param>
 	/// <returns>List of FrameData - each containing frame bitmap and duration</returns>
-	public static IEnumerable<FrameData> AnimDecode(byte[] rawWebP)
+	public static IEnumerable<AnimatedFrame> AnimDecode(byte[] rawWebP)
 	{
 		var pinnedWebP = GCHandle.Alloc(rawWebP, GCHandleType.Pinned);
 
@@ -599,7 +583,7 @@ public static class WebP
 		try
 		{
 			var dec_options = new WebPAnimDecoderOptions();
-			var result = UnsafeNativeMethods.WebPAnimDecoderOptionsInit(ref dec_options);
+			UnsafeNativeMethods.WebPAnimDecoderOptionsInit(ref dec_options);
 			dec_options.color_mode = WEBP_CSP_MODE.MODE_BGRA;
 			var webp_data = new WebPData
 			{
@@ -611,13 +595,13 @@ public static class WebP
 
 			var rect = new Rectangle(0, 0, (int)anim_info.canvas_width, (int)anim_info.canvas_height);
 
-			var frames = new List<FrameData>();
+			var frames = new List<AnimatedFrame>();
 			var oldTimestamp = 0;
 			while (UnsafeNativeMethods.WebPAnimDecoderHasMoreFrames(dec.decoder))
 			{
 				var buf = nint.Zero;
 				var timestamp = 0;
-				var result2 = UnsafeNativeMethods.WebPAnimDecoderGetNext(dec.decoder, ref buf, ref timestamp);
+				UnsafeNativeMethods.WebPAnimDecoderGetNext(dec.decoder, ref buf, ref timestamp);
 
 				bitmap = new Bitmap((int)anim_info.canvas_width, (int)anim_info.canvas_height, PixelFormat.Format32bppArgb);
 				bmpData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
@@ -627,7 +611,7 @@ public static class WebP
 				bitmap.UnlockBits(bmpData);
 				bmpData = null;
 
-				frames.Add(new FrameData() { Bitmap = bitmap, Duration = timestamp - oldTimestamp });
+				frames.Add(new AnimatedFrame(bitmap, timestamp - oldTimestamp));
 				oldTimestamp = timestamp;
 			}
 
@@ -743,8 +727,8 @@ public static class WebP
 			wpicSource = new WebPPicture();
 			if (UnsafeNativeMethods.WebPPictureInitInternal(ref wpicSource) != 1)
 				throw new Exception("Can´t initialize WebPPictureInit");
-			wpicSource.width = (int)source.Width;
-			wpicSource.height = (int)source.Height;
+			wpicSource.width = source.Width;
+			wpicSource.height = source.Height;
 
 			//Put the source bitmap componets in wpic
 			if (sourceBmpData.PixelFormat == PixelFormat.Format32bppArgb)
@@ -765,8 +749,8 @@ public static class WebP
 			wpicReference = new WebPPicture();
 			if (UnsafeNativeMethods.WebPPictureInitInternal(ref wpicReference) != 1)
 				throw new Exception("Can´t initialize WebPPictureInit");
-			wpicReference.width = (int)reference.Width;
-			wpicReference.height = (int)reference.Height;
+			wpicReference.width = reference.Width;
+			wpicReference.height = reference.Height;
 			wpicReference.use_argb = 1;
 
 			//Put the source bitmap contents in WebPPicture instance
@@ -844,7 +828,6 @@ public static class WebP
 			wpic.height = bmp.Height;
 			wpic.use_argb = 1;
 
-			int dataWebpSize;
 			if (bmp.PixelFormat == PixelFormat.Format32bppArgb)
 			{
 				//Put the bitmap componets in wpic
@@ -852,7 +835,6 @@ public static class WebP
 				if (result != 1)
 					throw new Exception("Can´t allocate memory in WebPPictureImportBGRA");
 				wpic.colorspace = (uint)WEBP_CSP_MODE.MODE_bgrA;
-				dataWebpSize = bmp.Width * bmp.Height * 32;
 			}
 			else
 			{
@@ -860,8 +842,6 @@ public static class WebP
 				var result = UnsafeNativeMethods.WebPPictureImportBGR(ref wpic, bmpData.Scan0, bmpData.Stride);
 				if (result != 1)
 					throw new Exception("Can´t allocate memory in WebPPictureImportBGR");
-				dataWebpSize = bmp.Width * bmp.Height * 24;
-
 			}
 
 			//Set up statistics of compression
@@ -881,7 +861,7 @@ public static class WebP
 			wpic.custom_ptr = initPtr;
 
 			//Set up a byte-writing method (write-to-memory, in this case)
-			UnsafeNativeMethods.OnCallback = new UnsafeNativeMethods.WebPMemoryWrite(MyWriter);
+			UnsafeNativeMethods.OnCallback = MyWriter;
 			wpic.writer = Marshal.GetFunctionPointerForDelegate(UnsafeNativeMethods.OnCallback);
 
 			//compress the input samples
@@ -974,8 +954,6 @@ public static class WebP
 		picture.custom_ptr = new nint(picture.custom_ptr.ToInt64() + (int)data_size);
 		return 1;
 	}
-
-	private delegate int MyWriterDelegate([In()] nint data, nuint data_size, ref WebPPicture picture);
 	#endregion
 }
 
@@ -1021,6 +999,7 @@ internal sealed partial class UnsafeNativeMethods
 
 	/// <summary>Initialize the WebPPicture structure checking the DLL version</summary>
 	/// <param name="wpic">The WebPPicture structure</param>
+	/// <param name="version"></param>
 	[DllImport("libwebp.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPPictureInitInternal")]
 	internal static extern int WebPPictureInitInternal(ref WebPPicture wpic, int version = WEBP_DECODER_ABI_VERSION);
 
@@ -1067,7 +1046,6 @@ internal sealed partial class UnsafeNativeMethods
 	/// <summary>Release the memory allocated by WebPPictureAlloc() or WebPPictureImport*()
 	/// Note that this function does _not_ free the memory used by the 'picture' object itself.
 	/// Besides memory (which is reclaimed) all other fields of 'picture' are preserved</summary>
-	/// <param name="picture">Picture structure</param>
 	[DllImport("libwebp.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPPictureFree")]
 	internal static extern void WebPPictureFree(ref WebPPicture wpic);
 
@@ -1109,6 +1087,7 @@ internal sealed partial class UnsafeNativeMethods
 
 	/// <summary>Initialize the configuration as empty. This function must always be called first, unless WebPGetFeatures() is to be called</summary>
 	/// <param name="webPDecoderConfig">Configuration structure</param>
+	/// <param name="version"></param>
 	/// <returns>False in case of mismatched version.</returns>
 	[DllImport("libwebp.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPInitDecoderConfigInternal")]
 	internal static extern int WebPInitDecoderConfig(ref WebPDecoderConfig webPDecoderConfig, int version = WEBP_DECODER_ABI_VERSION);
@@ -1116,7 +1095,7 @@ internal sealed partial class UnsafeNativeMethods
 	/// <summary>Decodes the full data at once, taking configuration into account</summary>
 	/// <param name="data">WebP raw data to decode</param>
 	/// <param name="data_size">Size of WebP data </param>
-	/// <param name="webPDecoderConfig">Configuration structure</param>
+	/// <param name="config"></param>
 	/// <returns>VP8_STATUS_OK if the decoding was successful</returns>
 	[DllImport("libwebp.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPDecode")]
 	internal static extern VP8StatusCode WebPDecode(nint data, nuint data_size, ref WebPDecoderConfig config);
@@ -1138,7 +1117,7 @@ internal sealed partial class UnsafeNativeMethods
 	internal static extern int WebPEncodeBGR([In()] nint bgr, int width, int height, int stride, float quality_factor, out nint output);
 
 	/// <summary>Lossy encoding images</summary>
-	/// <param name="bgr">Pointer to BGRA image data</param>
+	/// <param name="bgra"></param>
 	/// <param name="width">The range is limited currently from 1 to 16383</param>
 	/// <param name="height">The range is limited currently from 1 to 16383</param>
 	/// <param name="stride">Specifies the distance between scan lines</param>
@@ -1465,7 +1444,7 @@ internal struct WebPBitstreamFeatures
 	/// <summary>0 = undefined (/mixed), 1 = lossy, 2 = lossless</summary>
 	public int Format;
 	/// <summary>Padding for later use</summary>
-	[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 5, ArraySubType = UnmanagedType.U4)]
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5, ArraySubType = UnmanagedType.U4)]
 	private readonly uint[] pad;
 };
 
@@ -1539,7 +1518,7 @@ internal struct WebPPicture
 	/// <summary>Main flag for encoder selecting between ARGB or YUV input. Recommended to use ARGB input (*argb, argb_stride) for lossless, and YUV input (*y, *u, *v, etc.) for lossy</summary>
 	public int use_argb;
 	/// <summary>Color-space: should be YUV420 for now (=Y'CbCr). Value = 0</summary>
-	public UInt32 colorspace;
+	public uint colorspace;
 	/// <summary>Width of picture (less or equal to WEBP_MAX_DIMENSION)</summary>
 	public int width;
 	/// <summary>Height of picture (less or equal to WEBP_MAX_DIMENSION)</summary>
@@ -1559,14 +1538,14 @@ internal struct WebPPicture
 	/// <summary>stride of the alpha plane</summary>
 	public int a_stride;
 	/// <summary>Padding for later use</summary>
-	[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
 	private readonly uint[] pad1;
 	/// <summary>Pointer to ARGB (32 bit) plane</summary>
 	public nint argb;
 	/// <summary>This is stride in pixels units, not bytes</summary>
 	public int argb_stride;
 	/// <summary>Padding for later use</summary>
-	[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3, ArraySubType = UnmanagedType.U4)]
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 3, ArraySubType = UnmanagedType.U4)]
 	private readonly uint[] pad2;
 	/// <summary>Byte-emission hook, to store compressed bytes as they are ready</summary>
 	public nint writer;
@@ -1586,14 +1565,14 @@ internal struct WebPPicture
 	/// <summary>This field is free to be set to any value and used during callbacks (like progress-report e.g.)</summary>
 	public nint user_data;
 	/// <summary>Padding for later use</summary>
-	[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 13, ArraySubType = UnmanagedType.U4)]
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 13, ArraySubType = UnmanagedType.U4)]
 	private readonly uint[] pad3;
 	/// <summary>Row chunk of memory for YUVA planes</summary>
 	private readonly nint memory_;
 	/// <summary>Row chunk of memory for ARGB planes</summary>
 	private readonly nint memory_argb_;
 	/// <summary>Padding for later use</summary>
-	[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
 	private readonly uint[] pad4;
 };
 
@@ -1694,7 +1673,7 @@ internal struct WebPAuxStats
 	/// <summary>Lossless image data size</summary>
 	public int lossless_data_size;
 	/// <summary>Padding for later use</summary>
-	[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
 	private readonly uint[] pad;
 };
 
@@ -1739,10 +1718,10 @@ internal struct WebPDecBuffer
 [StructLayout(LayoutKind.Explicit)]
 internal struct RGBA_YUVA_Buffer
 {
-	[FieldOffsetAttribute(0)]
+	[FieldOffset(0)]
 	public WebPRGBABuffer RGBA;
 
-	[FieldOffsetAttribute(0)]
+	[FieldOffset(0)]
 	public WebPYUVABuffer YUVA;
 }
 

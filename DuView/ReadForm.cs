@@ -1,4 +1,5 @@
-﻿using DuView.Types;
+﻿using System.Drawing.Imaging;
+using DuView.Types;
 
 namespace DuView;
 
@@ -23,8 +24,6 @@ public partial class ReadForm : Form, ILocaleTranspose
 	private BookDirection _book_direction = BookDirection.Next;
 
 	private PageImage? _animate;
-	private int _animFrame;
-	private int _lastAnimDuration;
 	private CancellationTokenSource? _animCancel;
 
 	private bool _passmode;
@@ -987,13 +986,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		}
 	}
 
-	// GIF 애니메이션
-	private void OnGifAnimateFrameChanged(object? sender, EventArgs e)
-	{
-		Invalidate();
-	}
-
-	// WEBP 애니메이션
+	// WEBP 애니메이션 스레드
 	private void OnWebPAnimWorker(object? obj)
 	{
 		if (obj == null)
@@ -1001,39 +994,56 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		var token = (CancellationToken)obj;
 
-		while (true)
+		while (!token.IsCancellationRequested)
 		{
+			var duration = _animate?.Animate() ?? -1;
+			if (duration < 0)
+				break;
+
+			Thread.Sleep(duration);
+
 			if (token.IsCancellationRequested)
 				break;
-			if (_animate?.Frames == null)
-				break;
-
-			var frame = _animate.Frames[_animFrame++];
-			if (_animFrame >= _animate.Frames.Count)
-				_animFrame = 0;
 
 			Invoke(Invalidate);
+		}
+	}
 
-			_lastAnimDuration = frame.Duration;
-			Thread.Sleep(frame.Duration);
+	// WEBP 애니메이션 태스크
+	private async Task OnWebPAnimTask(CancellationToken token)
+	{
+		while (!token.IsCancellationRequested)
+		{
+			var duration = _animate?.Animate() ?? -1;
+			if (duration < 0)
+				break;
+
+			await Task.Delay(duration, token);
+
+			if (token.IsCancellationRequested)
+				break;
+
+			Invoke(Invalidate);
 		}
 	}
 
 	// 
 	private Image UpdateAnimation(PageImage page)
 	{
-		if (!page.IsAnimate)
+		if (!page.HasAnimation)
 			return page.Image;
+
+		Image img;
 
 		if (page.Frames != null)
 		{
-			// WEBP
+			// 애니메이션
 			if (_animate != null && _animate != page)
 			{
 				if (_animCancel != null)
 				{
 					_animCancel.Cancel();
-					Thread.Sleep(_lastAnimDuration);
+					Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 10);
 					_animCancel.Dispose();
 					_animCancel = null;
 				}
@@ -1042,29 +1052,32 @@ public partial class ReadForm : Form, ILocaleTranspose
 			if (_animate != page)
 			{
 				_animate = page;
-				_animFrame = 0;
-				_lastAnimDuration = 0;
+				_animate.InitAnimation();
 
 				_animCancel = new CancellationTokenSource();
-				ThreadPool.QueueUserWorkItem(OnWebPAnimWorker, _animCancel.Token);
+				if (Settings.UseAnimationThread)
+					ThreadPool.QueueUserWorkItem(OnWebPAnimWorker, _animCancel.Token);
+				else
+					_ = OnWebPAnimTask(_animCancel.Token);
+
+				img = page.Image;
+			}
+			else
+			{
+				// 업데이트
+				img = page.GetImage();
 			}
 
-			return page.Frames[_animFrame].Bitmap ?? page.Image;
+			if (Book != null)
+				PageInfo.Text = $@"[{page.CurrentFrame + 1}/{page.Frames.Count}] {Book.CurrentPage + 1}/{Book.TotalPage}";
 		}
 		else
 		{
-			// GIF
-			if (_animate != null && _animate != page)
-				ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
-
-			if (_animate != page)
-			{
-				_animate = page;
-				ImageAnimator.Animate(_animate.Image, OnGifAnimateFrameChanged);
-			}
-
-			return page.Image;
+			// 그냥 이미지
+			img = page.Image;
 		}
+
+		return img;
 	}
 
 	//
@@ -1079,15 +1092,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 			if (_animCancel != null)
 			{
 				_animCancel.Cancel();
-				Thread.Sleep(_lastAnimDuration);
+				Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 10);
 				_animCancel.Dispose();
 				_animCancel = null;
 			}
-		}
-		else
-		{
-			// GIF
-			ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
 		}
 
 		_animate = null;
@@ -1165,10 +1173,6 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (WindowState == FormWindowState.Minimized)
 			return;
 
-		// 애니메이션
-		if (_animate != null)
-			ImageAnimator.UpdateFrames();
-
 		// 본격 그리기
 		var w = BookCanvas.Width;
 		var h = BookCanvas.Height;
@@ -1179,7 +1183,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		if (_bmp == null || _bmp.Width != w || _bmp.Height != h)
 		{
 			_bmp?.Dispose();
-			_bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			_bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 		}
 
 		using (var g = Graphics.FromImage(_bmp))
@@ -1228,7 +1232,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
 		}
 
-#if true
+#if false
 		using (var g = BookCanvas.CreateGraphics())
 			g.DrawImage(_bmp, new Point(0, 0));
 #else

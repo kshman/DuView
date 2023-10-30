@@ -58,6 +58,7 @@ internal static class Settings
 	private static string s_pass_usages = string.Empty;
 
 	// -- 기타
+	private static bool s_use_anim_thread = true;
 
 	//
 	public static string StartupPath => Application.StartupPath;
@@ -836,5 +837,17 @@ internal static class Settings
 	#endregion
 
 	#region 기타
+	public static bool UseAnimationThread
+	{
+		get => s_use_anim_thread;
+		set
+		{
+			if (value == s_use_anim_thread)
+				return;
+
+			var lines = ReadSettings();
+			lines.SetBool("UseAnimationThread", s_use_anim_thread = value);
+		}
+	}
 	#endregion // 기타
 }
