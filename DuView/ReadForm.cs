@@ -1030,9 +1030,6 @@ public partial class ReadForm : Form, ILocaleTranspose
 	// 
 	private Image UpdateAnimation(PageImage page)
 	{
-		if (!page.HasAnimation)
-			return page.Image;
-
 		Image img;
 
 		if (page.Frames != null)
