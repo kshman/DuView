@@ -25,9 +25,9 @@ This application is for reading a zipped book or stored images in folder as a bo
 * 이미지 (단독 열기 안됨)
 	* JPG
 	* PNG
-	* GIF (애니메이션 안됨)
+	* GIF
 	* BMP
-    * WEBP (애니메이션 안됨)
+	* WEBP
 
 ## 사용키 
 | 키      | 명령              | 보조키             |
