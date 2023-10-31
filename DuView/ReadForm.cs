@@ -996,7 +996,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		while (!token.IsCancellationRequested)
 		{
-			var duration = _animate?.Animate() ?? -1;
+			if (_animate?.Frames == null)
+				break;
+
+			var duration = _animate.Animate();
 			if (duration < 0)
 				break;
 
@@ -1007,7 +1010,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				if (token.IsCancellationRequested)
 					break;
 
-				Invoke(PaintBook);
+				Invoke(Invalidate);
 			}
 			catch (ObjectDisposedException)
 			{
@@ -1025,7 +1028,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 	{
 		while (!token.IsCancellationRequested)
 		{
-			var duration = _animate?.Animate() ?? -1;
+			if (_animate?.Frames == null)
+				break;
+
+			var duration = _animate.Animate();
 			if (duration < 0)
 				break;
 
@@ -1036,7 +1042,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				if (token.IsCancellationRequested)
 					break;
 
-				Invoke(PaintBook);
+				Invoke(Invalidate);
 			}
 			catch (ObjectDisposedException)
 			{
@@ -1084,14 +1090,10 @@ public partial class ReadForm : Form, ILocaleTranspose
 					ThreadPool.QueueUserWorkItem(OnWebPAnimWorker, _animCancel.Token);
 				else
 					_ = OnWebPAnimTask(_animCancel.Token);
+			}
 
-				img = page.Image;
-			}
-			else
-			{
-				// 업데이트
-				img = page.GetImage();
-			}
+			// 업데이트
+			img = page.GetImage();
 
 			if (Book != null)
 				PageInfo.Text = $@"[{page.CurrentFrame + 1}/{page.Frames.Count}] {Book.CurrentPage + 1}/{Book.TotalPage}";
@@ -1099,7 +1101,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 		else if (page.IsGifAnimation)
 		{
 			// GDIP+ GIF
-			if (_animate != null && _animate!=page)
+			if (_animate != null && _animate != page)
 				ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
 
 			if (_animate != page)
@@ -1138,7 +1140,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			if (_animCancel != null)
 			{
 				_animCancel.Cancel();
-				Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 10);
+				Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 5);
 				_animCancel.Dispose();
 				_animCancel = null;
 			}

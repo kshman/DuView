@@ -59,7 +59,7 @@ internal static class Settings
 
 	// -- 기타
 	private static bool s_use_anim_thread = false;
-	private static bool s_use_gdip_gif = true;
+	private static bool s_use_gdip_gif = false;
 
 	//
 	public static string StartupPath => Application.StartupPath;
