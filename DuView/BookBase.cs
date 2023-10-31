@@ -116,6 +116,7 @@ public abstract class BookBase : IDisposable
 
 		Image? img = null;
 		List<AnimatedFrame>? frames = null;
+		var isgif = false;
 
 		try
 		{
@@ -125,22 +126,27 @@ public abstract class BookBase : IDisposable
 			// 애니메이션 처리
 			if (Equals(img.RawFormat, ImageFormat.Gif) /*|| Equals(img.RawFormat, ImageFormat.Webp)*/)
 			{
-				var cnt = img.GetFrameCount(FrameDimension.Time);
-				if (cnt > 1)
+				if (Settings.UseGdipGif)
+					isgif = true;
+				else
 				{
-					var times = img.GetPropertyItem(0x5100)?.Value;
-					if (times != null)
+					var cnt = img.GetFrameCount(FrameDimension.Time);
+					if (cnt > 1)
 					{
-						frames = new List<AnimatedFrame>();
-						for (var i = 0; i < cnt; i++)
+						var times = img.GetPropertyItem(0x5100)?.Value;
+						if (times != null)
 						{
-							var dur = BitConverter.ToInt32(times, 4 * i);
-							frames.Add(new AnimatedFrame(new Bitmap(img), dur * 10));
-							img.SelectActiveFrame(FrameDimension.Time, i);
-						}
+							frames = new List<AnimatedFrame>();
+							for (var i = 0; i < cnt; i++)
+							{
+								var dur = BitConverter.ToInt32(times, 4 * i);
+								frames.Add(new AnimatedFrame(new Bitmap(img), dur * 10));
+								img.SelectActiveFrame(FrameDimension.Time, i);
+							}
 
-						img.Dispose();
-						img = null;
+							img.Dispose();
+							img = null;
+						}
 					}
 				}
 			}
@@ -173,7 +179,7 @@ public abstract class BookBase : IDisposable
 		if (frames != null)
 			return new PageImage(frames);
 		if (img != null)
-			return new PageImage(img);
+			return new PageImage(img, isgif);
 		return new PageImage(Properties.Resources.ouch_noimg);
 	}
 

@@ -1029,13 +1029,30 @@ public partial class ReadForm : Form, ILocaleTranspose
 			if (duration < 0)
 				break;
 
-			await Task.Delay(duration, token);
+			try
+			{
+				await Task.Delay(duration, token);
 
-			if (token.IsCancellationRequested)
+				if (token.IsCancellationRequested)
+					break;
+
+				Invoke(PaintBook);
+			}
+			catch (ObjectDisposedException)
+			{
 				break;
-
-			Invoke(PaintBook);
+			}
+			catch (TaskCanceledException)
+			{
+				break;
+			}
 		}
+	}
+
+	// GDI+ GIF
+	private void OnGifAnimateFrameChanged(object? sender, EventArgs e)
+	{
+		Invalidate();
 	}
 
 	// 
@@ -1079,6 +1096,27 @@ public partial class ReadForm : Form, ILocaleTranspose
 			if (Book != null)
 				PageInfo.Text = $@"[{page.CurrentFrame + 1}/{page.Frames.Count}] {Book.CurrentPage + 1}/{Book.TotalPage}";
 		}
+		else if (page.IsGifAnimation)
+		{
+			// GDIP+ GIF
+			if (_animate != null && _animate!=page)
+				ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
+
+			if (_animate != page)
+			{
+				_animate = page;
+				ImageAnimator.Animate(_animate.Image, OnGifAnimateFrameChanged);
+
+				if (Book != null)
+				{
+					var cnt = _animate.Image.GetFrameCount(FrameDimension.Time);
+					PageInfo.Text = $@"[{cnt}] {Book.CurrentPage + 1}/{Book.TotalPage}";
+				}
+			}
+
+			ImageAnimator.UpdateFrames();
+			img = page.Image;
+		}
 		else
 		{
 			// 그냥 이미지
@@ -1104,6 +1142,11 @@ public partial class ReadForm : Form, ILocaleTranspose
 				_animCancel.Dispose();
 				_animCancel = null;
 			}
+		}
+		else if (_animate.IsGifAnimation)
+		{
+			// GDI+ GIF
+			ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
 		}
 
 		_animate = null;

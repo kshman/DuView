@@ -2,15 +2,16 @@
 
 public class PageImage : IDisposable
 {
-	private const int MinimumDuration = 5;
+	private const int MinimumDuration = 2;
 
 	public Image Image { get; }
 	public List<AnimatedFrame>? Frames { get; }
+	public bool IsGifAnimation { get; }
 
 	public int CurrentFrame { get; private set; }
 	public int LastDuration { get; private set; }
 
-	public bool HasAnimation => Frames != null;
+	public bool HasAnimation => Frames != null || IsGifAnimation;
 
 	public override string ToString()
 	{
@@ -19,10 +20,11 @@ public class PageImage : IDisposable
 			$"이미지: {Image.RawFormat}";
 	}
 
-	public PageImage(Image image)
+	public PageImage(Image image, bool isGifAnimation = false)
 	{
 		Image = image;
 		Frames = null;
+		IsGifAnimation = isGifAnimation;
 	}
 
 	public PageImage(List<AnimatedFrame> frames)
