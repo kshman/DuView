@@ -143,7 +143,7 @@ internal class BookFolder : BookBase
 		return r;
 	}
 
-	protected override string? GetEntryName(object entry)
+	public override string? GetEntryName(object entry)
 	{
 		var e = (BookEntryInfo)entry;
 		return e.Name;
@@ -181,5 +181,8 @@ internal class BookFolder : BookBase
 
 		return want < 0 ? null : want >= drs.Length ? null : drs[want].FullName;
 	}
+
+	/// <inheritdoc />
+	public override bool DisplayEntryTitle => true;
 }
 

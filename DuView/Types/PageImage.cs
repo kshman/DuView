@@ -2,6 +2,8 @@
 
 public class PageImage : IDisposable
 {
+	private const int MinimumDuration = 5;
+
 	public Image Image { get; }
 	public List<AnimatedFrame>? Frames { get; }
 
@@ -45,9 +47,9 @@ public class PageImage : IDisposable
 		if (CurrentFrame >= Frames.Count)
 			CurrentFrame = 0;
 
-		LastDuration = frame.Duration;
+		LastDuration = frame.Duration < MinimumDuration ? MinimumDuration: frame.Duration;
 
-		return frame.Duration;
+		return LastDuration;
 	}
 
 	//

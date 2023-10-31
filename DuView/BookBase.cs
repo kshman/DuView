@@ -26,12 +26,13 @@ public abstract class BookBase : IDisposable
 
 	//
 	protected abstract MemoryStream? ReadEntry(object entry);
-	protected abstract string? GetEntryName(object entry);
+	public abstract string? GetEntryName(object entry);
 	public abstract IEnumerable<BookEntryInfo> GetEntriesInfo();
 	public virtual bool CanDeleteFile(out string? reason) { reason = string.Empty; return true; }
 	public abstract bool DeleteFile(out bool close_book);
 	public abstract bool RenameFile(string new_filename, out string full_path);
 	public abstract bool MoveFile(string new_filename);
+	public virtual bool DisplayEntryTitle => false;
 
 	//
 	protected void SetFileName(FileInfo fi)
@@ -337,6 +338,16 @@ public abstract class BookBase : IDisposable
 		{
 			return StringAsNumericComparer.StringAsNumericCompare(x?.Name, y?.Name);
 		}
+	}
+
+	//
+	public string? GetEntryName(int pageno)
+	{
+		if (pageno < 0 || pageno >= TotalPage)
+			return null;
+
+		var entry = _entries[pageno];
+		return GetEntryName(entry);
 	}
 }
 

@@ -1000,12 +1000,23 @@ public partial class ReadForm : Form, ILocaleTranspose
 			if (duration < 0)
 				break;
 
-			Thread.Sleep(duration);
+			try
+			{
+				Thread.Sleep(duration);
 
-			if (token.IsCancellationRequested)
+				if (token.IsCancellationRequested)
+					break;
+
+				Invoke(PaintBook);
+			}
+			catch (ObjectDisposedException)
+			{
 				break;
-
-			Invoke(Invalidate);
+			}
+			catch (ThreadAbortException)
+			{
+				break;
+			}
 		}
 	}
 
@@ -1023,7 +1034,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			if (token.IsCancellationRequested)
 				break;
 
-			Invoke(Invalidate);
+			Invoke(PaintBook);
 		}
 	}
 
@@ -1040,7 +1051,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				if (_animCancel != null)
 				{
 					_animCancel.Cancel();
-					Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 10);
+					Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 5);
 					_animCancel.Dispose();
 					_animCancel = null;
 				}
@@ -1148,6 +1159,18 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 			var cache = ToolBox.SizeToString(Book.CacheSize);
 			MaxCacheMenuItem.Text = $@"[{cache}]";
+
+			if (Book.DisplayEntryTitle)
+			{
+				var name = Book.GetEntryName(Book.CurrentPage);
+				if (name == null)
+					TitleLabel.Text = $"{Book.OnlyFileName}";
+				else
+				{
+					var fi = new FileInfo(name);
+					TitleLabel.Text = $"{Book.OnlyFileName} - {fi.Name}";
+				}
+			}
 		}
 
 		// 화면 크기 검사
@@ -1160,7 +1183,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			return;
 		}
 
-		Invalidate();
+		PaintBook();
 	}
 
 	// 화면에 그리기
