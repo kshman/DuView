@@ -996,16 +996,30 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 		while (!token.IsCancellationRequested)
 		{
-			var duration = _animate?.Animate() ?? -1;
+			if (_animate?.Frames == null)
+				break;
+
+			var duration = _animate.Animate();
 			if (duration < 0)
 				break;
 
-			Thread.Sleep(duration);
+			try
+			{
+				Thread.Sleep(duration);
 
-			if (token.IsCancellationRequested)
+				if (token.IsCancellationRequested)
+					break;
+
+				Invoke(Invalidate);
+			}
+			catch (ObjectDisposedException)
+			{
 				break;
-
-			Invoke(Invalidate);
+			}
+			catch (ThreadAbortException)
+			{
+				break;
+			}
 		}
 	}
 
@@ -1014,17 +1028,37 @@ public partial class ReadForm : Form, ILocaleTranspose
 	{
 		while (!token.IsCancellationRequested)
 		{
-			var duration = _animate?.Animate() ?? -1;
+			if (_animate?.Frames == null)
+				break;
+
+			var duration = _animate.Animate();
 			if (duration < 0)
 				break;
 
-			await Task.Delay(duration, token);
+			try
+			{
+				await Task.Delay(duration, token);
 
-			if (token.IsCancellationRequested)
+				if (token.IsCancellationRequested)
+					break;
+
+				Invoke(Invalidate);
+			}
+			catch (ObjectDisposedException)
+			{
 				break;
-
-			Invoke(Invalidate);
+			}
+			catch (TaskCanceledException)
+			{
+				break;
+			}
 		}
+	}
+
+	// GDI+ GIF
+	private void OnGifAnimateFrameChanged(object? sender, EventArgs e)
+	{
+		Invalidate();
 	}
 
 	// 
@@ -1040,7 +1074,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 				if (_animCancel != null)
 				{
 					_animCancel.Cancel();
-					Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 10);
+					Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 5);
 					_animCancel.Dispose();
 					_animCancel = null;
 				}
@@ -1056,17 +1090,34 @@ public partial class ReadForm : Form, ILocaleTranspose
 					ThreadPool.QueueUserWorkItem(OnWebPAnimWorker, _animCancel.Token);
 				else
 					_ = OnWebPAnimTask(_animCancel.Token);
+			}
 
-				img = page.Image;
-			}
-			else
-			{
-				// 업데이트
-				img = page.GetImage();
-			}
+			// 업데이트
+			img = page.GetImage();
 
 			if (Book != null)
 				PageInfo.Text = $@"[{page.CurrentFrame + 1}/{page.Frames.Count}] {Book.CurrentPage + 1}/{Book.TotalPage}";
+		}
+		else if (page.IsGifAnimation)
+		{
+			// GDIP+ GIF
+			if (_animate != null && _animate != page)
+				ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
+
+			if (_animate != page)
+			{
+				_animate = page;
+				ImageAnimator.Animate(_animate.Image, OnGifAnimateFrameChanged);
+
+				if (Book != null)
+				{
+					var cnt = _animate.Image.GetFrameCount(FrameDimension.Time);
+					PageInfo.Text = $@"[{cnt}] {Book.CurrentPage + 1}/{Book.TotalPage}";
+				}
+			}
+
+			ImageAnimator.UpdateFrames();
+			img = page.Image;
 		}
 		else
 		{
@@ -1089,10 +1140,15 @@ public partial class ReadForm : Form, ILocaleTranspose
 			if (_animCancel != null)
 			{
 				_animCancel.Cancel();
-				Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 10);
+				Thread.Sleep(Settings.UseAnimationThread ? _animate.LastDuration : 5);
 				_animCancel.Dispose();
 				_animCancel = null;
 			}
+		}
+		else if (_animate.IsGifAnimation)
+		{
+			// GDI+ GIF
+			ImageAnimator.StopAnimate(_animate.Image, OnGifAnimateFrameChanged);
 		}
 
 		_animate = null;
@@ -1148,6 +1204,18 @@ public partial class ReadForm : Form, ILocaleTranspose
 
 			var cache = ToolBox.SizeToString(Book.CacheSize);
 			MaxCacheMenuItem.Text = $@"[{cache}]";
+
+			if (Book.DisplayEntryTitle)
+			{
+				var name = Book.GetEntryName(Book.CurrentPage);
+				if (name == null)
+					TitleLabel.Text = $"{Book.OnlyFileName}";
+				else
+				{
+					var fi = new FileInfo(name);
+					TitleLabel.Text = $"{Book.OnlyFileName} - {fi.Name}";
+				}
+			}
 		}
 
 		// 화면 크기 검사
@@ -1160,7 +1228,7 @@ public partial class ReadForm : Form, ILocaleTranspose
 			return;
 		}
 
-		Invalidate();
+		PaintBook();
 	}
 
 	// 화면에 그리기
