@@ -49,7 +49,7 @@ internal class BookZip : BookBase
 		return ms;
 	}
 
-	protected override string? GetEntryName(object entry)
+	public override string? GetEntryName(object entry)
 	{
 		return (entry is ZipArchiveEntry e) ? e.FullName : null;
 	}

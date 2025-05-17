@@ -26,12 +26,13 @@ public abstract class BookBase : IDisposable
 
 	//
 	protected abstract MemoryStream? ReadEntry(object entry);
-	protected abstract string? GetEntryName(object entry);
+	public abstract string? GetEntryName(object entry);
 	public abstract IEnumerable<BookEntryInfo> GetEntriesInfo();
 	public virtual bool CanDeleteFile(out string? reason) { reason = string.Empty; return true; }
 	public abstract bool DeleteFile(out bool close_book);
 	public abstract bool RenameFile(string new_filename, out string full_path);
 	public abstract bool MoveFile(string new_filename);
+	public virtual bool DisplayEntryTitle => false;
 
 	//
 	protected void SetFileName(FileInfo fi)
@@ -115,6 +116,7 @@ public abstract class BookBase : IDisposable
 
 		Image? img = null;
 		List<AnimatedFrame>? frames = null;
+		var isgif = false;
 
 		try
 		{
@@ -124,22 +126,27 @@ public abstract class BookBase : IDisposable
 			// 애니메이션 처리
 			if (Equals(img.RawFormat, ImageFormat.Gif) /*|| Equals(img.RawFormat, ImageFormat.Webp)*/)
 			{
-				var cnt = img.GetFrameCount(FrameDimension.Time);
-				if (cnt > 1)
+				if (Settings.UseGdipGif)
+					isgif = true;
+				else
 				{
-					var times = img.GetPropertyItem(0x5100)?.Value;
-					if (times != null)
+					var cnt = img.GetFrameCount(FrameDimension.Time);
+					if (cnt > 1)
 					{
-						frames = new List<AnimatedFrame>();
-						for (var i = 0; i < cnt; i++)
+						var times = img.GetPropertyItem(0x5100)?.Value;
+						if (times != null)
 						{
-							var dur = BitConverter.ToInt32(times, 4 * i);
-							frames.Add(new AnimatedFrame(new Bitmap(img), dur * 10));
-							img.SelectActiveFrame(FrameDimension.Time, i);
-						}
+							frames = new List<AnimatedFrame>();
+							for (var i = 0; i < cnt; i++)
+							{
+								var dur = BitConverter.ToInt32(times, 4 * i);
+								frames.Add(new AnimatedFrame(new Bitmap(img), dur * 10));
+								img.SelectActiveFrame(FrameDimension.Time, i);
+							}
 
-						img.Dispose();
-						img = null;
+							img.Dispose();
+							img = null;
+						}
 					}
 				}
 			}
@@ -172,7 +179,7 @@ public abstract class BookBase : IDisposable
 		if (frames != null)
 			return new PageImage(frames);
 		if (img != null)
-			return new PageImage(img);
+			return new PageImage(img, isgif);
 		return new PageImage(Properties.Resources.ouch_noimg);
 	}
 
@@ -337,6 +344,16 @@ public abstract class BookBase : IDisposable
 		{
 			return StringAsNumericComparer.StringAsNumericCompare(x?.Name, y?.Name);
 		}
+	}
+
+	//
+	public string? GetEntryName(int pageno)
+	{
+		if (pageno < 0 || pageno >= TotalPage)
+			return null;
+
+		var entry = _entries[pageno];
+		return GetEntryName(entry);
 	}
 }
 

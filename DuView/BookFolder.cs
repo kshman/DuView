@@ -23,22 +23,30 @@ internal class BookFolder : BookBase
 	//
 	private bool InternalOpenFolder(DirectoryInfo di)
 	{
-		var entries =
-			(from fi in di.EnumerateFiles()
-			 where fi.Exists
-			 where fi.Extension.IsValidImageFile()
-			 select new BookEntryInfo()
-			 {
-				 Name = fi.FullName,
-				 DateTime = fi.CreationTime,
-				 Size = fi.Length,
-			 }).ToArray();
-		Array.Sort(entries, new BookEntryInfoComparer());
+		try
+		{
+			var entries =
+				(from fi in di.EnumerateFiles()
+					where fi.Exists
+					where fi.Extension.IsValidImageFile()
+					select new BookEntryInfo()
+					{
+						Name = fi.FullName,
+						DateTime = fi.CreationTime,
+						Size = fi.Length,
+					}).ToArray();
+			Array.Sort(entries, new BookEntryInfoComparer());
 
-		foreach (var e in entries)
-			_entries.Add(e);
+			foreach (var e in entries)
+				_entries.Add(e);
 
-		return true;
+			return true;
+		}
+		catch (Exception)
+		{
+			// 시스템 파일이나 이런거 읽을 경우 오류
+			return false;
+		}
 	}
 
 	//
@@ -143,7 +151,7 @@ internal class BookFolder : BookBase
 		return r;
 	}
 
-	protected override string? GetEntryName(object entry)
+	public override string? GetEntryName(object entry)
 	{
 		var e = (BookEntryInfo)entry;
 		return e.Name;
@@ -181,5 +189,8 @@ internal class BookFolder : BookBase
 
 		return want < 0 ? null : want >= drs.Length ? null : drs[want].FullName;
 	}
+
+	/// <inheritdoc />
+	public override bool DisplayEntryTitle => true;
 }
 
