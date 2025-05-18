@@ -1,6 +1,4 @@
-﻿using DuView.Types;
-
-namespace DuView;
+﻿namespace DuView.Chaek;
 
 internal class BookFolder : BookBase
 {
@@ -28,7 +26,7 @@ internal class BookFolder : BookBase
 			var entries =
 				(from fi in di.EnumerateFiles()
 					where fi.Exists
-					where fi.Extension.IsValidImageFile()
+					where fi.Extension.IsImageExtension()
 					select new BookEntryInfo()
 					{
 						Name = fi.FullName,
@@ -38,7 +36,7 @@ internal class BookFolder : BookBase
 			Array.Sort(entries, new BookEntryInfoComparer());
 
 			foreach (var e in entries)
-				_entries.Add(e);
+				Entries.Add(e);
 
 			return true;
 		}
@@ -52,9 +50,9 @@ internal class BookFolder : BookBase
 	//
 	public int GetPageNumber(string filename)
 	{
-		for (var i = 0; i < _entries.Count; i++)
+		for (var i = 0; i < Entries.Count; i++)
 		{
-			var entry = _entries[i] as BookEntryInfo;
+			var entry = Entries[i] as BookEntryInfo;
 			if (entry?.Name == filename)
 				return i;
 		}
@@ -62,7 +60,7 @@ internal class BookFolder : BookBase
 		return -1;
 	}
 
-	//
+	/// <inheritdoc />
 	protected override void Dispose(bool disposing)
 	{
 		base.Dispose(disposing);
@@ -72,15 +70,17 @@ internal class BookFolder : BookBase
 		}
 	}
 
+	/// <inheritdoc />
 	public override bool CanDeleteFile(out string? reason)
 	{
-		reason = $"\"{OnlyFileName}\" {Locale.Text(116)}{Environment.NewLine}{Locale.Text(96)}";
+		reason = $"\"{OnlyFileName}\" {Resources.IsDirectory}{Environment.NewLine}{Resources.DoYouWannaContinue}";
 		return true;
 	}
 
-	public override bool DeleteFile(out bool close_book)
+	/// <inheritdoc />
+	public override bool DeleteFile(out bool closeBook)
 	{
-		close_book = true;
+		closeBook = true;
 
 		try
 		{
@@ -102,28 +102,29 @@ internal class BookFolder : BookBase
 		}
 	}
 
-	public override bool RenameFile(string new_filename, out string full_path)
+	/// <inheritdoc />
+	public override bool RenameFile(string newFilename, out string fullPath)
 	{
 		var di = new DirectoryInfo(FileName);
 		if (di.Parent == null)
 		{
-			full_path = string.Empty;
+			fullPath = string.Empty;
 			return false;
 		}
 
-		full_path = Path.Combine(di.Parent.FullName, new_filename);
-		if (Directory.Exists(full_path))
+		fullPath = Path.Combine(di.Parent.FullName, newFilename);
+		if (Directory.Exists(fullPath))
 			return false;
 
 		try
 		{
 			try
 			{
-				Microsoft.VisualBasic.FileIO.FileSystem.RenameDirectory(FileName, new_filename);
+				Microsoft.VisualBasic.FileIO.FileSystem.RenameDirectory(FileName, newFilename);
 			}
 			catch
 			{
-				di.MoveTo(full_path);
+				di.MoveTo(fullPath);
 			}
 
 			return true;
@@ -134,29 +135,33 @@ internal class BookFolder : BookBase
 		}
 	}
 
-	public override bool MoveFile(string new_filename)
+	/// <inheritdoc />
+	public override bool MoveFile(string newFilename)
 	{
 		// 안만드러쓰요
 		return false;
 	}
 
+	/// <inheritdoc />
 	public override IEnumerable<BookEntryInfo> GetEntriesInfo()
 	{
-		var r = new BookEntryInfo[_entries.Count];
+		var r = new BookEntryInfo[Entries.Count];
 
 		var n = 0;
-		foreach (var e in _entries.Cast<BookEntryInfo>())
+		foreach (var e in Entries.Cast<BookEntryInfo>())
 			r[n++] = e;
 
 		return r;
 	}
 
+	/// <inheritdoc />
 	public override string? GetEntryName(object entry)
 	{
 		var e = (BookEntryInfo)entry;
 		return e.Name;
 	}
 
+	/// <inheritdoc />
 	protected override MemoryStream? ReadEntry(object entry)
 	{
 		var e = (BookEntryInfo)entry;
@@ -171,6 +176,7 @@ internal class BookFolder : BookBase
 		}
 	}
 
+	/// <inheritdoc />
 	public override string? FindNextFile(BookDirection direction)
 	{
 		var si = new DirectoryInfo(FileName);
@@ -182,7 +188,7 @@ internal class BookFolder : BookBase
 			return null;
 
 		var drs = di.GetDirectories();
-		Array.Sort(drs, new ToolBox.DirectoryInfoComparer());
+		Array.Sort(drs, new Doumi.DirectoryInfoComparer());
 
 		var at = Array.FindIndex(drs, x => x.FullName == FileName);
 		var want = direction == BookDirection.Previous ? at - 1 : at + 1;

@@ -1,37 +1,31 @@
-﻿using System.Text;
-
-namespace DuView;
+﻿namespace DuView;
 
 internal static class Settings
 {
-	private static SettingsLineDb? s_lines;
+	private static SettingsHash? s_lines;
+	
+	// 책
+	internal static BookBase? Book { get; set; }
 
-	private static string s_language = string.Empty;
-
-	// 값
+	// -- 윈도우 정보
 	private static Rectangle s_bound = new(0, 0, 800, 480);
 	private static int s_magnetic_dock_size = 10;
 
-	// -- 최근
+	// -- 뷰
+	private static bool s_view_zoom = true;
+	private static ViewMode s_view_mode = ViewMode.Fit;
+	private static ViewQuality s_view_quality = ViewQuality.Default;
+
+	// -- 파일
 	private static string s_last_folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 	private static string s_last_filename = string.Empty;
 	private static string s_remember_filename = string.Empty;
 
-	private static ResizableLineDb? s_recently;
+	private static ResizableHash? s_recently;
 	private static int s_max_recently = 1000;
 
-	// -- 이동
-	private static readonly List<KeyValuePair<string, string>> s_move = new();
-
-	// -- 뷰
-	private static bool s_view_zoom = true;
-	private static Types.ViewMode s_view_mode = Types.ViewMode.FitWidth;
-	private static Types.ViewQuality s_view_quality = Types.ViewQuality.Default;
-
-	// -- 이름바꾸기
+	private static readonly List<KeyValuePair<string, string>> s_moves = new();
 	private static bool s_rename_open_next = true;
-
-	// -- 캐시
 	private static int s_max_page_cache = 230; // 1048576곱해야함
 
 	// -- 일반
@@ -40,15 +34,12 @@ internal static class Settings
 	private static bool s_use_magnetic_window;
 	private static bool s_confirm_when_delete_file = true;
 	private static bool s_always_on_top;
-	private static bool s_use_update_notification = true;
 	private static string s_external_run = string.Empty;
 	private static bool s_reload_after_external = true;
 	private static bool s_keep_book_direction;
-	private static string s_firefox_run = string.Empty;
-	private static bool s_extened_renamer = true;
 
 	// -- 마우스
-	private static bool s_use_doubleclick_state;
+	private static bool s_use_double_click_state;
 	private static bool s_use_click_page;
 
 	// -- 보안
@@ -56,10 +47,6 @@ internal static class Settings
 	private static bool s_unlock_pass;
 	private static string s_pass_code = string.Empty;
 	private static string s_pass_usages = string.Empty;
-
-	// -- 기타
-	private static bool s_use_anim_thread = false;
-	private static bool s_use_gdip_gif = false;
 
 	//
 	public static string StartupPath => Application.StartupPath;
@@ -71,14 +58,14 @@ internal static class Settings
 	public static string RecentlyPath => Path.Combine(StartupPath, "DuView.recently");
 
 	//
-	private static SettingsLineDb ReadSettings()
+	private static SettingsHash ReadSettings()
 	{
-		s_lines ??= SettingsLineDb.FromFile(SettingsPath);
+		s_lines ??= SettingsHash.FromFile(SettingsPath);
 		return s_lines;
 	}
 
 	// 시작할 때 앞
-	public static void WhenBeforeStart()
+	public static void MainBefore()
 	{
 		var lines = ReadSettings();
 
@@ -86,7 +73,7 @@ internal static class Settings
 	}
 
 	// 시작할 때 뒤
-	public static void WhenAfterStart()
+	public static void MainAfter()
 	{
 		var lines = ReadSettings();
 
@@ -105,8 +92,6 @@ internal static class Settings
 		}
 
 		//
-		s_language = lines.GetString("Language", s_language) ?? string.Empty;
-
 		s_magnetic_dock_size = lines.GetInt("MagneticDockSize", s_magnetic_dock_size);
 
 		//
@@ -126,8 +111,8 @@ internal static class Settings
 
 		//
 		s_view_zoom = lines.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
-		s_view_mode = (Types.ViewMode)lines.GetInt("ViewMode", (int)s_view_mode);
-		s_view_quality = (Types.ViewQuality)lines.GetInt("ViewQuality", (int)s_view_quality);
+		s_view_mode = (ViewMode)lines.GetInt("ViewMode", (int)s_view_mode);
+		s_view_quality = (ViewQuality)lines.GetInt("ViewQuality", (int)s_view_quality);
 
 		//
 		s_rename_open_next = lines.GetBool("RenameOpenNext", s_rename_open_next);
@@ -140,15 +125,12 @@ internal static class Settings
 		s_use_magnetic_window = lines.GetBool("GeneralUseMagnetic", s_use_magnetic_window);
 		s_confirm_when_delete_file = lines.GetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
 		s_always_on_top = lines.GetBool("GeneralAlwaysTop", s_always_on_top);
-		s_use_update_notification = lines.GetBool("GeneralUpdateNotify", s_use_update_notification);
 		s_external_run = lines.GetString("ExternalRun") ?? s_external_run;
 		s_reload_after_external = lines.GetBool("ReloadAfterExternalExit", s_reload_after_external);
 		s_keep_book_direction = lines.GetBool("KeepBookDirection", s_keep_book_direction);
-		s_firefox_run = lines.GetString("FirefoxRun") ?? s_firefox_run;
-		s_extened_renamer = lines.GetBool("ExtendedRenamer", s_extened_renamer);
 
 		//
-		s_use_doubleclick_state = lines.GetBool("MouseUseDoubleClick", s_use_doubleclick_state);
+		s_use_double_click_state = lines.GetBool("MouseUseDoubleClick", s_use_double_click_state);
 		s_use_click_page = lines.GetBool("MouseUseClickPage", s_use_click_page);
 
 		//
@@ -162,59 +144,26 @@ internal static class Settings
 			var s = lines.GetString($"MoveKeep{i}");
 			if (string.IsNullOrEmpty(s))
 				break;
-			var d = Converter.DecodingString(s);
-			if (!string.IsNullOrEmpty(d))
-				s = d;
 			var n = s.LastIndexOf("@:", StringComparison.Ordinal);
 			if (n == -1)
 			{
 				var di = new DirectoryInfo(s);
-				s_move.Add(new KeyValuePair<string, string>(s, di.Name));
+				s_moves.Add(new KeyValuePair<string, string>(s, di.Name));
 			}
 			else
 			{
 				var sk = s[..n];
 				var sv = s[(n + 2)..];
-				s_move.Add(new KeyValuePair<string, string>(sk, sv));
+				s_moves.Add(new KeyValuePair<string, string>(sk, sv));
 			}
 		}
 
 		var rfn = RecentlyPath;
-		s_recently = File.Exists(rfn) ? ResizableLineDb.FromFile(rfn) : ResizableLineDb.New();
+		s_recently = File.Exists(rfn) ? ResizableHash.FromFile(rfn) : ResizableHash.New();
 	}
 
-	private static bool s_init_locale;
-
-	//
-	public static void InitLocale()
-	{
-		if (s_init_locale)
-			return;
-
-		Locale.AddLocale("en", Properties.Resources.locale_english);
-		Locale.AddLocale("ko", Properties.Resources.locale_korean);
-		Locale.SetDefaultLocale();
-
-		SetLocale(s_language);
-
-		s_init_locale = true;
-	}
-
-	//
-	public static void SetLocale(string locale)
-	{
-		if (!Locale.HasLocale(locale))
-		{
-			var culture = Thread.CurrentThread.CurrentUICulture;
-			locale = culture.GetKnownCultureLocale();
-		}
-
-		if (locale != Locale.CurrentLocale)
-			Locale.SetLocale(locale);
-	}
-
-	//
-	public static void WhenMainLoad(Form form)
+	// 메인 로드하고
+	public static void MainLoaded(Form form)
 	{
 		form.Location = s_bound.Location;
 		form.Size = s_bound.Size;
@@ -230,39 +179,6 @@ internal static class Settings
 
 		var lines = ReadSettings();
 		lines.SetString("Window", $"{s_bound.X},{s_bound.Y},{s_bound.Width},{s_bound.Height}");
-	}
-
-	//
-	public static string Language
-	{
-		get => s_language;
-		set
-		{
-			if (value == s_language)
-				return;
-
-			s_language = value;
-
-			if (!Locale.HasLocale(value))
-			{
-				var culture = Thread.CurrentThread.CurrentUICulture;
-				s_language = culture.GetKnownCultureLocale();
-
-				if (s_language != Locale.CurrentLocale)
-					Locale.SetLocale(s_language);
-
-				var lines = ReadSettings();
-				lines.Remove("Language");
-			}
-			else
-			{
-				if (s_language != Locale.CurrentLocale)
-					Locale.SetLocale(s_language);
-
-				var lines = ReadSettings();
-				lines.SetString("Language", value);
-			}
-		}
 	}
 
 	//
@@ -346,7 +262,7 @@ internal static class Settings
 	}
 
 	//
-	public static Types.ViewMode ViewMode
+	public static ViewMode ViewMode
 	{
 		get => s_view_mode;
 		set
@@ -362,7 +278,7 @@ internal static class Settings
 	}
 
 	//
-	public static Types.ViewQuality ViewQuality
+	public static ViewQuality ViewQuality
 	{
 		get => s_view_quality;
 		set
@@ -409,22 +325,22 @@ internal static class Settings
 	}
 
 	//
-	public static int GetRecentlyPage(string onlyfilename)
+	public static int GetRecentlyPage(string onlyFilename)
 	{
-		if (string.IsNullOrEmpty(onlyfilename) || s_recently == null)
+		if (string.IsNullOrEmpty(onlyFilename) || s_recently == null)
 			return 0;
 
-		var s = Converter.EncodingString(onlyfilename);
+		var s = Alter.EncodingString(onlyFilename);
 		return s != null ? s_recently.Get(s) : 0;
 	}
 
 	//
-	public static void SetRecentlyPage(string onlyfilename, int page)
+	public static void SetRecentlyPage(string onlyFilename, int page)
 	{
-		if (string.IsNullOrEmpty(onlyfilename) || s_recently == null)
+		if (string.IsNullOrEmpty(onlyFilename) || s_recently == null)
 			return;
 
-		var s = Converter.EncodingString(onlyfilename);
+		var s = Alter.EncodingString(onlyFilename);
 		if (s == null)
 			return;
 
@@ -450,48 +366,46 @@ internal static class Settings
 	//
 	public static (string path, string desc) GetMoveLocation(int index)
 	{
-		if (index < 0 || index >= s_move.Count)
+		if (index < 0 || index >= s_moves.Count)
 			return (string.Empty, string.Empty);
 
-		var move = s_move[index];
+		var move = s_moves[index];
 		return (move.Key, move.Value);
 	}
 
 	//
-	public static void AddMoveLocation(string path, string desc)
-	{
-		s_move.Add(new KeyValuePair<string, string>(path, desc));
-	}
+	public static void AddMoveLocation(string path, string desc) =>
+		s_moves.Add(new KeyValuePair<string, string>(path, desc));
 
 	//
 	public static void SetMoveLocation(int index, string path, string desc)
 	{
-		if (index < 0 || index >= s_move.Count)
+		if (index < 0 || index >= s_moves.Count)
 			return;
 
-		s_move[index] = new KeyValuePair<string, string>(path, desc);
+		s_moves[index] = new KeyValuePair<string, string>(path, desc);
 	}
 
 	//
 	public static void DeleteMoveLocation(int index)
 	{
-		if (index < s_move.Count)
-			s_move.RemoveAt(index);
+		if (index < s_moves.Count)
+			s_moves.RemoveAt(index);
 	}
 
 	//
-	public static bool ReIndexMoveLocation(int from, int to)
+	public static bool IndexingMoveLocation(int from, int to)
 	{
-		if (from < 0 || from >= s_move.Count ||
-			to < 0 || to >= s_move.Count)
+		if (from < 0 || from >= s_moves.Count ||
+			to < 0 || to >= s_moves.Count)
 			return false;
 
-		var m = s_move[from];
-		s_move.RemoveAt(from);
+		var m = s_moves[from];
+		s_moves.RemoveAt(from);
 
 		if (from < to)
 			to--;
-		s_move.Insert(to, m);
+		s_moves.Insert(to, m);
 
 		return true;
 	}
@@ -499,7 +413,7 @@ internal static class Settings
 	//
 	public static KeyValuePair<string, string>[] GetMoveLocations()
 	{
-		return s_move.ToArray();
+		return s_moves.ToArray();
 	}
 
 	//
@@ -507,9 +421,9 @@ internal static class Settings
 	{
 		var lines = ReadSettings();
 
-		for (var i = 0; i < s_move.Count; i++)
+		for (var i = 0; i < s_moves.Count; i++)
 		{
-			var m = s_move[i];
+			var m = s_moves[i];
 			if (string.IsNullOrEmpty(m.Key))
 				break;
 			// lines.SetEncodedString
@@ -517,7 +431,7 @@ internal static class Settings
 				string.IsNullOrWhiteSpace(m.Value) ? m.Key : $"{m.Key}@:{m.Value}");
 		}
 
-		lines.SetString($"MoveKeep{s_move.Count}", string.Empty);
+		lines.SetString($"MoveKeep{s_moves.Count}", string.Empty);
 	}
 
 	//
@@ -526,11 +440,10 @@ internal static class Settings
 		var lines = ReadSettings();
 
 		var rfn = SettingsPath;
-		lines.Save(rfn, Encoding.UTF8, new []
-		{
+		lines.Save(rfn, [
 			"DuView settings",
 			$"Created: {DateTime.Now}"
-		});
+		]);
 	}
 
 	//
@@ -540,11 +453,10 @@ internal static class Settings
 			return;
 
 		var rfn = RecentlyPath;
-		s_recently.Save(rfn, Encoding.UTF8, new[]
-		{
+		s_recently.Save(rfn, [
 			"DuView recently files list",
 			$"Created: {DateTime.Now}"
-		});
+		]);
 	}
 
 	//
@@ -633,20 +545,6 @@ internal static class Settings
 	}
 
 	//
-	public static bool GeneralUpdateNotify
-	{
-		get => s_use_update_notification;
-		set
-		{
-			if (value == s_use_update_notification)
-				return;
-
-			var lines = ReadSettings();
-			lines.SetBool("GeneralUpdateNotify", s_use_update_notification = value);
-		}
-	}
-
-	//
 	public static string ExternalRun
 	{
 		get => s_external_run;
@@ -687,48 +585,20 @@ internal static class Settings
 			lines.SetBool("KeepBookDirection", s_keep_book_direction = value);
 		}
 	}
-
-	//
-	public static string FirefoxRun
-	{
-		get => s_firefox_run;
-		set
-		{
-			if (value.Equals(s_firefox_run))
-				return;
-
-			var lines = ReadSettings();
-			lines.SetString("FirefoxRun", s_firefox_run = value);
-		}
-	}
-
-	//
-	public static bool ExtendedRenamer
-	{
-		get => s_extened_renamer;
-		set
-		{
-			if (value == s_extened_renamer)
-				return;
-
-			var lines = ReadSettings();
-			lines.SetBool("ExtendedRenamer", s_extened_renamer = value);
-		}
-	}
 	#endregion // 기본
 
 	#region 마우스
 	//
 	public static bool MouseUseDoubleClickState
 	{
-		get => s_use_doubleclick_state;
+		get => s_use_double_click_state;
 		set
 		{
-			if (value == s_use_doubleclick_state)
+			if (value == s_use_double_click_state)
 				return;
 
 			var lines = ReadSettings();
-			lines.SetBool("MouseUseDoubleClick", s_use_doubleclick_state = value);
+			lines.SetBool("MouseUseDoubleClick", s_use_double_click_state = value);
 		}
 	}
 
@@ -772,10 +642,10 @@ internal static class Settings
 	//
 	public static string PassCode
 	{
-		get => Converter.DecompressString(s_pass_code) ?? string.Empty;
+		get => Alter.DecompressString(s_pass_code) ?? string.Empty;
 		set
 		{
-			var pw = value.Length > 0 ? Converter.CompressString(value) ?? string.Empty : string.Empty;
+			var pw = value.Length > 0 ? Alter.CompressString(value) ?? string.Empty : string.Empty;
 			if (s_pass_code.Equals(pw))
 				return;
 
@@ -788,7 +658,7 @@ internal static class Settings
 	public static string PassUsage => s_pass_usages;
 
 	//
-	public static void CommitPassUsage(IEnumerable<Types.PassCodeUsage> usages)
+	public static void CommitPassUsage(IEnumerable<PassCodeUsage> usages)
 	{
 		var s = string.Join(',', usages);
 		if (s.Equals(s_pass_usages))
@@ -799,23 +669,23 @@ internal static class Settings
 	}
 
 	//
-	public static Types.PassCodeUsage[] GetPassUsageArray()
+	public static PassCodeUsage[] GetPassUsageArray()
 	{
 		var ss = s_pass_usages.Split(',');
 		if (ss.Length == 0)
-			return Array.Empty<Types.PassCodeUsage>();
+			return [];
 
-		List<Types.PassCodeUsage> l = new();
+		List<PassCodeUsage> l = new();
 		foreach (var s in ss)
 		{
-			if (Enum.TryParse<Types.PassCodeUsage>(s, out var u) && !l.Contains(u))
+			if (Enum.TryParse<PassCodeUsage>(s, out var u) && !l.Contains(u))
 				l.Add(u);
 		}
 		return l.ToArray();
 	}
 
 	//
-	public static bool TestPassUsage(Types.PassCodeUsage usage)
+	public static bool TestPassUsage(PassCodeUsage usage)
 	{
 		return s_pass_usages.Contains(usage.ToString());
 	}
@@ -829,41 +699,11 @@ internal static class Settings
 	//
 	public static bool UnlockPass(string value)
 	{
-		var pw = value.Length > 0 ? Converter.CompressString(value) ?? string.Empty : string.Empty;
+		var pw = value.Length > 0 ? Alter.CompressString(value) ?? string.Empty : string.Empty;
 		if (!pw.Equals(s_pass_code))
 			return false;
 		s_unlock_pass = true;
 		return true;
 	}
 	#endregion
-
-	#region 기타
-	//
-	public static bool UseAnimationThread
-	{
-		get => s_use_anim_thread;
-		set
-		{
-			if (value == s_use_anim_thread)
-				return;
-
-			var lines = ReadSettings();
-			lines.SetBool("UseAnimationThread", s_use_anim_thread = value);
-		}
-	}
-	
-	//
-	public static bool UseGdipGif
-	{
-		get => s_use_gdip_gif;
-		set
-		{
-			if (value == s_use_gdip_gif)
-				return;
-
-			var lines = ReadSettings();
-			lines.SetBool("UseGdipGif", s_use_gdip_gif = value);
-		}
-	}
-	#endregion // 기타
 }

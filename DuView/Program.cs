@@ -1,10 +1,8 @@
-﻿global using Du;
-global using Du.Data;
-global using Du.Globalization;
-global using Du.Platform;
-global using Du.WinForms;
-global using System;
+﻿global using System;
 global using System.Windows.Forms;
+global using DuView.Properties;
+global using DuView.Dowa;
+global using DuView.Chaek;
 
 namespace DuView
 {
@@ -19,39 +17,34 @@ namespace DuView
 			var args = Environment.GetCommandLineArgs();
 			var filename = args.Length > 1 ? args[1] : string.Empty;
 
-			Settings.WhenBeforeStart();
-
+			Settings.MainBefore();
 			if (Settings.GeneralRunOnce && HasProductProcess(filename))
 				return;
-
-			Settings.WhenAfterStart();
-			Settings.InitLocale();
+			Settings.MainAfter();
 
 			ApplicationConfiguration.Initialize();
-			Application.Run(new ReadForm(filename));
+			Application.Run(new Forms.ReadForm(filename));
 		}
 
 		private static bool HasProductProcess(string filename)
 		{
-			var procs = System.Diagnostics.Process.GetProcessesByName(Application.ProductName);
+			var ps = System.Diagnostics.Process.GetProcessesByName(Application.ProductName);
 
-			if (procs.Length < 2)
+			if (ps.Length < 2)
 				return false;
-			else
-			{
-				var p = procs[0].Id == Environment.ProcessId ? procs[1] : procs[0];
-				var h = p.MainWindowHandle;
+			
+			var p = ps[0].Id == Environment.ProcessId ? ps[1] : ps[0];
+			var h = p.MainWindowHandle;
 
-				FormDu.ShowIfIconic(h);
-				FormDu.SetForeground(h);
+			DuForm.ShowIfIconic(h);
+			DuForm.SetForeground(h);
 
-				if (!string.IsNullOrEmpty(filename))
-				{
-					var enc = Converter.EncodingString(filename);
-					if (enc != null)
-						FormDu.SendCopyDataString(h, enc);
-				}
-			}
+			if (string.IsNullOrEmpty(filename))
+				return true;
+				
+			var enc = Alter.EncodingString(filename);
+			if (enc != null)
+				DuForm.SendCopyDataString(h, enc);
 
 			return true;
 		}
