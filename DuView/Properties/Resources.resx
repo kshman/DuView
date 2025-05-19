@@ -154,4 +154,49 @@
   <data name="DuView" xml:space="preserve">
     <value>두뷰</value>
   </data>
+  <data name="SelectBookOrImage" xml:space="preserve">
+    <value>책이나 이미지를 고르세요</value>
+  </data>
+  <data name="SelectFilter" xml:space="preserve">
+    <value>압축 파일|*.zip|모든 파일|*.*</value>
+  </data>
+  <data name="OpenBook" xml:space="preserve">
+    <value>책 열기</value>
+  </data>
+  <data name="CannotOpenBook" xml:space="preserve">
+    <value>책을 열 수 없어요</value>
+  </data>
+  <data name="UnsupportArchive" xml:space="preserve">
+    <value>지원하지 않는 압축 파일이예요</value>
+  </data>
+  <data name="CannotOpenDirectory" xml:space="preserve">
+    <value>디렉토리를 열 수 없어요</value>
+  </data>
+  <data name="NoPreviousBook" xml:space="preserve">
+    <value>이전 책이 없어요</value>
+  </data>
+  <data name="NoNextBook" xml:space="preserve">
+    <value>다음 책이 없어요</value>
+  </data>
+  <data name="DeleteBook" xml:space="preserve">
+    <value>책 지우기</value>
+  </data>
+  <data name="CannotDeleteBook" xml:space="preserve">
+    <value>책을 지울 수 없어요</value>
+  </data>
+  <data name="NoExternalRunExist" xml:space="preserve">
+    <value>외부 실행 파일이 없거나 실패했어요</value>
+  </data>
+  <data name="RememberFilename" xml:space="preserve">
+    <value>파일 이름을 기억했어요</value>
+  </data>
+  <data name="CannotOpenRemember" xml:space="preserve">
+    <value>기억한 책을 열 수 없어요</value>
+  </data>
+  <data name="TotalPagesColon" xml:space="preserve">
+    <value>전체 페이지:</value>
+  </data>
+  <data name="NoBook" xml:space="preserve">
+    <value>책이 없어요</value>
+  </data>
 </root>

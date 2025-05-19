@@ -1,20 +1,25 @@
-﻿namespace DuView.Forms;
+﻿// ReSharper disable MissingXmlDoc
+
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Text;
+
+namespace DuView.Forms;
 
 /// <summary>
 /// 읽기 폼
 /// </summary>
 public partial class ReadForm : Form
 {
+    private readonly DuFormWorker _dfw;
+
     private Bitmap? _bmp;
-    private readonly string _init_filename;
-    private Rectangle[] _paging_bound = new Rectangle[2];
+    private readonly Rectangle[] _paging_bound = new Rectangle[2];
 
     private readonly System.Windows.Forms.Timer _notify_timer;
+    private readonly string _init_filename;
+    private readonly PageForm _page_form;
 
-    /// <summary>
-    /// 생성자
-    /// </summary>
-    /// <param name="filename"></param>
     public ReadForm(string filename)
     {
         InitializeComponent();
@@ -25,7 +30,14 @@ public partial class ReadForm : Form
         BookCanvas.MouseWheel += BookCanvas_MouseWheel;
 
         //
+        _dfw = new DuFormWorker(this)
+        {
+            BodyAsTitle = true,
+            MoveTopToMaximize = false,
+        };
         _init_filename = filename;
+
+        _page_form = new PageForm();
 
         _notify_timer = new System.Windows.Forms.Timer { Interval = 5000 };
         _notify_timer.Tick += NotifyTimer_Tick;
@@ -35,7 +47,7 @@ public partial class ReadForm : Form
 
     private void ReadForm_Load(object sender, EventArgs e)
     {
-        Text = Resources.DuView;
+        RefreshTitle();
         Settings.MainLoaded(this);
         ApplyViewMenus();
         ResetFocus();
@@ -69,6 +81,9 @@ public partial class ReadForm : Form
     // 윈도우 프로시저
     protected override void WndProc(ref Message m)
     {
+        if (_dfw.WndProc(ref m))
+            return;
+
         if (DuForm.ReceiveCopyDataString(ref m, out var s) && !string.IsNullOrEmpty(s))
         {
             // 파일명 받음
@@ -85,14 +100,6 @@ public partial class ReadForm : Form
         }
 
         base.WndProc(ref m);
-    }
-
-    private void TurnMaximize()
-    {
-        var s = WindowState == FormWindowState.Maximized
-            ? FormWindowState.Normal
-            : FormWindowState.Maximized;
-        WindowState = s;
     }
 
     private void ResetFocus()
@@ -134,6 +141,7 @@ public partial class ReadForm : Form
 
     private void ReadForm_KeyDown(object sender, KeyEventArgs e)
     {
+        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         switch (e.KeyCode)
         {
             // 끝
@@ -178,33 +186,25 @@ public partial class ReadForm : Form
                 break;
 
             case Keys.PageUp:
-                PageControl(BookControl.SeekPrevious10);
+                if (e.Control)
+                    OpenPrevBook();
+                else
+                    PageControl(BookControl.SeekPrevious10);
                 break;
 
             case Keys.PageDown:
             case Keys.Back:
-                PageControl(BookControl.SeekNext10);
+                if (e is { Control: true, KeyCode: Keys.PageDown })
+                    OpenNextBook();
+                else
+                    PageControl(BookControl.SeekNext10);
                 break;
 
             case Keys.Enter:
-                if (!e.Control)
-                    PageControl(BookControl.Select);
-                else
-                    TurnMaximize();
-
+                PageControl(BookControl.Select);
                 break;
 
             // 보기
-            case Keys.M:
-                if (e.Control)
-                    UpdateViewZoom(!Settings.ViewZoom);
-                break;
-
-            case Keys.Y:
-                if (e.Control)
-                    UpdateViewQuality(ViewQuality.Default);
-                break;
-
             case Keys.Oemtilde:
                 UpdateViewMode(ViewMode.Fit);
                 break;
@@ -220,6 +220,7 @@ public partial class ReadForm : Form
             case Keys.Tab:
                 if (Settings.Book != null) // 혼란 방지: 책이 있을때만
                 {
+                    // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
                     switch (Settings.ViewMode)
                     {
                         case ViewMode.LeftToRight:
@@ -227,10 +228,6 @@ public partial class ReadForm : Form
                             break;
                         case ViewMode.RightToLeft:
                             UpdateViewMode(ViewMode.LeftToRight);
-                            break;
-                        case ViewMode.Fit:
-                        case ViewMode.Follow:
-                        default:
                             break;
                     }
                 }
@@ -266,14 +263,20 @@ public partial class ReadForm : Form
             // 기능
             case Keys.F:
                 if (!e.Alt) // ALT가 눌리면 ALT+F가 호출되야 하기 때문에
-                    TurnMaximize();
+                    _dfw.ToggleFullScreen();
                 break;
 
-#if DEBUG && true
-            default:
-                System.Diagnostics.Debug.WriteLine($"키코드: {e.KeyCode}");
-                break;
+            case Keys.F11:
+#if DEBUG
+                Notify("알림 메시지 테스트이와요~");
 #endif
+                break;
+
+            default:
+#if DEBUG && true
+                System.Diagnostics.Debug.WriteLine($"키코드: {e.KeyCode}");
+#endif
+                break;
         }
     }
 
@@ -298,26 +301,22 @@ public partial class ReadForm : Form
             }
         }
 
-        // 드래그 처리 여기서 해야하능데...
+        if (_dfw.BodyAsTitle && _dfw.DragOnDown(e))
+            return;
 
         if (e.Clicks != 2)
             return;
 
-        if (Settings.Book != null)
-        {
-            // 책이 있으면 최대화
-            if (Settings.MouseUseDoubleClickState)
-                TurnMaximize();
-            return;
-        }
-
-        // 책이 없으면 열기
-        OpenDialogForBook();
+        if (Settings.Book == null)
+            OpenDialogForBook();
+        else if (Settings.MouseUseDoubleClickState)
+            _dfw.Maximize();
     }
 
     private void BookCanvas_MouseUp(object sender, MouseEventArgs e)
     {
-        // 드래그 처리 끝을 여기서...
+        if (_dfw.BodyAsTitle)
+            _dfw.DragOnUp(e);
     }
 
     private void BookCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -332,7 +331,8 @@ public partial class ReadForm : Form
                 BookCanvas.Cursor = Cursors.Default;
         }
 
-        // 드래그 처리 이동
+        if (_dfw.BodyAsTitle)
+            _dfw.DragOnMove(e);
 
         // 마우스 슬립 처리
     }
@@ -349,7 +349,7 @@ public partial class ReadForm : Form
                 PageGoNext();
                 break;
         }
-        
+
         // 마우스 슬립 처리
     }
 
@@ -370,7 +370,7 @@ public partial class ReadForm : Form
     private void UpdateViewZoom(bool zoom, bool redraw = true)
     {
         Settings.ViewZoom = zoom;
-        cmiViewZoom.Checked = zoom;
+        ViewZoomMenuItem.Checked = zoom;
         if (redraw)
             DrawBook();
     }
@@ -387,14 +387,15 @@ public partial class ReadForm : Form
     private void UpdateViewMode(ViewMode mode, bool redraw = true)
     {
         Settings.ViewMode = mode;
-        cmiViewByWidth.Checked = mode == ViewMode.Fit;
-        cmiViewFromLeft.Checked = mode == ViewMode.LeftToRight;
-        cmiViewFromRight.Checked = mode == ViewMode.RightToLeft;
+        ViewFitMenuItem.Checked = mode == ViewMode.Fit;
+        ViewLeftMenuItem.Checked = mode == ViewMode.LeftToRight;
+        ViewRightMenuItem.Checked = mode == ViewMode.RightToLeft;
 
-        cmiView.Image = s_view_mode_icon[(int)mode];
+        ViewMenuItem.Image = s_view_mode_icon[(int)mode];
 
         if (!redraw)
             return;
+
         Settings.Book?.PrepareImages();
         DrawBook();
     }
@@ -403,161 +404,121 @@ public partial class ReadForm : Form
     private void UpdateViewQuality(ViewQuality quality, bool redraw = true)
     {
         Settings.ViewQuality = quality;
-        cmiQtLow.Checked = quality == ViewQuality.Low;
-        cmiQtNormal.Checked = quality == ViewQuality.Default;
-        cmiQtBilinear.Checked = quality == ViewQuality.Bilinear;
-        cmiQtBicubic.Checked = quality == ViewQuality.Bicubic;
-        cmiQtHigh.Checked = quality == ViewQuality.High;
-        cmiQtHighBilinear.Checked = quality == ViewQuality.HqBilinear;
-        cmiQtHighBicubic.Checked = quality == ViewQuality.HqBicubic;
+        QtLowMenuItem.Checked = quality == ViewQuality.Low;
+        QtNormalMenuItem.Checked = quality == ViewQuality.Default;
+        QtBilinearMenuItem.Checked = quality == ViewQuality.Bilinear;
+        QtBicubicMenuItem.Checked = quality == ViewQuality.Bicubic;
+        QtHighMenuItem.Checked = quality == ViewQuality.High;
+        QtHighBilinearMenuItem.Checked = quality == ViewQuality.HqBilinear;
+        QtHighBicubicMenuItem.Checked = quality == ViewQuality.HqBicubic;
 
         if (redraw)
             DrawBook();
     }
 
-    private void cmiFileOpen_Click(object sender, EventArgs e)
+    private void FileOpenMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        OpenDialogForBook();
     }
 
-    private void cmiFileLast_Click(object sender, EventArgs e)
+    private void FileLastMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        var book = Settings.Book;
+        if (book != null && book.FileName == Settings.LastFileName)
+            return;
+        // TODO: 원래 여기 패스코드 프롬프트
+        OpenBook(Settings.LastFileName);
     }
 
-    private void cmiFilePrev_Click(object sender, EventArgs e)
+    private void FilePrevMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        // TODO: OpenPrevBook();
     }
 
-    private void cmiFileNext_Click(object sender, EventArgs e)
+    private void FileNextMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        // TODO: OpenNextBook();
     }
 
-    private void cmiFileClose_Click(object sender, EventArgs e)
+    private void FileCloseMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        CloseBook();
     }
 
-    private void cmiFileExternal_Click(object sender, EventArgs e)
+    private void FileExternalMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        OpenExternalRun();
     }
 
-    private void cmiFileRename_Click(object sender, EventArgs e)
+    private void FileRenameMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        RenameBook();
     }
 
-    private void cmiFileMove_Click(object sender, EventArgs e)
+    private void FileMoveMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        MoveBook();
     }
 
-    private void cmiFileDelete_Click(object sender, EventArgs e)
+    private void FileDeleteMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        DeleteBookOrItem();
     }
 
-    private void cmiQtLow_Click(object sender, EventArgs e)
+    private void QualityMenuItems_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        if (sender is not ToolStripMenuItem { Tag: not null } i)
+            return;
+        var q = (ViewQuality)i.Tag;
+        UpdateViewQuality(q);
     }
 
-    private void cmiQtNormal_Click(object sender, EventArgs e)
+    private void ViewCopyMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        var book = Settings.Book;
+        try
+        {
+            if (book is not { PageLeft: not null })
+                return;
+            Clipboard.SetImage(book.PageLeft.Image);
+            Notify("클립보드로 복사했어요");
+        }
+        catch
+        {
+            Notify("클립보드에 넣을 수 없어요!");
+        }
     }
 
-    private void cmiQtBilinear_Click(object sender, EventArgs e)
+    private void ViewZoomMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        UpdateViewZoom(!ViewZoomMenuItem.Checked);
     }
 
-    private void cmiQtBicubic_Click(object sender, EventArgs e)
+    private void ViewModeMenuItems_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        if (sender is not ToolStripMenuItem { Tag: not null } i)
+            return;
+        var m = (ViewMode)i.Tag;
+        UpdateViewMode(m);
     }
 
-    private void cmiQtHigh_Click(object sender, EventArgs e)
+    private void PageMenuItems_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        if (sender is not ToolStripMenuItem { Tag: not null } i)
+            return;
+        var c = (BookControl)i.Tag;
+        PageControl(c);
     }
 
-    private void cmiQtHighBilinear_Click(object sender, EventArgs e)
+    private void SettingMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
+        // TODO: 세팅창 띄우기 
+        // TODO: 패스코드 적용
     }
 
-    private void cmiQtHighBicubic_Click(object sender, EventArgs e)
+    private void ExitMenuItem_Click(object sender, EventArgs e)
     {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiViewCopy_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiViewZoom_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiViewByWidth_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiViewByHeight_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiViewFromLeft_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiViewFromRight_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiPageGoto_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiPageHome_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiPageEnd_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiPagePrevTen_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiPageNextTen_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiSetting_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void cmiExit_Click(object sender, EventArgs e)
-    {
-        throw new System.NotImplementedException();
+        Close();
     }
 
     #endregion
@@ -570,12 +531,346 @@ public partial class ReadForm : Form
         DuControl.EffectFadeOut(NotifyLabel);
     }
 
+    private void Notify(string message, int timeout = 2000)
+    {
+        NotifyLabel.Text = message;
+
+        if (NotifyLabel.Visible)
+            _notify_timer.Stop();
+        else
+        {
+            NotifyLabel.Location = NotifyLabel.Location with
+            {
+                Y = (BookCanvas.Height - NotifyLabel.Height) / 2
+            };
+            DuControl.EffectFadeIn(NotifyLabel);
+        }
+
+        _notify_timer.Interval = timeout;
+        _notify_timer.Start();
+    }
+
     #endregion
 
-    #region 책 처리
+    #region 파일 처리
+
+    // 페이지 번호 표시
+    private void RefreshTitle(int page = -1)
+    {
+        StringBuilder sb = new();
+        sb.Append(Resources.DuView);
+
+        var book = Settings.Book;
+        if (book != null)
+        {
+            var cache = Doumi.SizeToString(book.CacheSize);
+            sb.Append(" - ");
+            sb.Append(book.OnlyFileName);
+            sb.Append($@" ({page + 1}/{book.TotalPage})");
+            sb.Append($" [{cache}]");
+        }
+
+        Text = sb.ToString();
+    }
+
+    // 책 닫기 공통
+    private void CleanBook()
+    {
+        StopAnimation();
+
+        var book = Settings.Book;
+        if (book != null)
+        {
+            Settings.SetRecentlyPage(book);
+            book.Dispose();
+            Settings.Book = null;
+
+            _page_form.ResetBook();
+            GC.Collect();
+        }
+
+        ResetFocus();
+    }
+
+    // 책 닫기
+    private void CloseBook()
+    {
+        var book = Settings.Book;
+        if (book == null)
+            return;
+
+        CleanBook();
+        DrawBook();
+
+        RefreshTitle();
+    }
+
+    // 책 고르기 다이얼로그
+    private void OpenDialogForBook()
+    {
+        var dlg = new OpenFileDialog()
+        {
+            Title = Resources.OpenBook,
+            Filter = Resources.SelectFilter,
+            InitialDirectory = Settings.LastFolder,
+        };
+        if (dlg.ShowDialog(this) == DialogResult.OK)
+            OpenBook(dlg.FileName);
+    }
+
+    // 책 열기
+    private void OpenBook(string filename, int page = -1)
+    {
+        BookBase? book = null;
+
+        if (File.Exists(filename))
+        {
+            // 단일 파일 또는 압축 파일
+            var fi = new FileInfo(filename);
+            var ext = fi.Extension;
+
+            if (ext.IsArchiveExtension())
+                book = OpenArchive(fi, ext);
+            else if (ext.IsImageExtension())
+            {
+                var di = fi.Directory;
+                if (di != null)
+                {
+                    book = OpenDirectory(di);
+                    if (book is BookFolder folder)
+                    {
+                        page = folder.GetPageNumber(fi.FullName);
+                        folder.ViewMode = ViewMode.Fit;
+                    }
+                }
+            }
+        }
+        else if (Directory.Exists(filename))
+        {
+            // 디렉토리
+            var di = new DirectoryInfo(filename);
+            book = OpenDirectory(di);
+        }
+
+        if (book != null)
+        {
+            CleanBook();
+            Settings.Book = book;
+
+            if (page < 0)
+                page = Settings.GetRecentlyPage(book.OnlyFileName);
+            book.CurrentPage = page;
+            book.PrepareImages();
+
+            RefreshTitle(page);
+            _page_form.SetBook(book);
+            Settings.LastFileName = filename;
+
+            DrawBook();
+        }
+        else
+        {
+            Notify(Resources.CannotOpenBook);
+        }
+
+        ResetFocus();
+    }
+
+    // 압축 파일 읽기
+    private BookBase? OpenArchive(FileInfo fi, string ext)
+    {
+        Settings.LastFolder = fi.DirectoryName ?? string.Empty;
+
+        BookBase? book = ext.ToLower() switch
+        {
+            ".zip" => BookZip.FromFile(fi.FullName),
+            _ => null,
+        };
+
+        if (book == null)
+            Notify(Resources.UnsupportArchive);
+        return book;
+    }
+
+    // 디렉토리 읽기
+    private BookFolder? OpenDirectory(DirectoryInfo di)
+    {
+        Settings.LastFolder = di.Parent?.FullName ?? string.Empty;
+
+        var book = BookFolder.FromFolder(di);
+        if (book == null)
+            Notify(Resources.CannotOpenDirectory);
+        return book;
+    }
+
+    // 앞쪽 책 열기
+    private void OpenPrevBook()
+    {
+        var book = Settings.Book;
+        if (book == null)
+            return;
+
+        var filename = book.FindNextFile(BookDirection.Previous);
+        if (string.IsNullOrEmpty(filename))
+        {
+            Notify(Resources.NoPreviousBook);
+            return;
+        }
+
+        OpenBook(filename);
+    }
+
+    // 뒷쪽 책 열기
+    private void OpenNextBook()
+    {
+        var book = Settings.Book;
+        if (book == null)
+            return;
+
+        var filename = book.FindNextFile(BookDirection.Next);
+        if (string.IsNullOrEmpty(filename))
+        {
+            Notify(Resources.NoNextBook);
+            return;
+        }
+
+        OpenBook(filename);
+    }
+
+    // 리멤버 책 열기
+    private void OpenRememberBook()
+    {
+        var filename = Settings.RememberFileName;
+        if (string.IsNullOrEmpty(filename) || !File.Exists(filename))
+        {
+            Notify(Resources.CannotOpenRemember);
+            return;
+        }
+
+        CloseBook();
+        OpenBook(filename);
+    }
+
+    // 리멤버 책 저장
+    private void SaveRememberBook()
+    {
+        var book = Settings.Book;
+        if (book == null)
+            return;
+
+        Settings.RememberFileName = book.FileName;
+        Notify(Resources.RememberFilename);
+    }
+
+    // 책이나 파일 지우기
+    private void DeleteBookOrItem()
+    {
+        var book = Settings.Book;
+        if (book == null)
+            return;
+        if (!book.CanDeleteFile(out var reason))
+            return;
+        if (!string.IsNullOrEmpty(reason) && Settings.GeneralConfirmDelete &&
+            MessageBox.Show(this, reason, Resources.DeleteBook, MessageBoxButtons.YesNo, MessageBoxIcon.Question) !=
+            DialogResult.Yes)
+            return;
+
+        var next = book.FindNextFileAny(BookDirection.Next);
+
+        if (!book.DeleteFile(out var closed))
+        {
+            Notify(Resources.CannotDeleteBook, 3000);
+            return;
+        }
+
+        if (closed)
+        {
+            // 책을 지우라는 것
+            book.CurrentPage = 0;
+            CloseBook();
+            if (!string.IsNullOrEmpty(next))
+                OpenBook(next);
+        }
+        else
+        {
+            // 파일 단위로 처리했다는 것
+            // 다음 파일을 위해 다시 그려
+            book.PrepareImages();
+            DrawBook();
+        }
+    }
+
+    // 외부 프로그램 실행용 변수
+    private string? _external_filename;
+    private FormWindowState _external_state;
+
+    // 외부 프로그램 실행
+    private void OpenExternalRun()
+    {
+        if (string.IsNullOrEmpty(Settings.ExternalRun) || !File.Exists(Settings.ExternalRun))
+        {
+            Notify(Resources.NoExternalRunExist);
+            return;
+        }
+
+        var book = Settings.Book;
+        if (book == null)
+            return;
+
+        _external_filename = book.FileName;
+        _external_state = WindowState;
+        WindowState = FormWindowState.Minimized;
+        CloseBook();
+
+        var ps = new System.Diagnostics.Process();
+        ps.StartInfo.FileName = Settings.ExternalRun;
+        ps.StartInfo.Arguments = _external_filename;
+        ps.StartInfo.UseShellExecute = false;
+        ps.StartInfo.CreateNoWindow = true;
+        ps.EnableRaisingEvents = true;
+        ps.Exited += (_, _) => ExternalRun_Exited();
+        ps.Start();
+    }
+
+    private void ExternalRun_Exited()
+    {
+        Invoke(method: () =>
+        {
+            if (Settings.ReloadAfterExternal && !string.IsNullOrEmpty(_external_filename))
+                OpenBook(_external_filename);
+            WindowState = _external_state;
+        });
+    }
+
+    // 책 이름 바꾸기
+    private void RenameBook(bool exRen = false)
+    {
+        var book = Settings.Book;
+        if (book == null)
+            return;
+
+        // TODO: 패스 코드 적용
+
+        // TODO: 다이얼로그 만들고 난 담에 하자
+    }
+
+    // 책 이동
+    private void MoveBook()
+    {
+        var book = Settings.Book;
+        if (book == null)
+            return;
+
+        // TODO: 패스 코드 적용
+
+        // TODO: 다이얼로그 만들고 난 담에 하자
+    }
+    #endregion
+
+    #region 쪽 및 애니메이션
 
     // 현재 뷰 모드
-    private Chaek.ViewMode CurrentViewMode
+    private static ViewMode CurrentViewMode
     {
         get
         {
@@ -585,61 +880,268 @@ public partial class ReadForm : Form
         }
     }
 
-    private void OpenDialogForBook()
-    {
-    }
-
-    private void OpenBook(string filename)
-    {
-    }
-
-    private void OpenPrevBook()
-    {
-    }
-
-    private void OpenNextBook()
-    {
-    }
-
-    private void OpenRememberBook()
-    {
-    }
-
-    private void SaveRememberBook()
-    {
-    }
-
-    private void CloseBook()
-    {
-    }
-
-    private void CleanBook()
-    {
-    }
-
-    private void MoveBook()
-    {
-    }
-
+    // 쪽 컨트롤러
     private void PageControl(BookControl ctrl)
     {
+        if (Settings.Book == null)
+            return;
+
+        switch (ctrl)
+        {
+            case BookControl.Previous:
+                PageGoPrev();
+                break;
+
+            case BookControl.Next:
+                PageGoNext();
+                break;
+
+            case BookControl.First:
+                PageGoTo(0);
+                break;
+
+            case BookControl.Last:
+                PageGoTo(int.MaxValue);
+                break;
+
+            case BookControl.SeekPrevious10:
+                PageGoDelta(-10);
+                break;
+
+            case BookControl.SeekNext10:
+                PageGoDelta(10);
+                break;
+
+            case BookControl.SeekMinusOne:
+                PageGoDelta(-1);
+                break;
+
+            case BookControl.SeekPlusOne:
+                PageGoDelta(1);
+                break;
+
+            case BookControl.ScanPrevious:
+                OpenPrevBook();
+                break;
+
+            case BookControl.ScanNext:
+                OpenNextBook();
+
+                break;
+
+            case BookControl.Select:
+                PageSelect();
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(ctrl), ctrl, null);
+        }
     }
 
+    // 쪽 이동
+    private void PageGoTo(int page)
+    {
+        var book = Settings.Book;
+        if (book == null || !book.MovePage(page))
+            return;
+        book.PrepareImages();
+        DrawBook();
+    }
+
+    // 지정한 만큼 쪽 이동
+    private void PageGoDelta(int delta)
+    {
+        var book = Settings.Book;
+        if (book == null || !book.MovePage(book.CurrentPage + delta))
+            return;
+        book.PrepareImages();
+        DrawBook();
+    }
+
+    // 앞으로 쪽 이동
     private void PageGoPrev()
     {
-        
+        var book = Settings.Book;
+        if (book == null || !book.MovePrev())
+            return;
+        book.PrepareImages();
+        DrawBook();
     }
-    
+
+    // 뒤로 쪽 이동
     private void PageGoNext()
     {
+        var book = Settings.Book;
+        if (book == null || !book.MoveNext())
+            return;
+        book.PrepareImages();
+        DrawBook();
     }
 
+    // 쪽 선택
+    private void PageSelect()
+    {
+        var book = Settings.Book;
+        if (book == null)
+            return;
+
+        if (_page_form.ShowDialog(this, book.CurrentPage) != DialogResult.OK)
+            return;
+
+        book.CurrentPage = _page_form.SelectedPage;
+        book.PrepareImages();
+        DrawBook();
+    }
+
+    // 애니메이션 정지
+    private void StopAnimation()
+    {
+
+    }
+
+    // 애니메이션 업데이트
+    private Image UpdateAnimation(PageImage page)
+    {
+        // 해야함. 일단 현재 이미지 반환
+        return page.GetImage();
+    }
+
+    #endregion
+
+    #region 그리기
+
+    // 로고
+    private static void DrawLogo(Graphics g, int w, int h)
+    {
+        var img = Resources.housebari_head_128;
+        if (w > img.Width && h > img.Height)
+            g.DrawImage(img, w - img.Width - 50, h - img.Height - 50);
+        else
+        {
+            var rt = new Rectangle(0, 0, w, h);
+            g.DrawImage(img, rt);
+        }
+    }
+
+    // 가로로 채워 그리기
+    private static void DrawBitmapFit(Graphics g, Image bmp, Image img,
+        HorizontalAlignment align = HorizontalAlignment.Center)
+    {
+        var (nw, nh) = Doumi.CalcDestSize(Settings.ViewZoom, bmp.Width, bmp.Height, img.Width, img.Height);
+        var rt = Doumi.CalcDestRect(bmp.Width, bmp.Height, nw, nh, align);
+        g.DrawImage(img, rt, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel);
+    }
+
+    // 두장 그리기
+    private static void DrawBitmapHalfHalf(Graphics g, Image bmp, Image l, Image r)
+    {
+        var f = bmp.Width / 2;
+
+        // 왼쪽
+        var (lw, lh) = Doumi.CalcDestSize(Settings.ViewZoom, f, bmp.Height, l.Width, l.Height);
+        var lrt = Doumi.CalcDestRect(f, bmp.Height, lw, lh, HorizontalAlignment.Right);
+        g.DrawImage(l, lrt, 0, 0, l.Width, l.Height, GraphicsUnit.Pixel);
+
+        // 오른쪽
+        var (rw, rh) = Doumi.CalcDestSize(Settings.ViewZoom, f, bmp.Height, r.Width, r.Height);
+        var rrt = Doumi.CalcDestRect(f, bmp.Height, rw, rh, HorizontalAlignment.Left);
+        rrt.X += f;
+        g.DrawImage(r, rrt, 0, 0, r.Width, r.Height, GraphicsUnit.Pixel);
+    }
+
+    // 그리기
     private void DrawBook()
     {
+        StopAnimation();
+
+        var book = Settings.Book;
+        if (book != null)
+        {
+            RefreshTitle(book.CurrentPage);
+            // TODO: 엔트리 타이틀
+        }
+
+        //
+        if (BookCanvas.Width == 0 || BookCanvas.Height == 0)
+            return;
+
+        PaintBook();
     }
 
+    // 화면에 그리기
     private void PaintBook()
     {
+        if (WindowState == FormWindowState.Minimized)
+            return;
+
+        var (w, h) = (BookCanvas.Width, BookCanvas.Height);
+        if (w == 0 || h == 0)
+            return;
+
+        if (_bmp == null || _bmp.Width != w || _bmp.Height != h)
+        {
+            _bmp?.Dispose();
+            _bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+        }
+
+        var book = Settings.Book;
+        using (var g = Graphics.FromImage(_bmp))
+        {
+            g.Clear(Color.FromArgb(10, 10, 10));
+            g.InterpolationMode = Doumi.QualityToInterpolationMode(Settings.ViewQuality);
+
+            if (book == null)
+                DrawLogo(g, w, h);
+            else
+            {
+                if (CurrentViewMode == ViewMode.Fit)
+                {
+                    if (book.PageLeft != null)
+                    {
+                        var img = UpdateAnimation(book.PageLeft);
+                        DrawBitmapFit(g, _bmp, img);
+                    }
+                }
+                else
+                {
+                    if (book.PageLeft == null)
+                    {
+                        if (book.PageRight == null)
+                        {
+                            // 헐 페이지가 없어?
+                            DrawLogo(g, w, h);
+                        }
+                        else
+                        {
+                            // 오른쪽 한장만
+                            DrawBitmapFit(g, _bmp, book.PageRight.Image);
+                        }
+                    }
+                    else if (book.PageRight == null)
+                    {
+                        // 왼쪽 한장만
+                        DrawBitmapFit(g, _bmp, book.PageLeft.Image);
+                    }
+                    else
+                    {
+                        // 양쪽 다
+                        DrawBitmapHalfHalf(g, _bmp, book.PageLeft.Image, book.PageRight.Image);
+                    }
+                }
+            }
+
+            // 그림 위에 그리려면 여기서 그려야 함
+            g.InterpolationMode = InterpolationMode.Default;
+        }
+
+        BookCanvas.Image = _bmp;
+    }
+
+    /// <inheritdoc />
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        PaintBook();
+        base.OnPaint(e);
     }
 
     #endregion

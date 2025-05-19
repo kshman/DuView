@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+	<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+	<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <ApplicationIcon>DuView.ico</ApplicationIcon>
     <Company>ksh</Company>
     <Copyright>Copyright © ksh 2021-2025</Copyright>

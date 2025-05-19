@@ -98,7 +98,7 @@ public static class Doumi
     /// </summary>
     /// <param name="extension">확장자 문자열입니다.</param>
     /// <returns>아카이브 타입이면 true, 아니면 false를 반환합니다.</returns>
-    public static bool IsArchiveType(this string extension) =>
+    public static bool IsArchiveExtension(this string extension) =>
         s_archive_extensions.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
