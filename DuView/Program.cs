@@ -23,7 +23,10 @@ namespace DuView
 			Settings.MainAfter();
 
 			ApplicationConfiguration.Initialize();
-			Application.Run(new Forms.ReadForm(filename));
+#pragma warning disable WFO5001
+            Application.SetColorMode(SystemColorMode.Dark);
+#pragma warning restore WFO5001
+            Application.Run(new Forms.ReadForm(filename));
 		}
 
 		private static bool HasProductProcess(string filename)
@@ -39,7 +42,7 @@ namespace DuView
 			DuForm.ShowIfIconic(h);
 			DuForm.SetForeground(h);
 
-			if (string.IsNullOrEmpty(filename))
+			if (filename.EmptyString())
 				return true;
 				
 			var enc = Alter.EncodingString(filename);

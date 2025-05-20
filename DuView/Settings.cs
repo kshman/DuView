@@ -25,7 +25,6 @@ internal static class Settings
 	private static int s_max_recently = 1000;
 
 	private static readonly List<KeyValuePair<string, string>> s_moves = new();
-	private static bool s_rename_open_next = true;
 	private static int s_max_page_cache = 230; // 1048576곱해야함
 
 	// -- 일반
@@ -96,15 +95,15 @@ internal static class Settings
 
 		//
 		v = lines.GetDecodedString("LastFolder");
-		if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
+		if (!v.EmptyString() && Directory.Exists(v))
 			s_last_folder = v;
 
 		v = lines.GetDecodedString("LastFileName");
-		if (!string.IsNullOrEmpty(v) && File.Exists(v))
+		if (!v.EmptyString() && File.Exists(v))
 			s_last_filename = v;
 
 		v = lines.GetDecodedString("RememberFileName");
-		if (!string.IsNullOrEmpty(v) && File.Exists(v))
+		if (!v.EmptyString() && File.Exists(v))
 			s_remember_filename = v;
 
 		s_max_recently = lines.GetInt("MaxRecently", s_max_recently);
@@ -113,9 +112,6 @@ internal static class Settings
 		s_view_zoom = lines.GetInt("ViewZoom", s_view_zoom ? 1 : 0) != 0;
 		s_view_mode = (ViewMode)lines.GetInt("ViewMode", (int)s_view_mode);
 		s_view_quality = (ViewQuality)lines.GetInt("ViewQuality", (int)s_view_quality);
-
-		//
-		s_rename_open_next = lines.GetBool("RenameOpenNext", s_rename_open_next);
 
 		//
 		s_max_page_cache = lines.GetInt("MaxPageCache", s_max_page_cache);
@@ -142,7 +138,7 @@ internal static class Settings
 		for (var i = 0; ; i++)
 		{
 			var s = lines.GetString($"MoveKeep{i}");
-			if (string.IsNullOrEmpty(s))
+			if (s.EmptyString())
 				break;
 			var n = s.LastIndexOf("@:", StringComparison.Ordinal);
 			if (n == -1)
@@ -327,7 +323,7 @@ internal static class Settings
 	//
 	public static int GetRecentlyPage(string onlyFilename)
 	{
-		if (string.IsNullOrEmpty(onlyFilename) || s_recently == null)
+		if (onlyFilename.EmptyString() || s_recently == null)
 			return 0;
 
 		var s = Alter.EncodingString(onlyFilename);
@@ -337,7 +333,7 @@ internal static class Settings
 	//
 	public static void SetRecentlyPage(string onlyFilename, int page)
 	{
-		if (string.IsNullOrEmpty(onlyFilename) || s_recently == null)
+		if (onlyFilename.EmptyString() || s_recently == null)
 			return;
 
 		var s = Alter.EncodingString(onlyFilename);
@@ -424,11 +420,11 @@ internal static class Settings
 		for (var i = 0; i < s_moves.Count; i++)
 		{
 			var m = s_moves[i];
-			if (string.IsNullOrEmpty(m.Key))
+			if (m.Key.EmptyString())
 				break;
 			// lines.SetEncodedString
 			lines.SetString($"MoveKeep{i}", 
-				string.IsNullOrWhiteSpace(m.Value) ? m.Key : $"{m.Key}@:{m.Value}");
+				m.Value.WhiteString() ? m.Key : $"{m.Key}@:{m.Value}");
 		}
 
 		lines.SetString($"MoveKeep{s_moves.Count}", string.Empty);
@@ -457,20 +453,6 @@ internal static class Settings
 			"DuView recently files list",
 			$"Created: {DateTime.Now}"
 		]);
-	}
-
-	//
-	public static bool RenameOpenNext
-	{
-		get => s_rename_open_next;
-		set
-		{
-			if (value == s_rename_open_next)
-				return;
-
-			var lines = ReadSettings();
-			lines.SetBool("RenameOpenNext", s_rename_open_next = value);
-		}
 	}
 
 	#region 기본

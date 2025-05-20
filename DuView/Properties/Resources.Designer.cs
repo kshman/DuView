@@ -70,6 +70,15 @@ namespace DuView.Properties {
         }
         
         /// <summary>
+        ///   책을 옮길 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CannotMoveBook {
+            get {
+                return ResourceManager.GetString("CannotMoveBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   책을 열 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string CannotOpenBook {
@@ -93,6 +102,24 @@ namespace DuView.Properties {
         internal static string CannotOpenRemember {
             get {
                 return ResourceManager.GetString("CannotOpenRemember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책 이름을 바꿀 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CannotRenameBook {
+            get {
+                return ResourceManager.GetString("CannotRenameBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책을 먼저 닫으세요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CloseBookFirst {
+            get {
+                return ResourceManager.GetString("CloseBookFirst", resourceCulture);
             }
         }
         
@@ -231,6 +258,15 @@ namespace DuView.Properties {
         internal static string RememberFilename {
             get {
                 return ResourceManager.GetString("RememberFilename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책을 기억할껀가요?과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string SaveRememberBook {
+            get {
+                return ResourceManager.GetString("SaveRememberBook", resourceCulture);
             }
         }
         

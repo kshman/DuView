@@ -53,7 +53,7 @@ public partial class ReadForm : Form
         ResetFocus();
 
         PaintBook();
-        if (!string.IsNullOrEmpty(_init_filename))
+        if (!_init_filename.EmptyString())
             OpenBook(_init_filename);
     }
 
@@ -84,11 +84,11 @@ public partial class ReadForm : Form
         if (_dfw.WndProc(ref m))
             return;
 
-        if (DuForm.ReceiveCopyDataString(ref m, out var s) && !string.IsNullOrEmpty(s))
+        if (DuForm.ReceiveCopyDataString(ref m, out var s) && !s.EmptyString())
         {
             // 파일명 받음
             var f = Alter.DecodingString(s);
-            if (!string.IsNullOrEmpty(f))
+            if (!f.EmptyString())
                 OpenBook(f);
             return;
         }
@@ -711,7 +711,7 @@ public partial class ReadForm : Form
             return;
 
         var filename = book.FindNextFile(BookDirection.Previous);
-        if (string.IsNullOrEmpty(filename))
+        if (filename.EmptyString())
         {
             Notify(Resources.NoPreviousBook);
             return;
@@ -728,7 +728,7 @@ public partial class ReadForm : Form
             return;
 
         var filename = book.FindNextFile(BookDirection.Next);
-        if (string.IsNullOrEmpty(filename))
+        if (filename.EmptyString())
         {
             Notify(Resources.NoNextBook);
             return;
@@ -741,9 +741,16 @@ public partial class ReadForm : Form
     private void OpenRememberBook()
     {
         var filename = Settings.RememberFileName;
-        if (string.IsNullOrEmpty(filename) || !File.Exists(filename))
+        if (filename.EmptyString() || !File.Exists(filename))
         {
             Notify(Resources.CannotOpenRemember);
+            return;
+        }
+
+        var book = Settings.Book;
+        if (book != null)
+        {
+            Notify(Resources.CloseBookFirst);
             return;
         }
 
@@ -758,6 +765,11 @@ public partial class ReadForm : Form
         if (book == null)
             return;
 
+        var res = MessageBox.Show(this, Resources.SaveRememberBook, Resources.DuView, MessageBoxButtons.YesNo, MessageBoxIcon.Question) !=
+                  DialogResult.Yes;
+        if (!res)
+            return;
+
         Settings.RememberFileName = book.FileName;
         Notify(Resources.RememberFilename);
     }
@@ -770,7 +782,7 @@ public partial class ReadForm : Form
             return;
         if (!book.CanDeleteFile(out var reason))
             return;
-        if (!string.IsNullOrEmpty(reason) && Settings.GeneralConfirmDelete &&
+        if (!reason.EmptyString() && Settings.GeneralConfirmDelete &&
             MessageBox.Show(this, reason, Resources.DeleteBook, MessageBoxButtons.YesNo, MessageBoxIcon.Question) !=
             DialogResult.Yes)
             return;
@@ -788,7 +800,7 @@ public partial class ReadForm : Form
             // 책을 지우라는 것
             book.CurrentPage = 0;
             CloseBook();
-            if (!string.IsNullOrEmpty(next))
+            if (!next.EmptyString())
                 OpenBook(next);
         }
         else
@@ -807,7 +819,7 @@ public partial class ReadForm : Form
     // 외부 프로그램 실행
     private void OpenExternalRun()
     {
-        if (string.IsNullOrEmpty(Settings.ExternalRun) || !File.Exists(Settings.ExternalRun))
+        if (Settings.ExternalRun.EmptyString() || !File.Exists(Settings.ExternalRun))
         {
             Notify(Resources.NoExternalRunExist);
             return;
@@ -836,7 +848,7 @@ public partial class ReadForm : Form
     {
         Invoke(method: () =>
         {
-            if (Settings.ReloadAfterExternal && !string.IsNullOrEmpty(_external_filename))
+            if (Settings.ReloadAfterExternal && !_external_filename.EmptyString())
                 OpenBook(_external_filename);
             WindowState = _external_state;
         });
@@ -851,7 +863,26 @@ public partial class ReadForm : Form
 
         // TODO: 패스 코드 적용
 
-        // TODO: 다이얼로그 만들고 난 담에 하자
+        var dlg = new RenexForm();
+        if (dlg.ShowDialog(this, book.OnlyFileName) != DialogResult.OK)
+            return;
+
+        var filename = dlg.Filename;
+        if (filename.EmptyString() || book.OnlyFileName.Equals(filename))
+            return;
+
+        var next = dlg.Reopen ? null : book.FindNextFileAny(BookDirection.Next);
+
+        if (!book.RenameFile(filename, out var fullPath))
+        {
+            Notify(Resources.CannotRenameBook, 3000);
+            return;
+        }
+
+        book.CurrentPage = 0;
+        CloseBook();
+
+        OpenBook(next ?? fullPath);
     }
 
     // 책 이동
@@ -863,7 +894,26 @@ public partial class ReadForm : Form
 
         // TODO: 패스 코드 적용
 
-        // TODO: 다이얼로그 만들고 난 담에 하자
+        var dlg = new MoveForm();
+        if (dlg.ShowDialog(this, book.OnlyFileName) != DialogResult.OK)
+            return;
+
+        var filename = dlg.Filename;
+        var next = book.FindNextFileAny(BookDirection.Next);
+
+        if (!book.MoveFile(filename))
+        {
+            Notify(Resources.CannotMoveBook, 3000);
+            return;
+        }
+
+        CloseBook();
+
+        if (next.EmptyString())
+            Notify(Resources.NoNextBook);
+        else
+            OpenBook(next);
+
     }
     #endregion
 

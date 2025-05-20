@@ -23,7 +23,7 @@ public static class Doumi
     /// </summary>
     /// <param name="v">평가할 문자열입니다. null일 수 있습니다.</param>
     /// <returns>문자열이 null이거나, 비어 있거나, 공백 문자로만 이루어져 있으면 <see langword="true"/>이고, 그렇지 않으면 <see langword="false"/>입니다.</returns>
-    public static bool EmptyString(this string? v) =>
+    public static bool EmptyString([NotNullWhen(false)] this string? v) =>
         string.IsNullOrEmpty(v);
 
     /// <summary>
@@ -31,7 +31,7 @@ public static class Doumi
     /// </summary>
     /// <param name="v">평가할 문자열입니다. null일 수 있습니다.</param>
     /// <returns>문자열이 null이거나, 비어 있거나, 공백 문자로만 이루어져 있으면 <see langword="true"/>이고, 그렇지 않으면 <see langword="false"/>입니다.</returns>
-    public static bool WhiteString(this string? v) =>
+    public static bool WhiteString([NotNullWhen(false)] this string? v) =>
         string.IsNullOrWhiteSpace(v);
 
     /// <summary>
