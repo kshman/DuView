@@ -46,23 +46,10 @@ internal static class WebP
 
         try
         {
-            if (!hasAlpha)
-            {
-                bmp = new ImageSurface(Format.RGB24, imgWidth, imgHeight);
-                var outputSize = imgHeight * bmp.Stride;
-                UnsafeNativeMethods.WebPDecodeBGRInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize,
-                    bmp.Stride);
-                ConvertBGRtoRGB(bmp);
-            }
-            else
-            {
-                bmp = new ImageSurface(Format.ARGB32, imgWidth, imgHeight);
-                var outputSize = imgHeight * bmp.Stride;
-                UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize,
-                    bmp.Stride);
-                ConvertBGRAtoARGB(bmp);
-            }
-
+            bmp = hasAlpha
+                ? new ImageSurface(Format.ARGB32, imgWidth, imgHeight)
+                : new ImageSurface(Format.RGB24, imgWidth, imgHeight);
+            UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, imgHeight * bmp.Stride, bmp.Stride);
             return bmp;
         }
         finally
@@ -89,21 +76,10 @@ internal static class WebP
             //Get image width and height
             GetInfo(rawWebP, out var imgWidth, out var imgHeight, out var hasAlpha, out _, out _);
 
-            if (!hasAlpha)
-            {
-                bmp = new ImageSurface(Format.RGB24, imgWidth, imgHeight);
-                var outputSize = imgHeight * bmp.Stride;
-                UnsafeNativeMethods.WebPDecodeBGRInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize,
-                    bmp.Stride);
-            }
-            else
-            {
-                bmp = new ImageSurface(Format.ARGB32, imgWidth, imgHeight);
-                var outputSize = imgHeight * bmp.Stride;
-                UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize,
-                    bmp.Stride);
-            }
-
+            bmp = hasAlpha
+                ? new ImageSurface(Format.ARGB32, imgWidth, imgHeight)
+                : new ImageSurface(Format.RGB24, imgWidth, imgHeight);
+            UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, imgHeight * bmp.Stride, bmp.Stride);
             return bmp;
         }
         finally
@@ -355,47 +331,6 @@ internal static class WebP
             //Free memory
             if (pinnedWebP.IsAllocated)
                 pinnedWebP.Free();
-        }
-    }
-
-    #endregion
-
-    #region 컨버팅
-
-    private static unsafe void ConvertBGRtoRGB(ImageSurface surface)
-    {
-        var data = (byte*)surface.DataPtr;
-        var stride = surface.Stride;
-        var width = surface.Width;
-        var height = surface.Height;
-
-        for (var y = 0; y < height; y++)
-        {
-            var row = data + y * stride;
-            for (var x = 0; x < width; x++)
-            {
-                var pixel = row + x * 3;
-                // BGR -> RGB 스왑
-                (pixel[0], pixel[2]) = (pixel[2], pixel[0]);
-            }
-        }
-    }
-
-    private static unsafe void ConvertBGRAtoARGB(ImageSurface surface)
-    {
-        var bufferSize = surface.Height * surface.Stride;
-        var data = (byte*)surface.DataPtr;
-        for (var i = 0; i < bufferSize; i += 4)
-        {
-            var a = data[i + 3];
-            var r = data[i + 2];
-            var g = data[i + 1];
-            var b = data[i];
-            
-            data[i]     = b;
-            data[i + 1] = g;
-            data[i + 2] = r;
-            data[i + 3] = a;
         }
     }
 
