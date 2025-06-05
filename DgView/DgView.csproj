@@ -6,6 +6,7 @@
         <LangVersion>13</LangVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <ApplicationIcon>Resources\DuView.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,7 +14,11 @@
         <EmbeddedResource Include="**\*.glade">
             <LogicalName>%(Filename)%(Extension)</LogicalName>
         </EmbeddedResource>
+        <None Remove="Resources\DuView.ico" />
+        <None Remove="Resources\icon_purutu.png" />
         <None Remove="Resources\ouch_noimg.png" />
+        <EmbeddedResource Include="Resources\DuView.ico" />
+        <EmbeddedResource Include="Resources\icon_purutu.png" />
         <EmbeddedResource Include="Resources\ouch_noimg.png" />
         <None Remove="Resources\folder-blue.png" />
         <EmbeddedResource Include="Resources\folder-blue.png" />
@@ -26,6 +31,7 @@
         <None Remove="Resources\viewmode_pitwidth.png" />
         <EmbeddedResource Include="Resources\viewmode_pitwidth.png" />
         <None Remove="Resources\viewmode_r2l.png" />
+        <Content Include="Resources\DuView.ico" />
         <EmbeddedResource Include="Resources\viewmode_r2l.png" />
     </ItemGroup>
 

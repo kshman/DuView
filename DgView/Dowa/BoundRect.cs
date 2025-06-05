@@ -62,7 +62,10 @@ public class BoundRect
         Width = rect.Width;
         Height = rect.Height;
     }
-    
+
+    public bool IsValidLocation =>
+        X >= 0 && Y >= 0;
+
     public override string ToString()
     {
         return $"(X={X}, Y={Y}, Width={Width}, Height={Height})";

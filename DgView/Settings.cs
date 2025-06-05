@@ -1,4 +1,6 @@
-﻿namespace DgView;
+﻿using System.Collections.Generic;
+
+namespace DgView;
 
 internal static class Settings
 {
@@ -10,7 +12,7 @@ internal static class Settings
     internal static BookBase? Book { get; set; }
 
     // -- 윈도우 정보
-    private static BoundRect s_bound = new(0, 0, 800, 480);
+    private static BoundRect s_bound = new(-1, -1, 800, 480);
     private static int s_magnetic_dock_size = 10;
 
     // -- 뷰
@@ -47,7 +49,7 @@ internal static class Settings
     private static string s_pass_usages = string.Empty;
 
     //
-    public static string AppPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ksh");
+    public static string AppPath => AppContext.BaseDirectory;
 
     //
     public static string SettingsPath => Path.Combine(AppPath, "DgView.config");
@@ -132,7 +134,7 @@ internal static class Settings
         s_pass_usages = lines.GetString("PassUsage") ?? s_pass_usages;
 
         //
-        for (var i = 0;; i++)
+        for (var i = 0; ; i++)
         {
             var s = lines.GetString($"MoveKeep{i}");
             if (s.EmptyString())
@@ -160,7 +162,8 @@ internal static class Settings
     {
         window.SetDefaultSize(s_bound.Width, s_bound.Height);
         window.SetPosition(WindowPosition.Center);
-        window.Move(s_bound.X, s_bound.Y);
+        if (s_bound.IsValidLocation)
+            window.Move(s_bound.X, s_bound.Y);
     }
 
     // 
@@ -172,19 +175,19 @@ internal static class Settings
             using var cr = new Cairo.Context(s_noimg);
             cr.SetSourceRGB(0, 0, 0);
             cr.Paint();
-                
+
             // 빨간색 X 모양 그리기
             cr.SetSourceRGB(1, 0, 0); // 빨간색 (RGB 값)
             cr.LineWidth = 10; // 선 두께
-            
+
             // 첫 번째 대각선 (왼쪽 위 -> 오른쪽 아래)
             cr.MoveTo(300 * 0.1, 300 * 0.1); // 시작점
             cr.LineTo(300 * 0.9, 300 * 0.9); // 끝점
-            
+
             // 두 번째 대각선 (오른쪽 위 -> 왼쪽 아래)
             cr.MoveTo(300 * 0.9, 300 * 0.1); // 시작점
             cr.LineTo(300 * 0.1, 300 * 0.9); // 끝점
-            
+
             cr.Stroke(); // 선 그리기 실행
         }
         return s_noimg;

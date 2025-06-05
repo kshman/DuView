@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 
@@ -89,6 +90,8 @@ public static class Doumi
     public static bool IsAnimationFileName(string filename)
     {
         var n = filename.LastIndexOf('.');
+        if (n < 0 || n >= filename.Length - 1)
+            return false; // 확장자가 없거나 잘못된 경우
         var extension = filename[n..];
         return IsAnimationExtension(extension);
     }
@@ -252,24 +255,24 @@ public static class Doumi
             switch (c1)
             {
                 case false when !c2:
-                {
-                    var letter1 = char.IsLetter(s1, i1);
-                    var letter2 = char.IsLetter(s2, i2);
-                    switch (letter1)
                     {
-                        case true when letter2:
-                        case false when !letter2:
-                            r = letter1 && letter2
-                                ? char.ToLower(s1[i1]).CompareTo(char.ToLower(s2[i2]))
-                                : s1[i1].CompareTo(s2[i2]);
-                            if (r != 0) return r;
-                            break;
-                        case false when letter2:
-                            return -1;
-                        case true when !letter2:
-                            return 1;
+                        var letter1 = char.IsLetter(s1, i1);
+                        var letter2 = char.IsLetter(s2, i2);
+                        switch (letter1)
+                        {
+                            case true when letter2:
+                            case false when !letter2:
+                                r = letter1 && letter2
+                                    ? char.ToLower(s1[i1]).CompareTo(char.ToLower(s2[i2]))
+                                    : s1[i1].CompareTo(s2[i2]);
+                                if (r != 0) return r;
+                                break;
+                            case false when letter2:
+                                return -1;
+                            case true when !letter2:
+                                return 1;
+                        }
                     }
-                }
                     break;
                 case true when c2:
                     r = InternalNumberCompare(s1, ref i1, s2, ref i2);
@@ -367,5 +370,59 @@ public static class Doumi
         /// <returns>비교 결과를 반환합니다. x가 y보다 작으면 음수, 같으면 0, 크면 양수를 반환합니다.</returns>
         public int Compare(DirectoryInfo? x, DirectoryInfo? y) =>
             StringAsNumericCompare(x?.FullName, y?.FullName);
+    }
+
+    /// <summary>
+    /// 리소스 스트림을 가져옵니다.
+    /// </summary>
+    /// <param name="name">리소스 이름</param>
+    /// <returns></returns>
+    public static Stream? GetResource(string name)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        return assembly.GetManifestResourceStream(name) ?? null;
+    }
+
+    /// <summary>
+    /// 지정한 이름의 이미지 리소스를 찾아 <see cref="PixBitmap"/> 객체로 반환합니다.
+    /// </summary>
+    /// <remarks>
+    /// 이 메서드는 지정한 리소스를 찾아 <see cref="PixBitmap"/>으로 변환을 시도합니다.
+    /// 리소스를 찾을 수 없는 경우 <see langword="null"/>을 반환합니다.
+    /// </remarks>
+    /// <param name="name">가져올 리소스의 이름입니다. null 또는 빈 문자열일 수 없습니다.</param>
+    /// <returns>
+    /// 이미지 리소스를 나타내는 <see cref="PixBitmap"/> 객체 또는 리소스를 찾을 수 없는 경우 <see langword="null"/>을 반환합니다.
+    /// </returns>
+    public static PixBitmap? GetResourcePixmap(string name)
+    {
+        using var stream = GetResource(name);
+        return stream == null ? null : new PixBitmap(stream);
+    }
+
+    /// <summary>
+    /// 지정한 이미지와 텍스트가 포함된 새 메뉴 아이템을 생성합니다.
+    /// </summary>
+    /// <remarks>
+    /// 이 메서드는 지정한 텍스트 라벨과 이미지를 포함하는 메뉴 아이템을 생성하여 반환합니다.
+    /// 생성된 메뉴 아이템은 바로 사용할 수 있도록 완전히 표시됩니다.
+    /// 그래픽 사용자 인터페이스에서 시각적으로 향상된 메뉴를 만들 때 사용하세요.
+    /// </remarks>
+    /// <param name="name">메뉴 아이템에 표시할 텍스트입니다. null 또는 빈 문자열일 수 없습니다.</param>
+    /// <param name="pix">메뉴 아이템에 표시할 비트맵 이미지입니다. null이 아니어야 합니다.</param>
+    /// <returns>지정한 텍스트와 이미지를 포함하는 <see cref="MenuItem"/> 인스턴스를 반환합니다.</returns>
+    public static MenuItem CreateImageMenuItem(string name, PixBitmap? pix)
+    {
+        if (pix == null)
+            return new MenuItem(name);
+        var item = new MenuItem();
+        var icon = new Image(pix);
+        var label = new Label(name);
+        var box = new Box(Orientation.Horizontal, 6);
+        box.PackStart(icon, false, false, 0);
+        box.PackStart(label, false, false, 0);
+        box.ShowAll();
+        item.Add(box);
+        return item;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Cairo;
+﻿using System.Collections.Generic;
+using Cairo;
 using DgView.WebPWrapper;
 using FileInfo = System.IO.FileInfo;
 
@@ -210,7 +211,8 @@ public abstract class BookBase : IDisposable
         try
         {
             // 일단 이미지로 읽어보자
-            var pix = new Gdk.Pixbuf(ms);
+            ms.Position = 0;
+            var pix = new PixBitmap(ms);
             img = new ImageSurface(Format.ARGB32, pix.Width, pix.Height);
             using (var cr = new Context(img))
             {
@@ -221,10 +223,8 @@ public abstract class BookBase : IDisposable
             // 애니메이션 처리
             // GIF 어카지...
         }
-        catch (Exception e)
+        catch
         {
-            System.Diagnostics.Debug.WriteLine($"Not .NET image: {e.Message}");
-
             // 지원하는 형식인지 확인하자
             ms.Position = 0;
             var raw = ms.ToArray();

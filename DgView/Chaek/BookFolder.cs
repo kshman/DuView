@@ -1,4 +1,6 @@
-﻿namespace DgView.Chaek;
+﻿using System.Collections.Generic;
+
+namespace DgView.Chaek;
 
 internal class BookFolder : BookBase
 {
