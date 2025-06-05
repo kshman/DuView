@@ -138,7 +138,6 @@ public static class Doumi
         }
     }
 
-#if false
     /// <summary>
     /// 대상 사각형을 계산합니다.
     /// </summary>
@@ -148,11 +147,11 @@ public static class Doumi
     /// <param name="dh">대상 높이</param>
     /// <param name="align">정렬 방식</param>
     /// <returns>계산된 Rectangle을 반환합니다.</returns>
-    public static BoundRect CalcDestRect(int tw, int th, int dw, int dh, HorizontalAlignment align)
+    public static BoundRect CalcDestRect(int tw, int th, int dw, int dh, HorizAlign align = HorizAlign.Center)
     {
         var rt = new BoundRect(0, 0, dw, dh);
 
-        if (align == HorizontalAlignment.Left)
+        if (align == HorizAlign.Left)
         {
             // 오우
         }
@@ -164,7 +163,7 @@ public static class Doumi
                 rt.X = tw - dw;
 
                 // 가운데
-                if (align == HorizontalAlignment.Center)
+                if (align == HorizAlign.Center)
                     rt.X /= 2;
             }
         }
@@ -174,7 +173,6 @@ public static class Doumi
 
         return rt;
     }
-#endif
 
     /// <summary>
     /// 원본과 대상 크기 및 확대 여부에 따라 최적의 크기를 계산합니다.
@@ -425,4 +423,23 @@ public static class Doumi
         item.Add(box);
         return item;
     }
+}
+
+/// <summary>
+/// 수평 정렬 방식을 지정합니다.
+/// </summary>
+public enum HorizAlign
+{
+    /// <summary>
+    /// 왼쪽 정렬
+    /// </summary>
+    Left,
+    /// <summary>
+    /// 가운데 정렬
+    /// </summary>
+    Center,
+    /// <summary>
+    /// 오른쪽 정렬
+    /// </summary>
+    Right
 }

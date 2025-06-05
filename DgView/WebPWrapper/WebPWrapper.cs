@@ -5,7 +5,9 @@ using System.Runtime.InteropServices;
 using System.Security;
 using Cairo;
 using DgView.Chaek;
+
 // ReSharper disable InconsistentNaming
+// ReSharper disable CollectionNeverQueried.Local
 
 namespace DgView.WebPWrapper;
 
@@ -48,13 +50,17 @@ internal static class WebP
             {
                 bmp = new ImageSurface(Format.RGB24, imgWidth, imgHeight);
                 var outputSize = imgHeight * bmp.Stride;
-                UnsafeNativeMethods.WebPDecodeBGRInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize, bmp.Stride);
+                UnsafeNativeMethods.WebPDecodeBGRInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize,
+                    bmp.Stride);
+                ConvertBGRtoRGB(bmp);
             }
             else
             {
                 bmp = new ImageSurface(Format.ARGB32, imgWidth, imgHeight);
                 var outputSize = imgHeight * bmp.Stride;
-                UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize, bmp.Stride);
+                UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize,
+                    bmp.Stride);
+                ConvertBGRAtoARGB(bmp);
             }
 
             return bmp;
@@ -87,13 +93,15 @@ internal static class WebP
             {
                 bmp = new ImageSurface(Format.RGB24, imgWidth, imgHeight);
                 var outputSize = imgHeight * bmp.Stride;
-                UnsafeNativeMethods.WebPDecodeBGRInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize, bmp.Stride);
+                UnsafeNativeMethods.WebPDecodeBGRInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize,
+                    bmp.Stride);
             }
             else
             {
                 bmp = new ImageSurface(Format.ARGB32, imgWidth, imgHeight);
                 var outputSize = imgHeight * bmp.Stride;
-                UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize, bmp.Stride);
+                UnsafeNativeMethods.WebPDecodeBGRAInto(ptrData, (nuint)rawWebP.Length, bmp.DataPtr, outputSize,
+                    bmp.Stride);
             }
 
             return bmp;
@@ -117,7 +125,7 @@ internal static class WebP
     {
         ImageSurface? bmp = null;
         var pinnedWebP = GCHandle.Alloc(rawWebP, GCHandleType.Pinned);
-        
+
         try
         {
             WebPDecoderConfig config = new();
@@ -256,6 +264,7 @@ internal static class WebP
                     var srcPtr = buf.ToPointer();
                     Buffer.MemoryCopy(srcPtr, destPtr, pixels, pixels);
                 }
+
                 bitmap.MarkDirty();
 
                 frames.Add(new AnimatedFrame(bitmap, timestamp - oldTimestamp));
@@ -346,6 +355,47 @@ internal static class WebP
             //Free memory
             if (pinnedWebP.IsAllocated)
                 pinnedWebP.Free();
+        }
+    }
+
+    #endregion
+
+    #region 컨버팅
+
+    private static unsafe void ConvertBGRtoRGB(ImageSurface surface)
+    {
+        var data = (byte*)surface.DataPtr;
+        var stride = surface.Stride;
+        var width = surface.Width;
+        var height = surface.Height;
+
+        for (var y = 0; y < height; y++)
+        {
+            var row = data + y * stride;
+            for (var x = 0; x < width; x++)
+            {
+                var pixel = row + x * 3;
+                // BGR -> RGB 스왑
+                (pixel[0], pixel[2]) = (pixel[2], pixel[0]);
+            }
+        }
+    }
+
+    private static unsafe void ConvertBGRAtoARGB(ImageSurface surface)
+    {
+        var bufferSize = surface.Height * surface.Stride;
+        var data = (byte*)surface.DataPtr;
+        for (var i = 0; i < bufferSize; i += 4)
+        {
+            var a = data[i + 3];
+            var r = data[i + 2];
+            var g = data[i + 1];
+            var b = data[i];
+            
+            data[i]     = b;
+            data[i + 1] = g;
+            data[i + 2] = r;
+            data[i + 3] = a;
         }
     }
 

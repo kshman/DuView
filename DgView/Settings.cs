@@ -6,7 +6,7 @@ internal static class Settings
 {
     private static SettingsHash? s_lines;
 
-    private static Cairo.ImageSurface? s_noimg;
+    private static Cairo.ImageSurface? s_no_img;
 
     // 책
     internal static BookBase? Book { get; set; }
@@ -28,7 +28,7 @@ internal static class Settings
     private static ResizableHash? s_recently;
     private static int s_max_recently = 1000;
 
-    private static readonly List<KeyValuePair<string, string>> s_moves = new();
+    private static readonly List<KeyValuePair<string, string>> s_moves = [];
     private static int s_max_page_cache = 230; // 1048576곱해야함
 
     // -- 일반
@@ -169,10 +169,10 @@ internal static class Settings
     // 
     public static Cairo.ImageSurface OopsNoImage()
     {
-        if (s_noimg == null)
+        if (s_no_img == null)
         {
-            s_noimg = new Cairo.ImageSurface(Cairo.Format.Argb32, 300, 300);
-            using var cr = new Cairo.Context(s_noimg);
+            s_no_img = new Cairo.ImageSurface(Cairo.Format.Argb32, 300, 300);
+            using var cr = new Cairo.Context(s_no_img);
             cr.SetSourceRGB(0, 0, 0);
             cr.Paint();
 
@@ -190,7 +190,7 @@ internal static class Settings
 
             cr.Stroke(); // 선 그리기 실행
         }
-        return s_noimg;
+        return s_no_img;
     }
 
     //

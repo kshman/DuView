@@ -154,8 +154,8 @@ public abstract class BookBase : IDisposable
 
         Entries.Clear();
         _cache.Clear();
-        PageLeft = null;
-        PageRight = null;
+        PageLeft?.Dispose();
+        PageRight?.Dispose();
     }
 
     //
@@ -254,8 +254,8 @@ public abstract class BookBase : IDisposable
     /// </summary>
     public void PrepareImages()
     {
-        PageLeft = null;
-        PageRight = null;
+        PageLeft?.Dispose();
+        PageRight?.Dispose();
 
         switch (ActualViewMode)
         {
