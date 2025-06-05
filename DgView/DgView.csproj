@@ -13,25 +13,24 @@
         <EmbeddedResource Include="**\*.glade">
             <LogicalName>%(Filename)%(Extension)</LogicalName>
         </EmbeddedResource>
+        <None Remove="Resources\ouch_noimg.png" />
+        <EmbeddedResource Include="Resources\ouch_noimg.png" />
+        <None Remove="Resources\folder-blue.png" />
+        <EmbeddedResource Include="Resources\folder-blue.png" />
+        <None Remove="Resources\housebari_head_128.jpg" />
+        <EmbeddedResource Include="Resources\housebari_head_128.jpg" />
+        <None Remove="Resources\viewmode_l2r.png" />
+        <EmbeddedResource Include="Resources\viewmode_l2r.png" />
+        <None Remove="Resources\viewmode_none.png" />
+        <EmbeddedResource Include="Resources\viewmode_none.png" />
+        <None Remove="Resources\viewmode_pitwidth.png" />
+        <EmbeddedResource Include="Resources\viewmode_pitwidth.png" />
+        <None Remove="Resources\viewmode_r2l.png" />
+        <EmbeddedResource Include="Resources\viewmode_r2l.png" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="GtkSharp" Version="3.24.24.*" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Resource.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Resource.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Update="Resource.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

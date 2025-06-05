@@ -14,10 +14,8 @@ Application.Init();
 var app = new Application("ksh.DgView", GLib.ApplicationFlags.None);
 app.Register(GLib.Cancellable.Current);
 
-var win = new DgView.Forms.TestComplex();
+var win = new DgView.Forms.ReadWindow(string.Empty);
 app.AddWindow(win);
-
-win.ShowAll();
 
 Application.Run();
 
