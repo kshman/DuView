@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using Cairo;
-using DgView.Chaek;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable CollectionNeverQueried.Local
@@ -295,7 +293,7 @@ internal static class WebP
     /// <param name="width">width of image</param>
     /// <param name="height">height of image</param>
     /// <param name="has_alpha">Image has alpha channel</param>
-    /// <param name="has_animation">Image is a animation</param>
+    /// <param name="has_animation">Image is an animation</param>
     /// <param name="format">Format of image: 0 = undefined (/mixed), 1 = lossy, 2 = lossless</param>
     public static void GetInfo(byte[] rawWebP, out int width, out int height, out bool has_alpha, out bool has_animation,
         out string format)
@@ -365,7 +363,7 @@ internal static partial class UnsafeNativeMethods
 
     /// <summary>Activate the lossless compression mode with the desired efficiency</summary>
     /// <param name="config">The WebPConfig struct</param>
-    /// <param name="level">between 0 (fastest, lowest compression) and 9 (slower, best compression)</param>
+    /// <param name="level">between 0 (fastest, lowest compression) and 9 (slower, the best compression)</param>
     /// <returns>0 in case of parameter error</returns>
     [DllImport("libwebp.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPConfigLosslessPreset")]
     internal static extern int WebPConfigLosslessPreset(ref WebPConfig config, int level);
@@ -491,7 +489,7 @@ internal static partial class UnsafeNativeMethods
     /// <param name="bgr">Pointer to BGR image data</param>
     /// <param name="width">The range is limited currently from 1 to 16383</param>
     /// <param name="height">The range is limited currently from 1 to 16383</param>
-    /// <param name="stride">Specifies the distance between scanlines</param>
+    /// <param name="stride">Specifies the distance between scan lines</param>
     /// <param name="quality_factor">Ranges from 0 (lower quality) to 100 (highest quality). Controls the loss and quality during compression</param>
     /// <param name="output">output_buffer with WebP image</param>
     /// <returns>Size of WebP Image or 0 if an error occurred</returns>
@@ -922,17 +920,17 @@ internal struct WebPConfig
     /// <summary>Spatial Noise Shaping. 0=off, 100=maximum</summary>
     public int sns_strength;
 
-    /// <summary>Range: [0 = off .. 100 = strongest]</summary>
+    /// <summary>Range: [0 = off ... 100 = strongest]</summary>
     public int filter_strength;
 
-    /// <summary>Range: [0 = off .. 7 = least sharp]</summary>
+    /// <summary>Range: [0 = off ... 7 = least sharp]</summary>
     public int filter_sharpness;
 
     /// <summary>Filtering type: 0 = simple, 1 = strong (only used if filter_strength > 0 or auto-filter > 0)</summary>
     public int filter_type;
 
     /// <summary>Auto adjust filter's strength [0 = off, 1 = on]</summary>
-    public int autofilter;
+    public int auto_filter;
 
     /// <summary>Algorithm for encoding the alpha plane (0 = none, 1 = compressed with WebP lossless). Default is 1</summary>
     public int alpha_compression;
@@ -961,13 +959,13 @@ internal struct WebPConfig
     /// <summary>If true, compression parameters will be remapped to better match the expected output size from JPEG compression. Generally, the output size will be similar but the degradation will be lower</summary>
     public int emulate_jpeg_size;
 
-    /// <summary>If non-zero, try and use multi-threaded encoding</summary>
+    /// <summary>If non-zero, try and use multithreaded encoding</summary>
     public int thread_level;
 
     /// <summary>If set, reduce memory usage (but increase CPU use)</summary>
     public int low_memory;
 
-    /// <summary>Near lossless encoding [0 = max loss .. 100 = off (default)]</summary>
+    /// <summary>Near lossless encoding [0 = max loss ... 100 = off (default)]</summary>
     public int near_lossless;
 
     /// <summary>If non-zero, preserve the exact RGB values under transparent area. Otherwise, discard this invisible RGB information for better compression. The default value is 0</summary>
@@ -1366,7 +1364,7 @@ public struct WebPDecoderOptions
     /// <summary>Final height</summary>
     public int scaled_height;
 
-    /// <summary>If true, use multi-threaded decoding</summary>
+    /// <summary>If true, use multithreaded decoding</summary>
     public int use_threads;
 
     /// <summary>Dithering strength (0=Off, 100=full)</summary>
@@ -1406,7 +1404,7 @@ public struct WebPAnimDecoderOptions
     /// MODE_RGBA, MODE_BGRA, MODE_rgbA and MODE_bgrA.</summary>
     public WEBP_CSP_MODE color_mode;
 
-    /// <summary>If true, use multi-threaded decoding</summary>
+    /// <summary>If true, use multithreaded decoding</summary>
     public int use_threads;
 
     /// <summary>Padding for later use</summary>
@@ -1457,7 +1455,7 @@ public struct WebPAnimInfo
     public uint canvas_width;
     public uint canvas_height;
     public uint loop_count;
-    public uint bgcolor;
+    public uint bg_color;
     public uint frame_count;
 
     /// <summary>Padding for later use</summary>

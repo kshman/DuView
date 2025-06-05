@@ -93,7 +93,7 @@ public class PageImage : IDisposable
     /// <returns>현재 표시할 Image 객체입니다.</returns>
     public ImageSurface GetImage() => Frames?[CurrentFrame].Bitmap ?? Image;
 
-    private bool _disposed = false;
+    private bool _disposed;
 
     protected virtual void Dispose(bool disposing)
     {
