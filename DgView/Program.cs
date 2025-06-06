@@ -27,6 +27,8 @@ static void Work(string filename)
 
     Application.Init();
 
+
+
     var app = new Application("ksh.DgView", GLib.ApplicationFlags.None);
     app.Register(GLib.Cancellable.Current);
 

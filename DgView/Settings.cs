@@ -49,13 +49,18 @@ internal static class Settings
     private static string s_pass_usages = string.Empty;
 
     //
-    public static string AppPath => AppContext.BaseDirectory;
+    public static string AppPath =>
+#if WINDOWS
+        AppContext.BaseDirectory;
+#else
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ksh");
+#endif
 
     //
-    public static string SettingsPath => Path.Combine(AppPath, "DgView.config");
+    private static string SettingsPath => Path.Combine(AppPath, "DgView.config");
 
     //
-    public static string RecentlyPath => Path.Combine(AppPath, "DgView.recently");
+    private static string RecentlyPath => Path.Combine(AppPath, "DgView.recently");
 
     //
     private static SettingsHash ReadSettings()
@@ -134,7 +139,7 @@ internal static class Settings
         s_pass_usages = lines.GetString("PassUsage") ?? s_pass_usages;
 
         //
-        for (var i = 0; ; i++)
+        for (var i = 0;; i++)
         {
             var s = lines.GetString($"MoveKeep{i}");
             if (s.EmptyString())
@@ -161,9 +166,10 @@ internal static class Settings
     public static void OnWindowInit(Window window)
     {
         window.SetDefaultSize(s_bound.Width, s_bound.Height);
-        window.SetPosition(WindowPosition.Center);
         if (s_bound.IsValidLocation)
             window.Move(s_bound.X, s_bound.Y);
+        else
+            window.SetPosition(WindowPosition.Center);
     }
 
     // 
@@ -190,6 +196,7 @@ internal static class Settings
 
             cr.Stroke(); // 선 그리기 실행
         }
+
         return s_no_img;
     }
 
@@ -456,8 +463,16 @@ internal static class Settings
     }
 
     //
+    private static void TestAppPath()
+    {
+        if (!Directory.Exists(AppPath))
+            Directory.CreateDirectory(AppPath);
+    }
+
+    //
     public static void SaveSettings()
     {
+        TestAppPath();
         var lines = ReadSettings();
 
         var rfn = SettingsPath;
@@ -470,6 +485,7 @@ internal static class Settings
     //
     public static void SaveFileInfos()
     {
+        TestAppPath();
         if (s_recently == null)
             return;
 

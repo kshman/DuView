@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Cairo;
+#if WINDOWS
 using DgView.WebPWrapper;
+#endif
 using FileInfo = System.IO.FileInfo;
 
 namespace DgView.Chaek;
@@ -205,7 +207,7 @@ public abstract class BookBase : IDisposable
         if (ms == null)
             return new PageImage(Settings.OopsNoImage());
 
-        ImageSurface? img = null;
+        ImageSurface? img;
         List<AnimatedFrame>? frames = null;
 
         try
@@ -225,6 +227,7 @@ public abstract class BookBase : IDisposable
         }
         catch
         {
+#if WINDOWS
             // 지원하는 형식인지 확인하자
             ms.Position = 0;
             var raw = ms.ToArray();
@@ -241,12 +244,17 @@ public abstract class BookBase : IDisposable
                     frames = WebP.AnimDecode(raw) as List<AnimatedFrame>;
                 }
             }
+#else
+            // 윈도우 외에는 부디 WebP가 지원되기를...
+            img = null;
+#endif
         }
 
         if (storeCache && img != null)
             CacheStream(pageNo, ms);
 
-        return frames != null ? new PageImage(frames) : img != null ? new PageImage(img) : new PageImage(Settings.OopsNoImage());
+        return frames != null ? new PageImage(frames) :
+            img != null ? new PageImage(img) : new PageImage(Settings.OopsNoImage());
     }
 
     /// <summary>

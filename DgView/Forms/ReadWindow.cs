@@ -17,7 +17,9 @@ internal class ReadWindow : Window
     private string _notify_text = string.Empty;
 
     private WindowState _window_state = WindowState.Focused;
-    private int _paint_count = 0;
+
+    // ReSharper disable once NotAccessedField.Local
+    private int _paint_count;
 
     //
     private readonly DrawingArea _draw;
@@ -26,9 +28,6 @@ internal class ReadWindow : Window
     private readonly Image _directionImage;
     private readonly MenuItem _menuOpenFile;
     private readonly MenuItem _menuCloseFile;
-    private readonly MenuItem _subViewFit;
-    private readonly MenuItem _subViewLeftToRight;
-    private readonly MenuItem _subViewRightToLeft;
     private readonly CheckMenuItem _subViewZoom;
     private readonly MenuItem _menuSetting;
     private readonly MenuItem _menuExit;
@@ -43,6 +42,12 @@ internal class ReadWindow : Window
 
         Icon = Doumi.GetResourcePixmap("DgView.Resources.DuView.ico");
 
+        _images["test"] = Doumi.GetResourcePixmap("DgView.Resources.000.jpg");
+        _images["logo"] = Doumi.GetResourcePixmap("DgView.Resources.housebari_head_128.jpg");
+        _images["view_fit"] = Doumi.GetResourcePixmap("DgView.Resources.viewmode_pitwidth.png");
+        _images["view_l2r"] = Doumi.GetResourcePixmap("DgView.Resources.viewmode_l2r.png");
+        _images["view_r2l"] = Doumi.GetResourcePixmap("DgView.Resources.viewmode_r2l.png");
+
         // 타이틀바 + 메뉴
         var header = new HeaderBar();
         header.ShowCloseButton = true;
@@ -54,55 +59,91 @@ internal class ReadWindow : Window
         header.PackStart(_titleLabel);
 
         // 메뉴
-        _images["test"] = Doumi.GetResourcePixmap("DgView.Resources.000.jpg");
-        _images["logo"] = Doumi.GetResourcePixmap("DgView.Resources.housebari_head_128.jpg");
-        _images["view_fit"] = Doumi.GetResourcePixmap("DgView.Resources.viewmode_pitwidth.png");
-        _images["view_l2r"] = Doumi.GetResourcePixmap("DgView.Resources.viewmode_l2r.png");
-        _images["view_r2l"] = Doumi.GetResourcePixmap("DgView.Resources.viewmode_r2l.png");
-
         var accel = new AccelGroup();
         AddAccelGroup(accel);
 
         var menu = new Menu();
+
+        // 파일 열기
         _menuOpenFile = new MenuItem("열기");
         _menuOpenFile.Activated += MenuOpenFile_OnActivated;
         _menuOpenFile.AddAccelerator("activate", accel, (uint)Gdk.Key.F3, ModifierType.None, AccelFlags.Visible);
         menu.Append(_menuOpenFile);
+
+        // 파일 닫기
         _menuCloseFile = new MenuItem("닫기");
         _menuCloseFile.Activated += MenuClose_OnActivated;
         _menuCloseFile.AddAccelerator("activate", accel, (uint)Gdk.Key.F4, ModifierType.None, AccelFlags.Visible);
         menu.Append(_menuCloseFile);
-        menu.Append(new SeparatorMenuItem());
+
+        //
+        menu.Append(Doumi.CreateSeparatorMenuItem());
+
+        // 보기 서브 메뉴
         var menuViewMode = new MenuItem("보기");
-        var msubView = new Menu();
-        // 아래 세개는 RadioMenuItem으로 바꿔야 한다
-        _subViewFit = Doumi.CreateImageMenuItem("화면에 맞춤", _images["view_fit"]);
-        _subViewFit.Data["tag"] = ViewMode.Fit; // ViewMode.Fit으로 설정
-        _subViewFit.Activated += SubMenuViewMode_OnActivated;
-        _subViewFit.AddAccelerator("activate", accel, (uint)Gdk.Key.Key_0, ModifierType.None, AccelFlags.Visible);
-        msubView.Append(_subViewFit);
-        _subViewLeftToRight = Doumi.CreateImageMenuItem("왼쪽에서 오른쪽으로", _images["view_l2r"]);
-        _subViewLeftToRight.Data["tag"] = ViewMode.LeftToRight; // ViewMode.LeftToRight으로 설정
-        _subViewLeftToRight.Activated += SubMenuViewMode_OnActivated;
-        _subViewLeftToRight.AddAccelerator("activate", accel, (uint)Gdk.Key.Key_1, ModifierType.None,
-            AccelFlags.Visible);
-        msubView.Append(_subViewLeftToRight);
-        _subViewRightToLeft = Doumi.CreateImageMenuItem("오른쪽에서 왼쪽으로", _images["view_r2l"]);
-        _subViewRightToLeft.Data["tag"] = ViewMode.RightToLeft; // ViewMode.RightToLeft으로 설정
-        _subViewRightToLeft.Activated += SubMenuViewMode_OnActivated;
-        _subViewRightToLeft.AddAccelerator("activate", accel, (uint)Gdk.Key.Key_2, ModifierType.None,
-            AccelFlags.Visible);
-        msubView.Append(_subViewRightToLeft);
-        msubView.Append(new SeparatorMenuItem());
+        var subView = new Menu();
+
+        // 늘려보기
         _subViewZoom = new CheckMenuItem("늘려보기");
         _subViewZoom.Active = Settings.ViewZoom;
         _subViewZoom.Activated += SubMenuViewZoom_OnActivated;
         _subViewZoom.AddAccelerator("activate", accel, (uint)Gdk.Key.Key_0, ModifierType.ControlMask,
             AccelFlags.Visible);
-        msubView.Append(_subViewZoom);
-        msubView.ShowAll();
-        menuViewMode.Submenu = msubView;
+        subView.Append(_subViewZoom);
+
+        //
+        subView.Append(Doumi.CreateSeparatorMenuItem());
+
+        // 보기 모드 라디오 메뉴
+        subView.Append(Doumi.CreateLabelMenuItem("보는 방법"));
+        RadioMenuItem[] viewModeGroup = [];
+        var viewModes = new[]
+        {
+            new { Name = "화면에 맞춤", Value = ViewMode.Fit, HotKey = Gdk.Key.Key_0 },
+            new { Name = "왼쪽에서 오른쪽으로", Value = ViewMode.LeftToRight, HotKey = Gdk.Key.Key_1 },
+            new { Name = "오른쪽에서 왼쪽으로", Value = ViewMode.RightToLeft, HotKey = Gdk.Key.Key_2 }
+        };
+        foreach (var v in viewModes)
+        {
+            var item = new RadioMenuItem(viewModeGroup, v.Name);
+            item.Data["tag"] = v.Value; // ViewMode로 설정
+            item.Active = (Settings.ViewMode == v.Value);
+            item.Toggled += SubMenuViewMode_OnToggled;
+            item.AddAccelerator("activate", accel, (uint)v.HotKey, ModifierType.None, AccelFlags.Visible);
+            subView.Append(item);
+            viewModeGroup = item.Group;
+        }
+
+        //
+        subView.Append(Doumi.CreateSeparatorMenuItem());
+
+        // 품질 라디오 메뉴
+        subView.Append(Doumi.CreateLabelMenuItem("그림 품질"));
+        RadioMenuItem[] qualityGroup = [];
+        var qualities = new[]
+        {
+            new { Name = "빠른 처리", Value = ViewQuality.Fast },
+            new { Name = "기본", Value = ViewQuality.Default },
+            new { Name = "높은 품질", Value = ViewQuality.High },
+            new { Name = "픽셀 유지", Value = ViewQuality.Nearest },
+            new { Name = "양선형 보간", Value = ViewQuality.Bilinear }
+        };
+        foreach (var q in qualities)
+        {
+            var item = new RadioMenuItem(qualityGroup, q.Name);
+            item.Data["tag"] = q.Value;
+            item.Active = (Settings.ViewQuality == q.Value);
+            item.Toggled += SubMenuViewQuality_OnToggled;
+            subView.Append(item);
+            qualityGroup = item.Group;
+        }
+
+        //
+        subView.ShowAll();
+        menuViewMode.Submenu = subView;
         menu.Append(menuViewMode);
+
+        // 설정
         _menuSetting = new MenuItem("설정");
         _menuSetting.Activated += (_, _) =>
         {
@@ -110,12 +151,17 @@ internal class ReadWindow : Window
         };
         _menuSetting.AddAccelerator("activate", accel, (uint)Gdk.Key.F12, ModifierType.None, AccelFlags.Visible);
         menu.Append(_menuSetting);
-        menu.Append(new SeparatorMenuItem());
+
+        //
+        menu.Append(Doumi.CreateSeparatorMenuItem());
+
+        // 종료
         _menuExit = new MenuItem("종료");
         _menuExit.Activated += (_, _) => { Close(); };
         menu.Append(_menuExit);
         menu.ShowAll();
 
+        //
         var menuButton = new MenuButton();
         menuButton.Popup = menu;
         menuButton.CanFocus = false;
@@ -152,11 +198,29 @@ internal class ReadWindow : Window
         Gtk.Drag.DestSet(_draw, DestDefaults.All, [
             new TargetEntry("text/uri-list", 0, 0)
         ], DragAction.Copy);
-        _draw.DragDataReceived += OnDragDataReceived;
+        _draw.DragDataReceived += DrawingArea_OnDragDataReceived;
 
         var box = new Box(Orientation.Vertical, 0);
         box.PackStart(_draw, true, true, 0);
         Add(box);
+
+        // CSS
+        var css = new CssProvider();
+        css.LoadFromData(
+            """
+            .height-separator {
+                min-height: 1px;
+                margin-top: 8px;
+                margin-bottom: 8px;
+                background-color: @theme_fg_color;
+                background-image: none;
+            }
+            .label-menu-item {
+                color: #333;
+                font-weight: bold;
+            }
+            """);
+        StyleContext.AddProviderForScreen(Screen.Default, css, StyleProviderPriority.User);
 
         // 윈도우
         SetSizeRequest(300, 300);
@@ -196,11 +260,22 @@ internal class ReadWindow : Window
 
         _notify_timer.Stop();
         _notify_timer.Dispose();
+        
+        if ((_window_state & WindowState.Fullscreen) != 0)
+        {
+            // 전체 화면 모드 해제
+            _window_state &= ~WindowState.Fullscreen;
+            Unfullscreen();
+        }
 
         Settings.KeepMoveLocation();
-        GetSize(out int width, out var height);
-        Window.GetRootOrigin(out var rx, out var ry);
-        Settings.KeepLocationSize(rx, ry, width, height);
+        GetSize(out var width, out var height);
+#if WINDOWS
+        Window.GetRootOrigin(out var x, out var y);
+#else
+        GetPosition(out var x, out var y);
+#endif
+        Settings.KeepLocationSize(x, y, width, height);
         Settings.SaveSettings();
         Settings.SaveFileInfos();
 
@@ -216,9 +291,9 @@ internal class ReadWindow : Window
 
     private void ReadWindow_OnWindowStateEvent(object o, WindowStateEventArgs args)
     {
-        if ((args.Event.ChangedMask & Gdk.WindowState.Maximized) != 0)
+        if ((args.Event.ChangedMask & WindowState.Maximized) != 0)
         {
-            if ((args.Event.NewWindowState & Gdk.WindowState.Maximized) != 0)
+            if ((args.Event.NewWindowState & WindowState.Maximized) != 0)
             {
                 // 최대화됨
                 _window_state |= WindowState.Maximized;
@@ -230,9 +305,9 @@ internal class ReadWindow : Window
             }
         }
 
-        if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0)
+        if ((args.Event.ChangedMask & WindowState.Iconified) != 0)
         {
-            if ((args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0)
+            if ((args.Event.NewWindowState & WindowState.Iconified) != 0)
             {
                 // 최소화됨
                 _window_state |= WindowState.Iconified;
@@ -247,7 +322,7 @@ internal class ReadWindow : Window
         _draw.QueueDraw(); // 다시 그리기 요청
     }
 
-    private void OnDragDataReceived(object o, DragDataReceivedArgs args)
+    private void DrawingArea_OnDragDataReceived(object o, DragDataReceivedArgs args)
     {
         // 드롭된 데이터에서 파일 경로 추출
         var uris = args.SelectionData.Uris;
@@ -262,32 +337,39 @@ internal class ReadWindow : Window
         Gtk.Drag.Finish(args.Context, true, false, args.Time);
     }
 
-    private ModifierType _prev_state;
-    private Gdk.Key _prev_key;
+    private ModifierType _prev_key_mask;
+    private Gdk.Key _prev_key_code;
 
     [GLib.ConnectBefore]
     private void ReadWindow_OnKeyReleaseEvent(object o, KeyReleaseEventArgs args)
     {
-        _prev_state = ModifierType.None;
-        _prev_key = 0;
+        _prev_key_mask = ModifierType.None;
+        _prev_key_code = 0;
     }
 
     [GLib.ConnectBefore]
     private void ReadWindow_OnKeyPressEvent(object o, KeyPressEventArgs args)
     {
-        if (args.Event.Key == _prev_key && args.Event.State == _prev_state)
+        var code = args.Event.Key;
+        var mask = args.Event.State & ~ ModifierType.Mod2Mask; // Num Lock 무시
+
+        if (code == _prev_key_code && mask == _prev_key_mask)
         {
             // 중복 입력 방지
             return;
         }
 
-        _prev_state = args.Event.State;
-        _prev_key = args.Event.Key;
+#if DEBUG && false
+        System.Diagnostics.Debug.WriteLine($"Key pressed: {args.Event.Key} ({args.Event.State})");
+#endif
 
-        if (args.Event.State == ModifierType.ControlMask)
+        _prev_key_mask = mask;
+        _prev_key_code = code;
+
+        if (mask == ModifierType.ControlMask)
         {
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-            switch (args.Event.Key)
+            switch (code)
             {
                 case Gdk.Key.w or Gdk.Key.W:
                     CloseBook();
@@ -303,6 +385,10 @@ internal class ReadWindow : Window
 
                 case Gdk.Key.d or Gdk.Key.D:
                     DeleteBookOrItem();
+                    break;
+
+                case Gdk.Key.F3:
+                    OpenLastBook();
                     break;
 
                 // 페이지
@@ -331,13 +417,28 @@ internal class ReadWindow : Window
                     break;
             }
         }
-        else if (args.Event.State == ModifierType.ShiftMask)
+        else if (mask == ModifierType.Mod1Mask)
         {
+            if (code is Gdk.Key.Return or Gdk.Key.KP_Enter)
+                ToggleFullScreen();
+        }
+        else if (mask == ModifierType.ShiftMask)
+        {
+        }
+        else if (mask == (ModifierType.ControlMask | ModifierType.ShiftMask))
+        {
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+            switch (code)
+            {
+                case Gdk.Key.z or Gdk.Key.Z:
+                    OpenLastBook();
+                    break;
+            }
         }
         else
         {
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-            switch (args.Event.Key)
+            switch (code)
             {
                 // 끝
                 case Gdk.Key.Escape:
@@ -421,7 +522,7 @@ internal class ReadWindow : Window
                     break;
 
                 case Gdk.Key.f or Gdk.Key.F:
-                    // 풀스크린
+                    ToggleFullScreen();
                     break;
 
 #if DEBUG
@@ -457,6 +558,22 @@ internal class ReadWindow : Window
         }
     }
 
+    private void ToggleFullScreen()
+    {
+        if ((_window_state & WindowState.Fullscreen) != 0)
+        {
+            // 전체 화면 모드 해제
+            _window_state &= ~WindowState.Fullscreen;
+            Unfullscreen();
+        }
+        else
+        {
+            // 전체 화면 모드로 전환
+            _window_state |= WindowState.Fullscreen;
+            Fullscreen();
+        }
+    }
+    
     #endregion
 
     #region 메뉴 및 액셀 그룹
@@ -466,6 +583,7 @@ internal class ReadWindow : Window
         KeepAbove = Settings.GeneralAlwaysTop;
         UpdateViewZoom(Settings.ViewZoom);
         UpdateViewMode(CurrentViewMode);
+        UpdateViewQuality(Settings.ViewQuality);
     }
 
     private void UpdateViewZoom(bool zoom, bool redraw = true)
@@ -495,6 +613,14 @@ internal class ReadWindow : Window
         DrawBook();
     }
 
+    private void UpdateViewQuality(ViewQuality quality, bool redraw = true)
+    {
+        Settings.ViewQuality = quality;
+
+        if (redraw)
+            DrawBook();
+    }
+
     private void MenuOpenFile_OnActivated(object? s, EventArgs e)
     {
         OpenBookDialog();
@@ -510,10 +636,16 @@ internal class ReadWindow : Window
         UpdateViewZoom(!_subViewZoom.Active);
     }
 
-    private void SubMenuViewMode_OnActivated(object? s, EventArgs e)
+    private void SubMenuViewMode_OnToggled(object? s, EventArgs e)
     {
-        if (s is MenuItem item && item.Data["tag"] is ViewMode mode)
+        if (s is RadioMenuItem { Active: true } item && item.Data["tag"] is ViewMode mode)
             UpdateViewMode(mode);
+    }
+
+    private void SubMenuViewQuality_OnToggled(object? s, EventArgs e)
+    {
+        if (s is RadioMenuItem { Active: true } item && item.Data["tag"] is ViewQuality quality)
+            UpdateViewQuality(quality);
     }
 
     #endregion
@@ -526,8 +658,14 @@ internal class ReadWindow : Window
             return;
 
         // 폰트 설정
-        cr.SelectFontFace("Serif", FontSlant.Normal, FontWeight.Normal);
-        cr.SetFontSize(32);
+        const string FontFamily =
+#if WINDOWS
+            "Serif";
+#else
+            "Sans";
+#endif
+        cr.SelectFontFace(FontFamily, FontSlant.Normal, FontWeight.Normal);
+        cr.SetFontSize(40);
 
         // 텍스트 크기 측정
         var te = cr.TextExtents(_notify_text);
@@ -540,16 +678,19 @@ internal class ReadWindow : Window
         var y = (areaHeight - te.Height) / 2 - te.YBearing;
 
         // 배경 사각형 좌표 및 크기 계산 (여백 포함)
-        const double padding = 12.0;
+        const double padding = 18.0;
         var rectX = x + te.XBearing - padding;
         var rectY = y + te.YBearing - padding;
         var rectW = te.Width + padding * 2;
         var rectH = te.Height + padding * 2;
 
         // 배경색 칠하기
-        cr.SetSourceRGBA(0, 0.12, 0.12, 0.7);
+        cr.SetSourceRGBA(0, 0.12, 0.12, 0.8);
         cr.Rectangle(rectX, rectY, rectW, rectH);
-        cr.Fill();
+        cr.FillPreserve();
+        cr.LineWidth = 3;
+        cr.SetSourceRGB(1, 1, 0);
+        cr.Stroke(); // 테두리만 그림
 
         // 텍스트 그리기
         cr.SetSourceRGB(1, 1, 1); // 흰색
@@ -618,16 +759,21 @@ internal class ReadWindow : Window
 
     private void OpenBookDialog()
     {
-        var dialog = new FileChooserDialog("파일 열기", this, FileChooserAction.Open);
+        using var dialog = new FileChooserDialog("파일 열기", this, FileChooserAction.Open);
         dialog.AddButton(Stock.Cancel, ResponseType.Cancel);
         dialog.AddButton(Stock.Open, ResponseType.Accept);
-        if (dialog.Run() == (int)ResponseType.Accept)
-        {
-            var filename = dialog.Filename;
-            OpenBook(filename);
-        }
 
-        dialog.Destroy();
+        var flt = new FileFilter();
+        flt.Name = "책 파일";
+        flt.AddPattern("*.zip");
+        flt.AddPattern("*.cbz");
+        dialog.AddFilter(flt);
+
+        if (dialog.Run() != (int)ResponseType.Accept)
+            return;
+
+        var filename = dialog.Filename;
+        OpenBook(filename);
     }
 
     private void OpenBook(string filename, int page = -1)
@@ -731,6 +877,15 @@ internal class ReadWindow : Window
         OpenBook(filename);
     }
 
+    private void OpenLastBook()
+    {
+        var book = Settings.Book;
+        if (book != null && book.FileName == Settings.LastFileName)
+            return;
+        // TODO: 원래 여기 패스코드
+        OpenBook(Settings.LastFileName);
+    }
+
     private void OpenRememberBook()
     {
         var filename = Settings.RememberFileName;
@@ -825,28 +980,32 @@ internal class ReadWindow : Window
         }
     }
 
-    private void RenameBook(bool exRen = false)
+    private void RenameBook()
     {
-#if false
         var book = Settings.Book;
         if (book == null)
             return;
 
         // TODO: 패스 코드 적용
 
-        var dlg = new RenexForm();
-        if (dlg.ShowDialog(this, book.OnlyFileName) != DialogResult.OK)
-            return;
+        string? filename;
+        bool reopen;
+        using (var dlg = new RenexDialog(this, book.OnlyFileName))
+        {
+            if (dlg.Run() != (int)ResponseType.Ok)
+                return;
+            filename = dlg.Filename;
+            reopen = dlg.Reopen;
+        }
 
-        var filename = dlg.Filename;
         if (filename.EmptyString() || book.OnlyFileName.Equals(filename))
             return;
 
-        var next = dlg.Reopen ? null : book.FindNextFileAny(BookDirection.Next);
+        var next = reopen ? null : book.FindNextFileAny(BookDirection.Next);
 
         if (!book.RenameFile(filename, out var fullPath))
         {
-            Notify(Resources.CannotRenameBook, 3000);
+            Notify($"파일 이름을 바꿀 수 없어요!{Environment.NewLine}\"{filename}\"", 3000);
             return;
         }
 
@@ -854,7 +1013,6 @@ internal class ReadWindow : Window
         CloseBook();
 
         OpenBook(next ?? fullPath);
-#endif
     }
 
     private void MoveBook()
@@ -1023,12 +1181,12 @@ internal class ReadWindow : Window
 
     private void DrawOnDrawn(object o, DrawnArgs args)
     {
-        System.Diagnostics.Debug.WriteLine($"{DateTime.Now} 그리기!");
-
         _width = _draw.AllocatedWidth;
         _height = _draw.AllocatedHeight;
 
         var cr = args.Cr;
+        cr.Antialias = Antialias.Subpixel;
+
         cr.SetSourceRGB(0.1, 0.1, 0.1); // 더 어두운 배경
         cr.Paint();
         cr.SetSourceRGB(0.2, 0.4, 0.6);
@@ -1050,6 +1208,7 @@ internal class ReadWindow : Window
             Gdk.CairoHelper.SetSourcePixbuf(cr, img, _width - img.Width - 50, _height - img.Height - 50);
         else
             Gdk.CairoHelper.SetSourcePixbuf(cr, img, 0, 0);
+
         cr.Paint();
         cr.Restore();
     }
@@ -1062,13 +1221,23 @@ internal class ReadWindow : Window
         cr.Save();
         cr.Translate(rt.X, rt.Y);
         cr.Scale((double)nw / img.Width, (double)nh / img.Height);
-        cr.SetSourceSurface(img, 0, 0);
-        cr.Paint();
+
+        using (var pattern = new SurfacePattern(img))
+        {
+            pattern.Filter = Doumi.QualityToFilter(Settings.ViewQuality);
+            cr.SetSource(pattern);
+            cr.Paint();
+        }
+
+        // 원래 아래 두줄인데 필터 적용건으로 위로 바뀜
+        //cr.SetSourceSurface(img, 0, 0);
+        //cr.Paint();
         cr.Restore();
     }
 
     private void DrawBitmapHalfHalf(Context cr, ImageSurface l, ImageSurface r)
     {
+        var qf = Doumi.QualityToFilter(Settings.ViewQuality);
         var hw = _width / 2;
 
         // 왼쪽 이미지
@@ -1078,8 +1247,14 @@ internal class ReadWindow : Window
         cr.Save();
         cr.Translate(lb.X, lb.Y);
         cr.Scale((double)lw / l.Width, (double)lh / l.Height);
-        cr.SetSourceSurface(l, 0, 0);
-        cr.Paint();
+        using (var pattern = new SurfacePattern(l))
+        {
+            pattern.Filter = qf;
+            cr.SetSource(pattern);
+            cr.Paint();
+        }
+        //cr.SetSourceSurface(l, 0, 0);
+        //cr.Paint();
         cr.Restore();
 
         // 오른쪽 이미지
@@ -1090,8 +1265,14 @@ internal class ReadWindow : Window
         cr.Save();
         cr.Translate(rb.X, rb.Y);
         cr.Scale((double)rw / r.Width, (double)rh / r.Height);
-        cr.SetSourceSurface(r, 0, 0);
-        cr.Paint();
+        using (var pattern = new SurfacePattern(r))
+        {
+            pattern.Filter = qf;
+            cr.SetSource(pattern);
+            cr.Paint();
+        }
+        //cr.SetSourceSurface(r, 0, 0);
+        //cr.Paint();
         cr.Restore();
     }
 

@@ -253,24 +253,24 @@ public static class Doumi
             switch (c1)
             {
                 case false when !c2:
+                {
+                    var letter1 = char.IsLetter(s1, i1);
+                    var letter2 = char.IsLetter(s2, i2);
+                    switch (letter1)
                     {
-                        var letter1 = char.IsLetter(s1, i1);
-                        var letter2 = char.IsLetter(s2, i2);
-                        switch (letter1)
-                        {
-                            case true when letter2:
-                            case false when !letter2:
-                                r = letter1 && letter2
-                                    ? char.ToLower(s1[i1]).CompareTo(char.ToLower(s2[i2]))
-                                    : s1[i1].CompareTo(s2[i2]);
-                                if (r != 0) return r;
-                                break;
-                            case false when letter2:
-                                return -1;
-                            case true when !letter2:
-                                return 1;
-                        }
+                        case true when letter2:
+                        case false when !letter2:
+                            r = letter1 && letter2
+                                ? char.ToLower(s1[i1]).CompareTo(char.ToLower(s2[i2]))
+                                : s1[i1].CompareTo(s2[i2]);
+                            if (r != 0) return r;
+                            break;
+                        case false when letter2:
+                            return -1;
+                        case true when !letter2:
+                            return 1;
                     }
+                }
                     break;
                 case true when c2:
                     r = InternalNumberCompare(s1, ref i1, s2, ref i2);
@@ -370,6 +370,15 @@ public static class Doumi
             StringAsNumericCompare(x?.FullName, y?.FullName);
     }
 
+    public static Cairo.Filter QualityToFilter(ViewQuality quality) => quality switch
+    {
+        ViewQuality.Fast => Cairo.Filter.Fast,
+        ViewQuality.High => Cairo.Filter.Best,
+        ViewQuality.Nearest => Cairo.Filter.Nearest,
+        ViewQuality.Bilinear => Cairo.Filter.Bilinear,
+        _ => Cairo.Filter.Good
+    };
+
     /// <summary>
     /// 리소스 스트림을 가져옵니다.
     /// </summary>
@@ -423,6 +432,23 @@ public static class Doumi
         item.Add(box);
         return item;
     }
+
+    public static SeparatorMenuItem CreateSeparatorMenuItem(string? style = "height-separator")
+    {
+        var item = new SeparatorMenuItem();
+        if (!style.EmptyString())
+            item.StyleContext.AddClass(style);
+        return item;
+    }
+
+    public static MenuItem CreateLabelMenuItem(string text, string? style = "label-menu-item")
+    {
+        var item = new MenuItem(text);
+        item.Sensitive = false;
+        if (!style.EmptyString())
+            item.StyleContext.AddClass(style);
+        return item;
+    }
 }
 
 /// <summary>
@@ -434,10 +460,12 @@ public enum HorizAlign
     /// 왼쪽 정렬
     /// </summary>
     Left,
+
     /// <summary>
     /// 가운데 정렬
     /// </summary>
     Center,
+
     /// <summary>
     /// 오른쪽 정렬
     /// </summary>

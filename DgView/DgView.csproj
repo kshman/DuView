@@ -9,6 +9,13 @@
         <ApplicationIcon>Resources\DuView.ico</ApplicationIcon>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- Windows 대상일 때 WINDOWS 상수 정의 -->
+        <DefineConstants Condition="'$(OS)' == 'Windows_NT'">$(DefineConstants);WINDOWS</DefineConstants>
+        <!-- Linux/macOS 구분을 원할 경우 -->
+        <DefineConstants Condition="'$(OS)' != 'Windows_NT'">$(DefineConstants);UNIX</DefineConstants>
+    </PropertyGroup>
+    
     <ItemGroup>
         <None Remove="**\*.glade" />
         <EmbeddedResource Include="**\*.glade">
@@ -33,10 +40,18 @@
         <None Remove="Resources\viewmode_r2l.png" />
         <Content Include="Resources\DuView.ico" />
         <EmbeddedResource Include="Resources\viewmode_r2l.png" />
+        <None Remove="Resources\icon_rename.png" />
+        <EmbeddedResource Include="Resources\icon_rename.png" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="GtkSharp" Version="3.24.24.*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Windows 전용 소스 파일 -->
+        <Compile Remove="WebPWrapper\WebPWrapper.cs" Condition="'$(OS)' != 'Windows_NT'" />
+        <None Include="WebPWrapper\WebPWrapper.cs" Condition="'$(OS)' != 'Windows_NT'" />
     </ItemGroup>
 
 </Project>
