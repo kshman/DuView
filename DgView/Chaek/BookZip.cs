@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO.Compression;
 
 namespace DgView.Chaek;
@@ -142,8 +142,8 @@ internal class BookZip : BookBase
     public override string? FindNextFile(BookDirection direction)
     {
         var ffs = GetNearFileInfos();
-        if (ffs == null || ffs.Length == 0)
-            return null;
+        if (ffs is not { Length: > 1 })
+	        return null;
 
         Array.Sort(ffs, new Doumi.FileInfoComparer());
         var at = Array.FindIndex(ffs, x => x.FullName == FileName);
@@ -162,7 +162,7 @@ internal class BookZip : BookBase
     public override string? FindRandomFile()
     {
         var ffs = GetNearFileInfos();
-        if (ffs == null || ffs.Length == 0)
+        if (ffs is not { Length: > 1 })
             return null;
 
         var rand = new Random();
