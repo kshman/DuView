@@ -2,7 +2,7 @@
 
 namespace DgView;
 
-internal static class Settings
+internal static class Configs
 {
     private static SettingsHash? s_lines;
 
@@ -37,6 +37,9 @@ internal static class Settings
     private static bool s_use_magnetic_window;
     private static bool s_confirm_when_delete_file = true;
     private static bool s_always_on_top;
+    private static bool s_update_notify = true;
+    private static string s_external_run = string.Empty;
+    private static bool s_reload_after_external = true;
 
     // -- 마우스
     private static bool s_use_double_click_state;
@@ -57,10 +60,10 @@ internal static class Settings
 #endif
 
     //
-    private static string SettingsPath => Path.Combine(AppPath, "DgView.config");
+    public static string SettingsPath => Path.Combine(AppPath, "DgView.config");
 
     //
-    private static string RecentlyPath => Path.Combine(AppPath, "DgView.recently");
+    public static string RecentlyPath => Path.Combine(AppPath, "DgView.recently");
 
     //
     private static SettingsHash ReadSettings()
@@ -83,7 +86,7 @@ internal static class Settings
         var lines = ReadSettings();
 
         var v = lines.GetString("Window");
-        if (v.TestHave())
+        if (!string.IsNullOrEmpty(v))
         {
             var ss = v.Split(',');
             try
@@ -102,15 +105,15 @@ internal static class Settings
 
         //
         v = lines.GetDecodedString("LastFolder");
-        if (!v.EmptyString() && Directory.Exists(v))
+        if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
             s_last_folder = v;
 
         v = lines.GetDecodedString("LastFileName");
-        if (!v.EmptyString() && File.Exists(v))
+        if (!string.IsNullOrEmpty(v) && File.Exists(v))
             s_last_filename = v;
 
         v = lines.GetDecodedString("RememberFileName");
-        if (!v.EmptyString() && File.Exists(v))
+        if (!string.IsNullOrEmpty(v) && File.Exists(v))
             s_remember_filename = v;
 
         s_max_recently = lines.GetInt("MaxRecently", s_max_recently);
@@ -128,6 +131,9 @@ internal static class Settings
         s_use_magnetic_window = lines.GetBool("GeneralUseMagnetic", s_use_magnetic_window);
         s_confirm_when_delete_file = lines.GetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
         s_always_on_top = lines.GetBool("GeneralAlwaysTop", s_always_on_top);
+        s_update_notify = lines.GetBool("GeneralUpdateNotify", s_update_notify);
+        s_external_run = lines.GetString("ExternalRun") ?? s_external_run;
+        s_reload_after_external = lines.GetBool("ReloadAfterExternalExit", s_reload_after_external);
 
         //
         s_use_double_click_state = lines.GetBool("MouseUseDoubleClick", s_use_double_click_state);
@@ -142,7 +148,7 @@ internal static class Settings
         for (var i = 0;; i++)
         {
             var s = lines.GetString($"MoveKeep{i}");
-            if (s.EmptyString())
+            if (string.IsNullOrEmpty(s))
                 break;
             var n = s.LastIndexOf("@:", StringComparison.Ordinal);
             if (n == -1)
@@ -355,7 +361,7 @@ internal static class Settings
     //
     public static int GetRecentlyPage(string onlyFilename)
     {
-        if (onlyFilename.EmptyString() || s_recently == null)
+        if (string.IsNullOrEmpty(onlyFilename) || s_recently == null)
             return 0;
 
         var s = Alter.EncodingString(onlyFilename);
@@ -365,7 +371,7 @@ internal static class Settings
     //
     public static void SetRecentlyPage(string onlyFilename, int page)
     {
-        if (onlyFilename.EmptyString() || s_recently == null)
+        if (string.IsNullOrEmpty(onlyFilename) || s_recently == null)
             return;
 
         var s = Alter.EncodingString(onlyFilename);
@@ -434,7 +440,7 @@ internal static class Settings
         if (from < to)
             to--;
         s_moves.Insert(to, m);
-
+        
         return true;
     }
 
@@ -452,11 +458,11 @@ internal static class Settings
         for (var i = 0; i < s_moves.Count; i++)
         {
             var m = s_moves[i];
-            if (m.Key.EmptyString())
+            if (string.IsNullOrEmpty(m.Key))
                 break;
             // lines.SetEncodedString
             lines.SetString($"MoveKeep{i}",
-                m.Value.WhiteString() ? m.Key : $"{m.Key}@:{m.Value}");
+                string.IsNullOrWhiteSpace(m.Value) ? m.Key : $"{m.Key}@:{m.Value}");
         }
 
         lines.SetString($"MoveKeep{s_moves.Count}", string.Empty);
@@ -565,6 +571,48 @@ internal static class Settings
 
             var lines = ReadSettings();
             lines.SetBool("GeneralAlwaysTop", s_always_on_top = value);
+        }
+    }
+
+    //
+    public static bool GeneralUpdateNotify
+    {
+        get => s_update_notify;
+        set
+        {
+            if (value == s_update_notify)
+                return;
+
+            var lines = ReadSettings();
+            lines.SetBool("GeneralUpdateNotify", s_update_notify = value);
+        }
+    }
+
+    //
+    public static string ExternalRun
+    {
+        get => s_external_run;
+        set
+        {
+            if (value.Equals(s_external_run))
+                return;
+
+            var lines = ReadSettings();
+            lines.SetString("ExternalRun", s_external_run = value);
+        }
+    }
+
+    //
+    public static bool ReloadAfterExternal
+    {
+        get => s_reload_after_external;
+        set
+        {
+            if (value == s_reload_after_external)
+                return;
+
+            var lines = ReadSettings();
+            lines.SetBool("ReloadAfterExternalExit", s_reload_after_external = value);
         }
     }
 

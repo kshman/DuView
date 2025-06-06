@@ -52,7 +52,7 @@ public abstract class BookBase : IDisposable
     /// </summary>
     public ViewMode ViewMode { get; set; } = ViewMode.Follow;
 
-    private ViewMode ActualViewMode => ViewMode == ViewMode.Follow ? Settings.ViewMode : ViewMode;
+    private ViewMode ActualViewMode => ViewMode == ViewMode.Follow ? Configs.ViewMode : ViewMode;
 
     /// <summary>엔트리 저장소</summary>
     protected readonly List<object> Entries = [];
@@ -168,7 +168,7 @@ public abstract class BookBase : IDisposable
 
         var size = ms.Length;
 
-        if ((CacheSize + size) > Settings.MaxActualPageCache && _cache.Count > 0)
+        if ((CacheSize + size) > Configs.MaxActualPageCache && _cache.Count > 0)
         {
             var (key, value) = _cache.ElementAt(0);
 
@@ -192,7 +192,7 @@ public abstract class BookBase : IDisposable
     private PageImage ReadPage(int pageNo)
     {
         if (pageNo < 0 || pageNo >= TotalPage)
-            return new PageImage(Settings.OopsNoImage());
+            return new PageImage(Configs.OopsNoImage());
 
         var en = Entries[pageNo];
         var storeCache = false;
@@ -205,9 +205,9 @@ public abstract class BookBase : IDisposable
         }
 
         if (ms == null)
-            return new PageImage(Settings.OopsNoImage());
+            return new PageImage(Configs.OopsNoImage());
 
-        ImageSurface? img;
+        ImageSurface? img = null;
         List<AnimatedFrame>? frames = null;
 
         try
@@ -246,7 +246,6 @@ public abstract class BookBase : IDisposable
             }
 #else
             // 윈도우 외에는 부디 WebP가 지원되기를...
-            img = null;
 #endif
         }
 
@@ -254,7 +253,7 @@ public abstract class BookBase : IDisposable
             CacheStream(pageNo, ms);
 
         return frames != null ? new PageImage(frames) :
-            img != null ? new PageImage(img) : new PageImage(Settings.OopsNoImage());
+            img != null ? new PageImage(img) : new PageImage(Configs.OopsNoImage());
     }
 
     /// <summary>

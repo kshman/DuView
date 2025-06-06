@@ -1,6 +1,21 @@
 ﻿namespace DgView.Chaek;
 
 /// <summary>
+/// 수평 정렬 방식을 지정합니다.
+/// </summary>
+public enum HorizAlign
+{
+    /// <summary>왼쪽 정렬</summary>
+    Left,
+
+    /// <summary>가운데 정렬</summary>
+    Center,
+
+    /// <summary>오른쪽 정렬</summary>
+    Right
+}
+
+/// <summary>
 /// 보기 모드
 /// </summary>
 public enum ViewMode
@@ -101,15 +116,15 @@ public enum PassCodeUsage
     /// <summary>실행 할 때</summary>
     Run,
 
-    /// <summary></summary>
+    /// <summary>설정을 열 때</summary>
     Option,
 
-    /// <summary></summary>
+    /// <summary>마지막 책을 고를 때</summary>
     LastBook,
 
-    /// <summary></summary>
+    /// <summary>책을 옮길 때</summary>
     MoveBook,
 
-    /// <summary></summary>
+    /// <summary>책 이름을 바꿀 때</summary>
     RenameBook,
 }

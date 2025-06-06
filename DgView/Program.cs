@@ -5,11 +5,12 @@ global using System;
 global using System.IO;
 global using System.Linq;
 global using PixBitmap = Gdk.Pixbuf;
+global using GdkKey = Gdk.Key;
 
 var filename = args.Length > 1 ? args[1] : string.Empty;
-DgView.Settings.OnMainBefore();
+DgView.Configs.OnMainBefore();
 
-if (!DgView.Settings.GeneralRunOnce)
+if (!DgView.Configs.GeneralRunOnce)
     Work(filename);
 else
 {
@@ -23,11 +24,13 @@ return 0;
 
 static void Work(string filename)
 {
-    DgView.Settings.OnMainAfter();
+    DgView.Configs.OnMainAfter();
 
     Application.Init();
 
-
+    var css = new CssProvider();
+    css.LoadFromResource("DgView.Resources.style.css");
+    StyleContext.AddProviderForScreen(Gdk.Screen.Default, css, StyleProviderPriority.Application);
 
     var app = new Application("ksh.DgView", GLib.ApplicationFlags.None);
     app.Register(GLib.Cancellable.Current);

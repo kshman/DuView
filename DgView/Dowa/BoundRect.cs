@@ -63,6 +63,18 @@ public class BoundRect
         Height = rect.Height;
     }
 
+    public bool Contains(int x, int y)
+    {
+        return x >= Left && x < Right && y >= Top && y < Bottom;
+    }
+
+    public bool Contains(double dx, double dy)
+    {
+        var x = (int)dx;
+        var y = (int)dy;
+        return x >= Left && x < Right && y >= Top && y < Bottom;
+    }
+
     public bool IsValidLocation =>
         X >= 0 && Y >= 0;
 
