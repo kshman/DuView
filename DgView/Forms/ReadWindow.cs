@@ -17,6 +17,7 @@ internal class ReadWindow : Window
     private string _notify_text = string.Empty;
 
     private WindowState _window_state = WindowState.Focused;
+    private readonly PageDialog _page_dialog;
 
     // ReSharper disable once NotAccessedField.Local
     private int _paint_count;
@@ -234,6 +235,8 @@ internal class ReadWindow : Window
 
         #endregion
 
+        _page_dialog = new PageDialog();
+
         _notify_timer = new System.Timers.Timer() { Interval = 5000 };
         _notify_timer.Elapsed += (_, _) =>
         {
@@ -260,6 +263,7 @@ internal class ReadWindow : Window
 
         _notify_timer.Stop();
         _notify_timer.Dispose();
+        _page_dialog.Destroy();
         
         if ((_window_state & WindowState.Fullscreen) != 0)
         {
@@ -428,12 +432,8 @@ internal class ReadWindow : Window
         else if (mask == (ModifierType.ControlMask | ModifierType.ShiftMask))
         {
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-            switch (code)
-            {
-                case Gdk.Key.z or Gdk.Key.Z:
-                    OpenLastBook();
-                    break;
-            }
+            if (code is Gdk.Key.z or Gdk.Key.Z) 
+                OpenLastBook();
         }
         else
         {
@@ -738,7 +738,7 @@ internal class ReadWindow : Window
             book.Dispose();
             Settings.Book = null;
 
-            // 페이지 폼 리셋
+            _page_dialog.ResetBook();
             GC.Collect();
         }
 
@@ -820,7 +820,7 @@ internal class ReadWindow : Window
             book.PrepareImages();
 
             SetBookInfo(page);
-            // _page_form.SetBook(book);
+            _page_dialog.SetBook(book);
             Settings.LastFileName = filename;
 
             DrawBook();
@@ -1141,18 +1141,18 @@ internal class ReadWindow : Window
 
     private void PageSelect()
     {
-#if false
         var book = Settings.Book;
         if (book == null)
             return;
+        
+        // TODO: 패스 코드 적용
 
-        if (_page_form.ShowDialog(this, book.CurrentPage) != DialogResult.OK)
+        if (!_page_dialog.ShowDialog(this, book.CurrentPage))
             return;
-
-        book.CurrentPage = _page_form.SelectedPage;
+        
+        book.CurrentPage = _page_dialog.SelectedPage;
         book.PrepareImages();
         DrawBook();
-#endif
     }
 
     private void StopAnimation()

@@ -27,6 +27,7 @@ public class RenexDialog : Dialog
         //Modal = true;
         //WindowPosition = parent != null ? WindowPosition.CenterOnParent : WindowPosition.Center;
         Resizable = false;
+        SkipTaskbarHint = true;
         
         Icon = Doumi.GetResourcePixmap("DgView.Resources.icon_rename.png");
         
