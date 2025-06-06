@@ -95,6 +95,10 @@ public class PageImage : IDisposable
 
     private bool _disposed;
 
+    /// <summary>
+    /// Dispose 메서드의 실제 구현입니다.
+    /// </summary>
+    /// <param name="disposing">Dispose 여부</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)
@@ -108,6 +112,7 @@ public class PageImage : IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Dispose(true);

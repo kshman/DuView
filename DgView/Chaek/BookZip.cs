@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO.Compression;
 
 namespace DgView.Chaek;
@@ -123,8 +123,7 @@ internal class BookZip : BookBase
             Doumi.StringAsNumericCompare(x?.FullName, y?.FullName);
     }
 
-    /// <inheritdoc />
-    public override string? FindNextFile(BookDirection direction)
+    private FileInfo[]? GetNearFileInfos()
     {
         var fi = new FileInfo(FileName);
         if (!fi.Exists)
@@ -134,7 +133,17 @@ internal class BookZip : BookBase
         if (di == null)
             return null;
 
-        var ffs = di.GetFiles("*.zip");
+        var zips = di.GetFiles("*.zip");
+        var cbzs = di.GetFiles("*.cbz");
+        return zips.Concat(cbzs).ToArray();
+    }
+
+    /// <inheritdoc />
+    public override string? FindNextFile(BookDirection direction)
+    {
+        var ffs = GetNearFileInfos();
+        if (ffs is not { Length: > 1 })
+	        return null;
 
         Array.Sort(ffs, new Doumi.FileInfoComparer());
         var at = Array.FindIndex(ffs, x => x.FullName == FileName);
@@ -147,6 +156,26 @@ internal class BookZip : BookBase
             return null;
 
         return ffs[want].FullName;
+    }
+
+    /// <inheritdoc />
+    public override string? FindRandomFile()
+    {
+        var ffs = GetNearFileInfos();
+        if (ffs is not { Length: > 1 })
+            return null;
+
+        var rand = new Random();
+        while (true)
+        {
+            var at = rand.Next(ffs.Length);
+            if (at < 0 || at >= ffs.Length)
+                continue;
+            var fi = ffs[at];
+            if (fi.FullName == FileName)
+                continue;
+            return fi.FullName;
+        }
     }
 
     /// <inheritdoc />

@@ -2,13 +2,19 @@
 
 namespace DgView;
 
-internal static class Settings
+/// <summary>
+/// 프로그램의 전역 설정을 관리하는 정적 클래스입니다.
+/// 윈도우 위치, 뷰 모드, 최근 파일, 보안 등 다양한 설정을 저장하고 불러옵니다.
+/// </summary>
+internal static class Configs
 {
     private static SettingsHash? s_lines;
 
     private static Cairo.ImageSurface? s_no_img;
 
-    // 책
+    /// <summary>
+    /// 현재 열려 있는 책입니다.
+    /// </summary>
     internal static BookBase? Book { get; set; }
 
     // -- 윈도우 정보
@@ -37,6 +43,9 @@ internal static class Settings
     private static bool s_use_magnetic_window;
     private static bool s_confirm_when_delete_file = true;
     private static bool s_always_on_top;
+    private static bool s_update_notify = true;
+    private static string s_external_run = string.Empty;
+    private static bool s_reload_after_external = true;
 
     // -- 마우스
     private static bool s_use_double_click_state;
@@ -48,7 +57,9 @@ internal static class Settings
     private static string s_pass_code = string.Empty;
     private static string s_pass_usages = string.Empty;
 
-    //
+    /// <summary>
+    /// 프로그램 데이터가 저장되는 경로를 반환합니다.
+    /// </summary>
     public static string AppPath =>
 #if WINDOWS
         AppContext.BaseDirectory;
@@ -56,20 +67,28 @@ internal static class Settings
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ksh");
 #endif
 
-    //
-    private static string SettingsPath => Path.Combine(AppPath, "DgView.config");
+    /// <summary>
+    /// 설정 파일의 전체 경로를 반환합니다.
+    /// </summary>
+    public static string SettingsPath => Path.Combine(AppPath, "DgView.config");
 
-    //
-    private static string RecentlyPath => Path.Combine(AppPath, "DgView.recently");
+    /// <summary>
+    /// 최근 파일 정보가 저장되는 파일 경로를 반환합니다.
+    /// </summary>
+    public static string RecentlyPath => Path.Combine(AppPath, "DgView.recently");
 
-    //
+    /// <summary>
+    /// 설정 파일을 읽어 SettingsHash 객체로 반환합니다.
+    /// </summary>
     private static SettingsHash ReadSettings()
     {
         s_lines ??= SettingsHash.FromFile(SettingsPath);
         return s_lines;
     }
 
-    // 시작할 때 앞
+    /// <summary>
+    /// 프로그램 시작 전(메인 진입 전) 설정을 불러옵니다.
+    /// </summary>
     public static void OnMainBefore()
     {
         var lines = ReadSettings();
@@ -77,13 +96,15 @@ internal static class Settings
         s_run_only_once_instance = lines.GetBool("GeneralRunOnce", s_run_only_once_instance);
     }
 
-    // 시작할 때 뒤
+    /// <summary>
+    /// 프로그램 시작 후(메인 진입 후) 설정을 불러옵니다.
+    /// </summary>
     public static void OnMainAfter()
     {
         var lines = ReadSettings();
 
         var v = lines.GetString("Window");
-        if (v.TestHave())
+        if (!string.IsNullOrEmpty(v))
         {
             var ss = v.Split(',');
             try
@@ -102,15 +123,15 @@ internal static class Settings
 
         //
         v = lines.GetDecodedString("LastFolder");
-        if (!v.EmptyString() && Directory.Exists(v))
+        if (!string.IsNullOrEmpty(v) && Directory.Exists(v))
             s_last_folder = v;
 
         v = lines.GetDecodedString("LastFileName");
-        if (!v.EmptyString() && File.Exists(v))
+        if (!string.IsNullOrEmpty(v) && File.Exists(v))
             s_last_filename = v;
 
         v = lines.GetDecodedString("RememberFileName");
-        if (!v.EmptyString() && File.Exists(v))
+        if (!string.IsNullOrEmpty(v) && File.Exists(v))
             s_remember_filename = v;
 
         s_max_recently = lines.GetInt("MaxRecently", s_max_recently);
@@ -128,6 +149,9 @@ internal static class Settings
         s_use_magnetic_window = lines.GetBool("GeneralUseMagnetic", s_use_magnetic_window);
         s_confirm_when_delete_file = lines.GetBool("GeneralConfirmDelete", s_confirm_when_delete_file);
         s_always_on_top = lines.GetBool("GeneralAlwaysTop", s_always_on_top);
+        s_update_notify = lines.GetBool("GeneralUpdateNotify", s_update_notify);
+        s_external_run = lines.GetString("ExternalRun") ?? s_external_run;
+        s_reload_after_external = lines.GetBool("ReloadAfterExternalExit", s_reload_after_external);
 
         //
         s_use_double_click_state = lines.GetBool("MouseUseDoubleClick", s_use_double_click_state);
@@ -142,7 +166,7 @@ internal static class Settings
         for (var i = 0;; i++)
         {
             var s = lines.GetString($"MoveKeep{i}");
-            if (s.EmptyString())
+            if (string.IsNullOrEmpty(s))
                 break;
             var n = s.LastIndexOf("@:", StringComparison.Ordinal);
             if (n == -1)
@@ -162,7 +186,10 @@ internal static class Settings
         s_recently = File.Exists(rfn) ? ResizableHash.FromFile(rfn) : ResizableHash.New();
     }
 
-    // 메인 로드하고
+    /// <summary>
+    /// 윈도우 초기화 시 위치와 크기를 설정합니다.
+    /// </summary>
+    /// <param name="window">초기화할 윈도우 객체</param>
     public static void OnWindowInit(Window window)
     {
         window.SetDefaultSize(s_bound.Width, s_bound.Height);
@@ -172,7 +199,10 @@ internal static class Settings
             window.SetPosition(WindowPosition.Center);
     }
 
-    // 
+    /// <summary>
+    /// 이미지가 없을 때 표시할 기본 이미지를 반환합니다.
+    /// </summary>
+    /// <returns>기본 이미지 Surface</returns>
     public static Cairo.ImageSurface OopsNoImage()
     {
         if (s_no_img == null)
@@ -200,7 +230,9 @@ internal static class Settings
         return s_no_img;
     }
 
-    //
+    /// <summary>
+    /// 윈도우의 위치와 크기를 저장합니다.
+    /// </summary>
     public static void KeepLocationSize(int x, int y, int width, int height)
     {
         s_bound = new BoundRect(x, y, width, height);
@@ -209,7 +241,9 @@ internal static class Settings
         lines.SetString("Window", $"{s_bound.X},{s_bound.Y},{s_bound.Width},{s_bound.Height}");
     }
 
-    //
+    /// <summary>
+    /// 자석 윈도우의 도킹 크기를 가져오거나 설정합니다.
+    /// </summary>
     public static int MagneticDockSize
     {
         get => s_magnetic_dock_size;
@@ -225,7 +259,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 마지막으로 열었던 폴더 경로를 가져오거나 설정합니다.
+    /// </summary>
     public static string LastFolder
     {
         get => s_last_folder;
@@ -241,7 +277,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 마지막으로 열었던 파일 이름을 가져오거나 설정합니다.
+    /// </summary>
     public static string LastFileName
     {
         get => s_last_filename;
@@ -257,7 +295,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 기억해둘 파일 이름을 가져오거나 설정합니다.
+    /// </summary>
     public static string RememberFileName
     {
         get => s_remember_filename;
@@ -273,7 +313,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 확대 사용 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool ViewZoom
     {
         get => s_view_zoom;
@@ -289,7 +331,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 현재 뷰 모드를 가져오거나 설정합니다.
+    /// </summary>
     public static ViewMode ViewMode
     {
         get => s_view_mode;
@@ -305,7 +349,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 현재 뷰 품질을 가져오거나 설정합니다.
+    /// </summary>
     public static ViewQuality ViewQuality
     {
         get => s_view_quality;
@@ -321,10 +367,14 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 최대 페이지 캐시 크기(바이트)를 반환합니다.
+    /// </summary>
     public static long MaxActualPageCache => s_max_page_cache * 1048576L;
 
-    //
+    /// <summary>
+    /// 최대 페이지 캐시 크기(MB)를 가져오거나 설정합니다.
+    /// </summary>
     public static int MaxPageCache
     {
         get => s_max_page_cache;
@@ -338,7 +388,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 최근 파일 최대 개수를 가져오거나 설정합니다.
+    /// </summary>
     public static int MaxRecently
     {
         get => s_max_recently;
@@ -352,20 +404,28 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 파일 이름에 해당하는 최근 페이지 번호를 반환합니다.
+    /// </summary>
+    /// <param name="onlyFilename">파일 이름(경로 제외)</param>
+    /// <returns>최근 페이지 번호</returns>
     public static int GetRecentlyPage(string onlyFilename)
     {
-        if (onlyFilename.EmptyString() || s_recently == null)
+        if (string.IsNullOrEmpty(onlyFilename) || s_recently == null)
             return 0;
 
         var s = Alter.EncodingString(onlyFilename);
         return s != null ? s_recently.Get(s) : 0;
     }
 
-    //
+    /// <summary>
+    /// 파일 이름에 해당하는 최근 페이지 번호를 저장합니다.
+    /// </summary>
+    /// <param name="onlyFilename">파일 이름(경로 제외)</param>
+    /// <param name="page">페이지 번호</param>
     public static void SetRecentlyPage(string onlyFilename, int page)
     {
-        if (onlyFilename.EmptyString() || s_recently == null)
+        if (string.IsNullOrEmpty(onlyFilename) || s_recently == null)
             return;
 
         var s = Alter.EncodingString(onlyFilename);
@@ -384,14 +444,21 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 책 객체의 최근 페이지를 저장합니다.
+    /// </summary>
+    /// <param name="book">책 객체</param>
     public static void SetRecentlyPage(BookBase book)
     {
         var page = book.CurrentPage - 1 == book.TotalPage ? 0 : book.CurrentPage;
         SetRecentlyPage(book.OnlyFileName, page);
     }
 
-    //
+    /// <summary>
+    /// 책 이동 위치를 반환합니다.
+    /// </summary>
+    /// <param name="index">인덱스</param>
+    /// <returns>경로와 설명</returns>
     public static (string path, string desc) GetMoveLocation(int index)
     {
         if (index < 0 || index >= s_moves.Count)
@@ -401,11 +468,20 @@ internal static class Settings
         return (move.Key, move.Value);
     }
 
-    //
+    /// <summary>
+    /// 책 이동 위치를 추가합니다.
+    /// </summary>
+    /// <param name="path">경로</param>
+    /// <param name="desc">설명</param>
     public static void AddMoveLocation(string path, string desc) =>
         s_moves.Add(new KeyValuePair<string, string>(path, desc));
 
-    //
+    /// <summary>
+    /// 책 이동 위치를 수정합니다.
+    /// </summary>
+    /// <param name="index">인덱스</param>
+    /// <param name="path">경로</param>
+    /// <param name="desc">설명</param>
     public static void SetMoveLocation(int index, string path, string desc)
     {
         if (index < 0 || index >= s_moves.Count)
@@ -414,14 +490,22 @@ internal static class Settings
         s_moves[index] = new KeyValuePair<string, string>(path, desc);
     }
 
-    //
+    /// <summary>
+    /// 책 이동 위치를 삭제합니다.
+    /// </summary>
+    /// <param name="index">인덱스</param>
     public static void DeleteMoveLocation(int index)
     {
         if (index < s_moves.Count)
             s_moves.RemoveAt(index);
     }
 
-    //
+    /// <summary>
+    /// 책 이동 위치의 순서를 변경합니다.
+    /// </summary>
+    /// <param name="from">이동할 인덱스</param>
+    /// <param name="to">이동될 인덱스</param>
+    /// <returns>성공 여부</returns>
     public static bool IndexingMoveLocation(int from, int to)
     {
         if (from < 0 || from >= s_moves.Count ||
@@ -434,17 +518,21 @@ internal static class Settings
         if (from < to)
             to--;
         s_moves.Insert(to, m);
-
+        
         return true;
     }
 
-    //
+    /// <summary>
+    /// 모든 책 이동 위치를 배열로 반환합니다.
+    /// </summary>
     public static KeyValuePair<string, string>[] GetMoveLocations()
     {
         return s_moves.ToArray();
     }
 
-    //
+    /// <summary>
+    /// 책 이동 위치를 설정 파일에 저장합니다.
+    /// </summary>
     public static void KeepMoveLocation()
     {
         var lines = ReadSettings();
@@ -452,25 +540,29 @@ internal static class Settings
         for (var i = 0; i < s_moves.Count; i++)
         {
             var m = s_moves[i];
-            if (m.Key.EmptyString())
+            if (string.IsNullOrEmpty(m.Key))
                 break;
             // lines.SetEncodedString
             lines.SetString($"MoveKeep{i}",
-                m.Value.WhiteString() ? m.Key : $"{m.Key}@:{m.Value}");
+                string.IsNullOrWhiteSpace(m.Value) ? m.Key : $"{m.Key}@:{m.Value}");
         }
 
         lines.SetString($"MoveKeep{s_moves.Count}", string.Empty);
     }
 
-    //
+    /// <summary>
+    /// AppPath 경로가 없으면 생성합니다.
+    /// </summary>
     private static void TestAppPath()
     {
         if (!Directory.Exists(AppPath))
             Directory.CreateDirectory(AppPath);
     }
 
-    //
-    public static void SaveSettings()
+    /// <summary>
+    /// 설정을 파일로 저장합니다.
+    /// </summary>
+    public static void SaveConfigs()
     {
         TestAppPath();
         var lines = ReadSettings();
@@ -482,7 +574,9 @@ internal static class Settings
         ]);
     }
 
-    //
+    /// <summary>
+    /// 최근 파일 정보를 파일로 저장합니다.
+    /// </summary>
     public static void SaveFileInfos()
     {
         TestAppPath();
@@ -498,7 +592,9 @@ internal static class Settings
 
     #region 기본
 
-    //
+    /// <summary>
+    /// 프로그램을 한 번만 실행할지 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool GeneralRunOnce
     {
         get => s_run_only_once_instance;
@@ -512,7 +608,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// ESC 키로 프로그램을 종료할지 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool GeneralEscExit
     {
         get => s_esc_to_exit;
@@ -526,7 +624,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 자석 윈도우 사용 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool GeneralUseMagnetic
     {
         get => s_use_magnetic_window;
@@ -540,7 +640,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 파일 삭제 시 확인 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool GeneralConfirmDelete
     {
         get => s_confirm_when_delete_file;
@@ -554,7 +656,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 항상 위에 표시할지 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool GeneralAlwaysTop
     {
         get => s_always_on_top;
@@ -568,11 +672,61 @@ internal static class Settings
         }
     }
 
-    #endregion // 기본
+    /// <summary>
+    /// 업데이트 알림 사용 여부를 가져오거나 설정합니다.
+    /// </summary>
+    public static bool GeneralUpdateNotify
+    {
+        get => s_update_notify;
+        set
+        {
+            if (value == s_update_notify)
+                return;
+
+            var lines = ReadSettings();
+            lines.SetBool("GeneralUpdateNotify", s_update_notify = value);
+        }
+    }
+
+    /// <summary>
+    /// 외부 실행 파일 경로를 가져오거나 설정합니다.
+    /// </summary>
+    public static string ExternalRun
+    {
+        get => s_external_run;
+        set
+        {
+            if (value.Equals(s_external_run))
+                return;
+
+            var lines = ReadSettings();
+            lines.SetString("ExternalRun", s_external_run = value);
+        }
+    }
+
+    /// <summary>
+    /// 외부 실행 후 책을 다시 열지 여부를 가져오거나 설정합니다.
+    /// </summary>
+    public static bool ReloadAfterExternal
+    {
+        get => s_reload_after_external;
+        set
+        {
+            if (value == s_reload_after_external)
+                return;
+
+            var lines = ReadSettings();
+            lines.SetBool("ReloadAfterExternalExit", s_reload_after_external = value);
+        }
+    }
+
+    #endregion
 
     #region 마우스
 
-    //
+    /// <summary>
+    /// 두 번 클릭 상태 사용 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool MouseUseDoubleClickState
     {
         get => s_use_double_click_state;
@@ -586,7 +740,9 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 마우스 버튼으로 페이지 이동 사용 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool MouseUseClickPage
     {
         get => s_use_click_page;
@@ -600,11 +756,13 @@ internal static class Settings
         }
     }
 
-    #endregion // 마우스
+    #endregion
 
     #region 보안
 
-    //
+    /// <summary>
+    /// 비밀번호 사용 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool UsePassCode
     {
         get => s_use_pass;
@@ -618,14 +776,18 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 비밀번호가 해제되었는지 여부를 가져오거나 설정합니다.
+    /// </summary>
     public static bool UnlockedPassCode
     {
         get => s_unlock_pass;
         set => s_unlock_pass = value;
     }
 
-    //
+    /// <summary>
+    /// 비밀번호를 가져오거나 설정합니다.
+    /// </summary>
     public static string PassCode
     {
         get => Alter.DecompressString(s_pass_code) ?? string.Empty;
@@ -640,10 +802,15 @@ internal static class Settings
         }
     }
 
-    //
+    /// <summary>
+    /// 비밀번호 사용처 문자열을 반환합니다.
+    /// </summary>
     public static string PassUsage => s_pass_usages;
 
-    //
+    /// <summary>
+    /// 비밀번호 사용처를 저장합니다.
+    /// </summary>
+    /// <param name="usages">사용처 배열</param>
     public static void CommitPassUsage(IEnumerable<PassCodeUsage> usages)
     {
         var s = string.Join(',', usages);
@@ -654,7 +821,9 @@ internal static class Settings
         lines.SetString("PassUsage", s);
     }
 
-    //
+    /// <summary>
+    /// 비밀번호 사용처 배열을 반환합니다.
+    /// </summary>
     public static PassCodeUsage[] GetPassUsageArray()
     {
         var ss = s_pass_usages.Split(',');
@@ -671,19 +840,29 @@ internal static class Settings
         return l.ToArray();
     }
 
-    //
+    /// <summary>
+    /// 특정 사용처에 대해 비밀번호가 필요한지 검사합니다.
+    /// </summary>
+    /// <param name="usage">사용처</param>
     public static bool TestPassUsage(PassCodeUsage usage)
     {
         return s_pass_usages.Contains(usage.ToString());
     }
 
-    //
+    /// <summary>
+    /// 특정 사용처 문자열에 대해 비밀번호가 필요한지 검사합니다.
+    /// </summary>
+    /// <param name="usage">사용처 문자열</param>
     public static bool TestPassUsage(string usage)
     {
         return s_pass_usages.Contains(usage);
     }
 
-    //
+    /// <summary>
+    /// 입력한 비밀번호가 맞는지 확인하고 해제합니다.
+    /// </summary>
+    /// <param name="value">입력한 비밀번호</param>
+    /// <returns>일치하면 true, 아니면 false</returns>
     public static bool UnlockPass(string value)
     {
         var pw = value.Length > 0 ? Alter.CompressString(value) ?? string.Empty : string.Empty;

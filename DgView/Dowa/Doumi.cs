@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 
@@ -18,31 +17,6 @@ public static class Doumi
     // 문자열을 줄 단위로 나누기
     internal static string[] SplitLines(string context) =>
         context.Split(s_separates, StringSplitOptions.RemoveEmptyEntries);
-
-    /// <summary>
-    /// 빈 문자열인지 검사
-    /// </summary>
-    /// <param name="v">평가할 문자열입니다. null일 수 있습니다.</param>
-    /// <returns>문자열이 null이거나, 비어 있거나, 공백 문자로만 이루어져 있으면 <see langword="true"/>이고, 그렇지 않으면 <see langword="false"/>입니다.</returns>
-    public static bool EmptyString([NotNullWhen(false)] this string? v) =>
-        string.IsNullOrEmpty(v);
-
-    /// <summary>
-    /// 지정한 문자열이 null이거나, 비어 있거나, 공백 문자로만 이루어져 있는지 확인합니다.
-    /// </summary>
-    /// <param name="v">평가할 문자열입니다. null일 수 있습니다.</param>
-    /// <returns>문자열이 null이거나, 비어 있거나, 공백 문자로만 이루어져 있으면 <see langword="true"/>이고, 그렇지 않으면 <see langword="false"/>입니다.</returns>
-    public static bool WhiteString([NotNullWhen(false)] this string? v) =>
-        string.IsNullOrWhiteSpace(v);
-
-    /// <summary>
-    /// 문자열이 null이 아니고, 비어 있지 않은지 또는 공백이 아닌지 검사합니다.
-    /// </summary>
-    /// <param name="v">검사할 문자열입니다.</param>
-    /// <param name="testWhites">공백까지 검사할지 여부입니다.</param>
-    /// <returns>조건에 따라 문자열이 존재하면 true, 아니면 false를 반환합니다.</returns>
-    public static bool TestHave([NotNullWhen(true)] this string? v, bool testWhites = false) =>
-        testWhites ? !string.IsNullOrWhiteSpace(v) : !string.IsNullOrEmpty(v);
 
     /// <summary>
     /// CultureInfo에서 알려진 로캘 문자열을 반환합니다.
@@ -370,6 +344,12 @@ public static class Doumi
             StringAsNumericCompare(x?.FullName, y?.FullName);
     }
 
+    /// <summary>
+    /// Converts a <see cref="ViewQuality"/> value to its corresponding <see cref="Cairo.Filter"/> value.
+    /// </summary>
+    /// <param name="quality">The quality level to be converted. Must be one of the defined <see cref="ViewQuality"/> values.</param>
+    /// <returns>A <see cref="Cairo.Filter"/> value that corresponds to the specified <see cref="ViewQuality"/>. If the <paramref
+    /// name="quality"/> value is not explicitly mapped, <see cref="Cairo.Filter.Good"/> is returned.</returns>
     public static Cairo.Filter QualityToFilter(ViewQuality quality) => quality switch
     {
         ViewQuality.Fast => Cairo.Filter.Fast,
@@ -433,41 +413,34 @@ public static class Doumi
         return item;
     }
 
+    /// <summary>
+    /// Creates a new separator menu item with an optional style class.
+    /// </summary>
+    /// <param name="style">The name of the style class to apply to the separator menu item.  If <see langword="null"/> or empty, no style
+    /// class is applied. Defaults to "height-separator".</param>
+    /// <returns>A <see cref="SeparatorMenuItem"/> instance configured with the specified style class, if provided.</returns>
     public static SeparatorMenuItem CreateSeparatorMenuItem(string? style = "height-separator")
     {
         var item = new SeparatorMenuItem();
-        if (!style.EmptyString())
+        if (!string.IsNullOrEmpty(style))
             item.StyleContext.AddClass(style);
         return item;
     }
 
+    /// <summary>
+    /// Creates a new menu item with the specified text and an optional style class.
+    /// </summary>
+    /// <param name="text">The text to display on the menu item. Cannot be null or empty.</param>
+    /// <param name="style">The optional style class to apply to the menu item. Defaults to <see langword="null"/> if not specified. If
+    /// <paramref name="style"/> is <see langword="null"/> or empty, no style class is applied.</param>
+    /// <returns>A <see cref="MenuItem"/> instance with the specified text and style class applied. The menu item is created in a
+    /// non-sensitive state.</returns>
     public static MenuItem CreateLabelMenuItem(string text, string? style = "label-menu-item")
     {
         var item = new MenuItem(text);
         item.Sensitive = false;
-        if (!style.EmptyString())
+        if (!string.IsNullOrEmpty(style))
             item.StyleContext.AddClass(style);
         return item;
     }
-}
-
-/// <summary>
-/// 수평 정렬 방식을 지정합니다.
-/// </summary>
-public enum HorizAlign
-{
-    /// <summary>
-    /// 왼쪽 정렬
-    /// </summary>
-    Left,
-
-    /// <summary>
-    /// 가운데 정렬
-    /// </summary>
-    Center,
-
-    /// <summary>
-    /// 오른쪽 정렬
-    /// </summary>
-    Right
 }
