@@ -190,7 +190,7 @@ public class MoveDialog : Dialog
             return;
 
         Configs.KeepMoveLocation();
-        Configs.SaveSettings();
+        Configs.SaveConfigs();
     }
 
     private void MoveDialog_Response(object o, ResponseArgs args)

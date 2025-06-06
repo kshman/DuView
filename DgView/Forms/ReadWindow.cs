@@ -294,7 +294,7 @@ internal class ReadWindow : Window
         GetPosition(out var x, out var y);
 #endif
         Configs.KeepLocationSize(x, y, width, height);
-        Configs.SaveSettings();
+        Configs.SaveConfigs();
         Configs.SaveFileInfos();
 
         Application.Quit();

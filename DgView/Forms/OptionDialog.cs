@@ -1,7 +1,9 @@
-// ReSharper disable MissingXmlDoc
-
 namespace DgView.Forms;
 
+/// <summary>
+/// 설정을 위한 옵션 다이얼로그를 제공하는 클래스입니다.
+/// 일반, 보기, 키보드/마우스, 보안 등 다양한 설정 탭을 포함합니다.
+/// </summary>
 public class OptionDialog : Dialog
 {
     // 일반 탭
@@ -35,6 +37,10 @@ public class OptionDialog : Dialog
         "책 이름 바꾸기",
     ];
 
+    /// <summary>
+    /// OptionDialog의 인스턴스를 생성합니다.
+    /// </summary>
+    /// <param name="parent">부모 윈도우입니다.</param>
     public OptionDialog(Window? parent) : base("설정", parent, DialogFlags.Modal)
     {
         #region 디자인
@@ -166,6 +172,9 @@ public class OptionDialog : Dialog
         ShowAll();
     }
 
+    /// <summary>
+    /// 설정값을 UI에 로드합니다.
+    /// </summary>
     private void LoadSettings()
     {
         _runOnceCheck.Active = Configs.GeneralRunOnce;
@@ -198,11 +207,21 @@ public class OptionDialog : Dialog
         }
     }
 
+    /// <summary>
+    /// 다이얼로그가 삭제될 때 설정을 저장합니다.
+    /// </summary>
+    /// <param name="o">이벤트 소스 객체</param>
+    /// <param name="args">이벤트 인자</param>
     private void OptionDialog_DeleteEvent(object o, DeleteEventArgs args)
     {
         SaveConfigs();
     }
 
+    /// <summary>
+    /// 다이얼로그의 응답 이벤트를 처리합니다.
+    /// </summary>
+    /// <param name="o">이벤트 소스 객체</param>
+    /// <param name="args">응답 인자</param>
     private void OptionDialog_Response(object o, ResponseArgs args)
     {
         SaveConfigs();
@@ -211,6 +230,9 @@ public class OptionDialog : Dialog
 
     private bool _save_configs;
 
+    /// <summary>
+    /// 현재 UI 상태를 Configs에 저장하고, 중복 저장을 방지합니다.
+    /// </summary>
     private void SaveConfigs()
     {
         if (_save_configs)
@@ -227,9 +249,14 @@ public class OptionDialog : Dialog
         var usages = rows.Select(path => (PassCodeUsage)path.Indices[0]).ToArray();
         Configs.CommitPassUsage(usages);
 
-        Configs.SaveSettings();
+        Configs.SaveConfigs();
     }
 
+    /// <summary>
+    /// 외부 실행 파일을 선택하는 파일 선택 다이얼로그를 표시합니다.
+    /// </summary>
+    /// <param name="sender">이벤트 소스 객체</param>
+    /// <param name="e">이벤트 인자</param>
     private void ExternalRunButton_Clicked(object? sender, EventArgs e)
     {
         using var dialog = new FileChooserDialog("외부 실행 파일 선택", this, FileChooserAction.Open);
