@@ -61,11 +61,101 @@ namespace DuView.Properties {
         }
         
         /// <summary>
+        ///   책을 지울 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CannotDeleteBook {
+            get {
+                return ResourceManager.GetString("CannotDeleteBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책을 옮길 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CannotMoveBook {
+            get {
+                return ResourceManager.GetString("CannotMoveBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책을 열 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CannotOpenBook {
+            get {
+                return ResourceManager.GetString("CannotOpenBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   디렉토리를 열 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CannotOpenDirectory {
+            get {
+                return ResourceManager.GetString("CannotOpenDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   기억한 책을 열 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CannotOpenRemember {
+            get {
+                return ResourceManager.GetString("CannotOpenRemember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책 이름을 바꿀 수 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CannotRenameBook {
+            get {
+                return ResourceManager.GetString("CannotRenameBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책을 먼저 닫으세요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string CloseBookFirst {
+            get {
+                return ResourceManager.GetString("CloseBookFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   DuView is a book viewer\n\n\n\n서시\n윤동주\n\n\n죽는 날까지 하늘을 우러러\n한 점 부끄럼이 없기를,\n잎새에 이는 바람에도\n나는 괴로워했다.\n\n\n별을 노래하는 마음으로\n모든 죽어 가는 것을 사랑해야지\n그리고 나한테 주어진 길을\n걸어가야겠다.\n\n\n오늘 밤에도 별이 바람에 스치운다.\n\n\n\n\nSupported by kshman\n,과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string CreditsWithSeosi {
             get {
                 return ResourceManager.GetString("CreditsWithSeosi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책 지우기과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string DeleteBook {
+            get {
+                return ResourceManager.GetString("DeleteBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   계속하시나요?과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string DoYouWannaContinue {
+            get {
+                return ResourceManager.GetString("DoYouWannaContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   두뷰과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string DuView {
+            get {
+                return ResourceManager.GetString("DuView", resourceCulture);
             }
         }
         
@@ -90,89 +180,65 @@ namespace DuView.Properties {
         }
         
         /// <summary>
-        ///   # English messages
-        ///LANG=English
-        ///
-        ///0=DuView
-        ///1=PuruLive
-        ///2=https://github.com/kshman/DuView
-        ///94=Close
-        ///95=Menu
-        ///96=Do you want to continue?
-        ///97=Ok
-        ///98=Cancel
-        ///99=(reserved)
-        ///
-        ///101=Copy image
-        ///102=Copied to clipboard!
-        ///103=Fail to copying image to clipboard!
-        ///104=Select an archive or image
-        ///105=Archive|*.zip|All files|*.*
-        ///106=Open book
-        ///107=Cannot open the archive file!
-        ///108=Cannot acces directory!
-        ///109=No previous book!
-        ///110=No next book!
-        ///111=View book
-        ///112=Image drawing error!
-        ///113=file is archive file [나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   압축 파일이예요과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        internal static string locale_english {
+        internal static string IsArchive {
             get {
-                return ResourceManager.GetString("locale_english", resourceCulture);
+                return ResourceManager.GetString("IsArchive", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   # 한국말 메시지
-        ///LANG=한국말
-        ///
-        ///0=두뷰
-        ///1=PuruLive
-        ///2=https://github.com/kshman/DuView
-        ///94=닫기
-        ///95=메뉴
-        ///96=계속하시겠습니까?
-        ///97=선택
-        ///98=취소
-        ///99=(기능없음)
-        ///
-        ///101=이미지 복사
-        ///102=클립보드로 복사했어요!
-        ///103=클립보드에 넣을 수 없어요!
-        ///104=책이나 이미지를 고르세요
-        ///105=압축 파일|*.zip|모든 파일|*.*
-        ///106=책 열기
-        ///107=열 수 없는 압축 파일이예요!
-        ///108=디렉토리를 열 수 없어요!
-        ///109=이전 책이 없어요!
-        ///110=다음 책이 없어요!
-        ///111=책 보기
-        ///112=이미지 그리기 오류!
-        ///113=파일은 압축 파일이예요
-        ///114=책 지우기
-        ///115=책을 지울 수 없었어요
-        ///116=디렉토리예요
-        ///117=책을 열 수 없어요
-        ///118=찾아보기
-        ///119=실행 파일|*.exe
-        ///120=적절한 파일을 고르세요
-        ///121=외부 실행 파일이 없거나 실패했어요
-        ///122=책 이름 바꾸기
-        ///123=책 이름을 바꿀 [나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   디렉토리예요과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        internal static string locale_korean {
+        internal static string IsDirectory {
             get {
-                return ResourceManager.GetString("locale_korean", resourceCulture);
+                return ResourceManager.GetString("IsDirectory", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   2022-11-30 21:14과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   책이 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        internal static string LocaleLastCheck {
+        internal static string NoBook {
             get {
-                return ResourceManager.GetString("LocaleLastCheck", resourceCulture);
+                return ResourceManager.GetString("NoBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   외부 실행 파일이 없거나 실패했어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string NoExternalRunExist {
+            get {
+                return ResourceManager.GetString("NoExternalRunExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   다음 책이 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string NoNextBook {
+            get {
+                return ResourceManager.GetString("NoNextBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   이전 책이 없어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string NoPreviousBook {
+            get {
+                return ResourceManager.GetString("NoPreviousBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책 열기과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string OpenBook {
+            get {
+                return ResourceManager.GetString("OpenBook", resourceCulture);
             }
         }
         
@@ -183,6 +249,60 @@ namespace DuView.Properties {
             get {
                 object obj = ResourceManager.GetObject("ouch_noimg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   파일 이름을 기억했어요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string RememberFilename {
+            get {
+                return ResourceManager.GetString("RememberFilename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책을 기억할껀가요?과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string SaveRememberBook {
+            get {
+                return ResourceManager.GetString("SaveRememberBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   책이나 이미지를 고르세요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string SelectBookOrImage {
+            get {
+                return ResourceManager.GetString("SelectBookOrImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   압축 파일|*.zip|모든 파일|*.*과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string SelectFilter {
+            get {
+                return ResourceManager.GetString("SelectFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   전체 페이지:과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string TotalPagesColon {
+            get {
+                return ResourceManager.GetString("TotalPagesColon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   지원하지 않는 압축 파일이예요과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string UnsupportArchive {
+            get {
+                return ResourceManager.GetString("UnsupportArchive", resourceCulture);
             }
         }
         

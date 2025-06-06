@@ -2,7 +2,15 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
-using DuView.Types;
+// ReSharper disable MissingXmlDoc
+// ReSharper disable InconsistentNaming
+// ReSharper disable LocalizableElement
+// ReSharper disable StringLiteralTypo
+// ReSharper disable CollectionNeverQueried.Local
+// ReSharper disable IdentifierTypo
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable CommentTypo
+// ReSharper disable JoinDeclarationAndInitializer
 
 namespace DuView.WebPWrapper;
 

@@ -5,10 +5,6 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuView", "DuView\DuView.csproj", "{ADD4D345-000E-4A28-BFF0-D12E167D5DC9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuLib.Zero", "..\DuLib\DuLib.Zero\DuLib.Zero.csproj", "{72E385DE-F983-4839-A312-5E6A87E9562F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuLib.WinForms", "..\DuLib\DuLib.WinForms\DuLib.WinForms.csproj", "{EFDD1605-68B9-444F-9A23-EDE5154CE4C7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -19,14 +15,6 @@ Global
 		{ADD4D345-000E-4A28-BFF0-D12E167D5DC9}.Debug|x64.Build.0 = Debug|x64
 		{ADD4D345-000E-4A28-BFF0-D12E167D5DC9}.Release|x64.ActiveCfg = Release|x64
 		{ADD4D345-000E-4A28-BFF0-D12E167D5DC9}.Release|x64.Build.0 = Release|x64
-		{72E385DE-F983-4839-A312-5E6A87E9562F}.Debug|x64.ActiveCfg = Debug|x64
-		{72E385DE-F983-4839-A312-5E6A87E9562F}.Debug|x64.Build.0 = Debug|x64
-		{72E385DE-F983-4839-A312-5E6A87E9562F}.Release|x64.ActiveCfg = Release|x64
-		{72E385DE-F983-4839-A312-5E6A87E9562F}.Release|x64.Build.0 = Release|x64
-		{EFDD1605-68B9-444F-9A23-EDE5154CE4C7}.Debug|x64.ActiveCfg = Debug|x64
-		{EFDD1605-68B9-444F-9A23-EDE5154CE4C7}.Debug|x64.Build.0 = Debug|x64
-		{EFDD1605-68B9-444F-9A23-EDE5154CE4C7}.Release|x64.ActiveCfg = Release|x64
-		{EFDD1605-68B9-444F-9A23-EDE5154CE4C7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
