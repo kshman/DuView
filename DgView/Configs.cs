@@ -802,10 +802,15 @@ internal static class Configs
         }
     }
 
-    //
+    /// <summary>
+    /// 비밀번호 사용처 문자열을 반환합니다.
+    /// </summary>
     public static string PassUsage => s_pass_usages;
 
-    //
+    /// <summary>
+    /// 비밀번호 사용처를 저장합니다.
+    /// </summary>
+    /// <param name="usages">사용처 배열</param>
     public static void CommitPassUsage(IEnumerable<PassCodeUsage> usages)
     {
         var s = string.Join(',', usages);
@@ -816,7 +821,9 @@ internal static class Configs
         lines.SetString("PassUsage", s);
     }
 
-    //
+    /// <summary>
+    /// 비밀번호 사용처 배열을 반환합니다.
+    /// </summary>
     public static PassCodeUsage[] GetPassUsageArray()
     {
         var ss = s_pass_usages.Split(',');
@@ -833,19 +840,29 @@ internal static class Configs
         return l.ToArray();
     }
 
-    //
+    /// <summary>
+    /// 특정 사용처에 대해 비밀번호가 필요한지 검사합니다.
+    /// </summary>
+    /// <param name="usage">사용처</param>
     public static bool TestPassUsage(PassCodeUsage usage)
     {
         return s_pass_usages.Contains(usage.ToString());
     }
 
-    //
+    /// <summary>
+    /// 특정 사용처 문자열에 대해 비밀번호가 필요한지 검사합니다.
+    /// </summary>
+    /// <param name="usage">사용처 문자열</param>
     public static bool TestPassUsage(string usage)
     {
         return s_pass_usages.Contains(usage);
     }
 
-    //
+    /// <summary>
+    /// 입력한 비밀번호가 맞는지 확인하고 해제합니다.
+    /// </summary>
+    /// <param name="value">입력한 비밀번호</param>
+    /// <returns>일치하면 true, 아니면 false</returns>
     public static bool UnlockPass(string value)
     {
         var pw = value.Length > 0 ? Alter.CompressString(value) ?? string.Empty : string.Empty;

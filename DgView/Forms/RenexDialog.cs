@@ -15,7 +15,7 @@ public class RenexDialog : Dialog
     /// <summary>완성된 파일 이름입니다.</summary>
     public string Filename { get; private set; }
     /// <summary>다시 열기 여부를 나타냅니다.</summary>
-    public bool Reopen { get; private set; } = false;
+    public bool Reopen { get; private set; }
 
     // 컨트롤 선언
     private readonly Label _bookNameLabel;

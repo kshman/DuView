@@ -11,11 +11,6 @@ namespace DgView.Forms;
 /// 만화책, 이미지북 등 다양한 책 파일을 읽고 탐색할 수 있는 메인 뷰어 윈도우입니다.
 /// 파일 열기, 닫기, 페이지 이동, 보기 모드/품질 변경, 전체화면, 파일 삭제/이름변경 등
 /// 다양한 독서 및 파일 관리 기능을 제공합니다.
-///
-/// - 다양한 압축 파일 및 폴더 기반 책을 지원합니다.
-/// - 키보드, 마우스, 끌어 놓기 등 다양한 입력을 통한 조작이 가능합니다.
-/// - 현재 페이지, 전체 페이지, 캐시 크기 등 책 정보를 실시간으로 표시합니다.
-/// - 페이지 선택, 알림 메시지, 설정 등 부가 기능을 포함합니다.
 /// </summary>
 internal class ReadWindow : Window
 {
@@ -27,6 +22,7 @@ internal class ReadWindow : Window
     private string _notify_text = string.Empty;
 
     private WindowState _window_state = WindowState.Focused;
+    private bool _random_book;
 
     private readonly PageDialog _page_dialog;
 
@@ -352,6 +348,9 @@ internal class ReadWindow : Window
     }
 #endif
 
+    /// <summary>
+    /// 윈도우 크기 할당 시 페이지 클릭 영역을 재계산합니다.
+    /// </summary>
     private void ReadWindow_SizeAllocated(object o, SizeAllocatedArgs args)
     {
         var width = args.Allocation.Width;
@@ -388,7 +387,7 @@ internal class ReadWindow : Window
 
     /// <summary>
     /// DrawingArea에 파일을 끌어 놓았을 때 호출됩니다.
-    /// 드롭된 파일의 경로를 추출하여 책을 엽니다.
+    /// 놓은 파일의 경로를 추출하여 책을 엽니다.
     /// </summary>
     private void DrawingArea_DragDataReceived(object o, DragDataReceivedArgs args)
     {
@@ -570,6 +569,15 @@ internal class ReadWindow : Window
                     OpenBook(BookDirection.Next);
                     break;
 
+                case GdkKey.backslash:
+                    if (!_random_book)
+                    {
+                        _random_book = true;
+                        return;
+                    }
+                    OpenRandomBook();
+                    break;
+
                 case GdkKey.plus or GdkKey.KP_Add or GdkKey.Insert:
                     MoveBook();
                     break;
@@ -599,6 +607,8 @@ internal class ReadWindow : Window
                     break;
             }
         }
+
+        _random_book = false; // 랜덤 북 플래그 초기화
     }
 
     /// <summary>
@@ -1035,9 +1045,9 @@ internal class ReadWindow : Window
     }
 
     /// <summary>
-    /// 폴더를 열어 BookFolder 객체를 생성합니다.
+    /// 폴더를 열어 BookBase 객체를 생성합니다.
     /// </summary>
-    private BookFolder? OpenDirectory(DirectoryInfo di)
+    private BookBase? OpenDirectory(DirectoryInfo di)
     {
         Configs.LastFolder = di.Parent?.FullName ?? string.Empty;
 
@@ -1077,6 +1087,25 @@ internal class ReadWindow : Window
             return;
         // TODO: 원래 여기 패스코드
         OpenBook(Configs.LastFileName);
+    }
+
+    /// <summary>
+    /// 임의의 책을 선택하여 엽니다.
+    /// </summary>
+    private void OpenRandomBook()
+    {
+        var book = Configs.Book;
+        if (book == null)
+            return;
+
+        var filename = book.FindRandomFile();
+        if (string.IsNullOrEmpty(filename))
+        {
+            Notify("임의의 책을 열 수 없어요!");
+            return;
+        }
+
+        OpenBook(filename);
     }
 
     /// <summary>
@@ -1156,7 +1185,7 @@ internal class ReadWindow : Window
                 return;
         }
 
-        var next = book.FindNextFileAny(BookDirection.Next);
+        var next = book.FindAnyNextFile(BookDirection.Next);
 
         if (!book.DeleteFile(out var closed))
         {
@@ -1205,7 +1234,7 @@ internal class ReadWindow : Window
         if (string.IsNullOrEmpty(filename) || book.OnlyFileName.Equals(filename))
             return;
 
-        var next = reopen ? null : book.FindNextFileAny(BookDirection.Next);
+        var next = reopen ? null : book.FindAnyNextFile(BookDirection.Next);
 
         if (!book.RenameFile(filename, out var fullPath))
         {
@@ -1220,7 +1249,7 @@ internal class ReadWindow : Window
     }
 
     /// <summary>
-    /// (구현 예정) 현재 책을 이동합니다.
+    /// 현재 책을 이동합니다.
     /// </summary>
     private void MoveBook()
     {
@@ -1244,7 +1273,7 @@ internal class ReadWindow : Window
             return;
         }
 
-        var next = book.FindNextFileAny(BookDirection.Next);
+        var next = book.FindAnyNextFile(BookDirection.Next);
 
         if (!book.MoveFile(filename))
         {

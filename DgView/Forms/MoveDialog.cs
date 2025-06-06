@@ -1,11 +1,16 @@
-// ReSharper disable MissingXmlDoc
-
 using System.Text;
 
 namespace DgView.Forms;
 
+/// <summary>
+/// 책 이동을 위한 대화상자를 제공하는 클래스입니다.
+/// 사용자는 미리 등록된 위치 목록에서 선택하거나, 새 위치를 추가/수정/삭제할 수 있습니다.
+/// </summary>
 public class MoveDialog : Dialog
 {
+    /// <summary>
+    /// 이동할 최종 파일 이름을 가져옵니다.
+    /// </summary>
     public string Filename { get; private set; } = string.Empty;
 
     private static string s_last_location = string.Empty;
@@ -25,8 +30,11 @@ public class MoveDialog : Dialog
     private readonly MenuItem _moveDeleteMenuItem;
 
     private TreePath? _dragSourcePath;
-    private int? _dragSourceIndex;
 
+    /// <summary>
+    /// MoveDialog를 생성합니다.
+    /// </summary>
+    /// <param name="parent">부모 윈도우</param>
     public MoveDialog(Window? parent)
         : base("책 이동하기", parent, DialogFlags.Modal)
     {
@@ -163,6 +171,9 @@ public class MoveDialog : Dialog
         _moveList.GrabFocus();
     }
 
+    /// <summary>
+    /// 대화상자가 닫힐 때 호출되어, 선택된 경로의 유효성을 검사하고 설정을 저장합니다.
+    /// </summary>
     [GLib.ConnectBefore]
     private void MoveDialog_DeleteEvent(object sender, DeleteEventArgs args)
     {
@@ -193,6 +204,9 @@ public class MoveDialog : Dialog
         Configs.SaveConfigs();
     }
 
+    /// <summary>
+    /// 대화상자의 응답(OK/Cancel 등)을 처리합니다.
+    /// </summary>
     private void MoveDialog_Response(object o, ResponseArgs args)
     {
         _response = args.ResponseId;
@@ -207,6 +221,9 @@ public class MoveDialog : Dialog
         Destroy();
     }
 
+    /// <summary>
+    /// 키 입력 이벤트를 처리합니다. ESC로 취소, Enter로 확인 동작을 지원합니다.
+    /// </summary>
     private void MoveDialog_KeyPressEvent(object o, KeyPressEventArgs args)
     {
         if (args.Event.Key == Gdk.Key.Escape)
@@ -227,6 +244,9 @@ public class MoveDialog : Dialog
         }
     }
 
+    /// <summary>
+    /// "찾아보기" 버튼 클릭 시 폴더 선택 대화상자를 엽니다.
+    /// </summary>
     private void BrowseButton_Click(object? sender, EventArgs e)
     {
         var loc = _destText.Text;
@@ -243,6 +263,9 @@ public class MoveDialog : Dialog
         _destText.Text = folder;
     }
 
+    /// <summary>
+    /// 목록에서 항목을 선택하면 경로를 입력란에 표시합니다.
+    /// </summary>
     private void MoveList_CursorChanged(object? sender, EventArgs e)
     {
         if (!_moveList.Selection.GetSelected(out var iter))
@@ -252,12 +275,18 @@ public class MoveDialog : Dialog
         _destText.Text = path;
     }
 
+    /// <summary>
+    /// 목록에서 행을 더블클릭하면 확인(OK) 동작을 수행합니다.
+    /// </summary>
     private void MoveList_RowActivated(object o, RowActivatedArgs args)
     {
         if (_moveList.Selection.GetSelected(out _))
             Respond(ResponseType.Ok);
     }
 
+    /// <summary>
+    /// 별명 셀 편집이 끝나면 Configs에 반영합니다.
+    /// </summary>
     private void AliasCell_Edited(object o, EditedArgs args)
     {
         _child_focus = false;
@@ -275,6 +304,9 @@ public class MoveDialog : Dialog
         _save_settings = true;
     }
 
+    /// <summary>
+    /// 마우스 오른쪽 버튼 클릭 시 컨텍스트 메뉴를 표시합니다.
+    /// </summary>
     [GLib.ConnectBefore]
     private void MoveList_ButtonPressEvent(object o, ButtonPressEventArgs args)
     {
@@ -294,16 +326,22 @@ public class MoveDialog : Dialog
         _moveAliasMenuItem.Sensitive = enable;
         _moveMenu.Popup();
     }
+
+    /// <summary>
+    /// 끌기 시작 시 소스 인덱스를 저장합니다.
+    /// </summary>
     private void MoveList_DragDataGet(object o, DragDataGetArgs args)
     {
         if (!_moveList.Selection.GetSelected(out var iter))
             return;
 
         _dragSourcePath = _moveList.Model.GetPath(iter);
-        _dragSourceIndex = _dragSourcePath.Indices[0];
         args.SelectionData.Set(args.SelectionData.Target, 8, Encoding.UTF8.GetBytes(_dragSourcePath.ToString()));
     }
 
+    /// <summary>
+    /// 끌어 놓기로 항목 이동 시 Configs에 반영하고 목록을 갱신합니다.
+    /// </summary>
     private void MoveList_DragDataReceived(object o, DragDataReceivedArgs args)
     {
         if (!_moveList.GetDestRowAtPos(args.X, args.Y, out var destPath, out var pos))
@@ -345,9 +383,11 @@ public class MoveDialog : Dialog
         }
 
         _dragSourcePath = null;
-        _dragSourceIndex = null;
     }
 
+    /// <summary>
+    /// 위치 추가 메뉴 클릭 시 폴더 선택 후 위치를 추가합니다.
+    /// </summary>
     private void MoveAddMenuItem_Click(object? sender, EventArgs e)
     {
         if (!OpenDirectoryChooserDialog(_destText.Text, out var folder))
@@ -365,6 +405,9 @@ public class MoveDialog : Dialog
         _save_settings = true;
     }
 
+    /// <summary>
+    /// 위치 변경 메뉴 클릭 시 폴더 선택 후 위치를 변경합니다.
+    /// </summary>
     private void MoveChangeMenuItem_Click(object? sender, EventArgs e)
     {
         if (!_moveList.Selection.GetSelected(out var iter))
@@ -390,6 +433,9 @@ public class MoveDialog : Dialog
         _save_settings = true;
     }
 
+    /// <summary>
+    /// 별명 바꾸기 메뉴 클릭 시 셀 편집 모드로 전환합니다.
+    /// </summary>
     private void MoveAliasMenuItem_Click(object? sender, EventArgs e)
     {
         if (!_moveList.Selection.GetSelected(out var iter))
@@ -402,6 +448,9 @@ public class MoveDialog : Dialog
         _moveList.SetCursor(path, aliasColumn, true);
     }
 
+    /// <summary>
+    /// 위치 삭제 메뉴 클릭 시 해당 위치를 삭제합니다.
+    /// </summary>
     private void MoveDeleteMenuItem_Click(object? sender, EventArgs e)
     {
         if (!_moveList.Selection.GetSelected(out var iter))
@@ -415,6 +464,9 @@ public class MoveDialog : Dialog
         _save_settings = true;
     }
 
+    /// <summary>
+    /// 지정한 경로가 목록에 있으면 해당 항목을 선택합니다.
+    /// </summary>
     private bool EnsureMoveItem(string loc)
     {
         if (string.IsNullOrEmpty(loc))
@@ -435,6 +487,9 @@ public class MoveDialog : Dialog
         return false;
     }
 
+    /// <summary>
+    /// 지정한 TreeIter의 항목을 선택하고 스크롤합니다.
+    /// </summary>
     private void EnsureMoveItem(TreeIter iter)
     {
         var path = _moveListStore.GetPath(iter);
@@ -444,12 +499,19 @@ public class MoveDialog : Dialog
         _destText.Text = (string)_moveListStore.GetValue(iter, 2);
     }
 
+    /// <summary>
+    /// 지정한 인덱스의 항목을 선택하고 스크롤합니다.
+    /// </summary>
     private void EnsureMoveItem(int index)
     {
         if (_moveListStore.IterNthChild(out var iter, index))
             EnsureMoveItem(iter);
     }
 
+    /// <summary>
+    /// 위치 목록을 새로고침합니다.
+    /// </summary>
+    /// <param name="ensure">선택 항목을 보장할지 여부</param>
     private void RefreshList(bool ensure = true)
     {
         _moveListStore.Clear();
@@ -468,6 +530,12 @@ public class MoveDialog : Dialog
         _moveList.GrabFocus();
     }
 
+    /// <summary>
+    /// 폴더 선택 대화상자를 열고, 선택된 경로를 반환합니다.
+    /// </summary>
+    /// <param name="path">초기 폴더 경로</param>
+    /// <param name="ret">선택된 폴더 경로</param>
+    /// <returns>선택 성공 여부</returns>
     private bool OpenDirectoryChooserDialog(string path, out string ret)
     {
         ret = path;
@@ -491,6 +559,11 @@ public class MoveDialog : Dialog
         return result;
     }
 
+    /// <summary>
+    /// 파일 이름을 지정하여 대화상자를 실행합니다.
+    /// </summary>
+    /// <param name="filename">이동할 파일 이름</param>
+    /// <returns>이동이 성공하면 true</returns>
     public bool Run(string? filename)
     {
         if (!string.IsNullOrEmpty(filename))

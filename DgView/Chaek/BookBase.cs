@@ -417,11 +417,20 @@ public abstract class BookBase : IDisposable
     }
 
     /// <summary>
+    /// Finds and returns the path of a randomly selected file.
+    /// </summary>
+    /// <returns>The path of the randomly selected file as a string, or <see langword="null"/> if no file is found.</returns>
+    public virtual string? FindRandomFile()
+    {
+        return null;
+    }
+
+    /// <summary>
     /// 다음 또는 이전 파일을 찾습니다. 우선순위 방향을 먼저 시도합니다.
     /// </summary>
     /// <param name="firstDirection">우선적으로 시도할 방향</param>
     /// <returns>찾은 파일 경로 또는 null</returns>
-    public string? FindNextFileAny(BookDirection firstDirection) => firstDirection switch
+    public string? FindAnyNextFile(BookDirection firstDirection) => firstDirection switch
     {
         BookDirection.Next => FindNextFile(BookDirection.Next) ??
                               FindNextFile(BookDirection.Previous) ?? null,
