@@ -1,12 +1,12 @@
 namespace DgView.Forms;
 
 /// <summary>
-/// ¼³Á¤À» À§ÇÑ ¿É¼Ç ´ÙÀÌ¾ó·Î±×¸¦ Á¦°øÇÏ´Â Å¬·¡½ºÀÔ´Ï´Ù.
-/// ÀÏ¹İ, º¸±â, Å°º¸µå/¸¶¿ì½º, º¸¾È µî ´Ù¾çÇÑ ¼³Á¤ ÅÇÀ» Æ÷ÇÔÇÕ´Ï´Ù.
+/// ì„¤ì •ì„ ìœ„í•œ ì˜µì…˜ ë‹¤ì´ì–¼ë¡œê·¸ë¥¼ ì œê³µí•˜ëŠ” í´ë˜ìŠ¤ì…ë‹ˆë‹¤.
+/// ì¼ë°˜, ë³´ê¸°, í‚¤ë³´ë“œ/ë§ˆìš°ìŠ¤, ë³´ì•ˆ ë“± ë‹¤ì–‘í•œ ì„¤ì • íƒ­ì„ í¬í•¨í•©ë‹ˆë‹¤.
 /// </summary>
 public class OptionDialog : Dialog
 {
-    // ÀÏ¹İ ÅÇ
+    // ì¼ë°˜ íƒ­
     private readonly CheckButton _runOnceCheck;
     private readonly CheckButton _escExitCheck;
     private readonly CheckButton _useMagneticCheck;
@@ -18,11 +18,11 @@ public class OptionDialog : Dialog
     private readonly Button _externalRunButton;
     private readonly CheckButton _reloadExternalExitCheck;
 
-    // Å°º¸µå/¸¶¿ì½º ÅÇ
+    // í‚¤ë³´ë“œ/ë§ˆìš°ìŠ¤ íƒ­
     private readonly CheckButton _useClickToPageCheck;
     private readonly CheckButton _useDoubleClickStateCheck;
 
-    // º¸¾È ÅÇ
+    // ë³´ì•ˆ íƒ­
     private readonly CheckButton _usePasswordCheck;
     private readonly Entry _passwordText;
     private readonly TreeView _passwordUsageList;
@@ -30,92 +30,92 @@ public class OptionDialog : Dialog
 
     //
     private static readonly string[] s_password_usage_items = [
-        "µÎ±×ºä ½ÇÇà",
-        "¿É¼Ç ¼³Á¤",
-        "¸¶Áö¸· Ã¥ ¿­±â",
-        "Ã¥ ¿Å±â±â",
-        "Ã¥ ÀÌ¸§ ¹Ù²Ù±â",
+        "ë‘ê·¸ë·° ì‹¤í–‰",
+        "ì˜µì…˜ ì„¤ì •",
+        "ë§ˆì§€ë§‰ ì±… ì—´ê¸°",
+        "ì±… ì˜®ê¸°ê¸°",
+        "ì±… ì´ë¦„ ë°”ê¾¸ê¸°",
     ];
 
     /// <summary>
-    /// OptionDialogÀÇ ÀÎ½ºÅÏ½º¸¦ »ı¼ºÇÕ´Ï´Ù.
+    /// OptionDialogì˜ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="parent">ºÎ¸ğ À©µµ¿ìÀÔ´Ï´Ù.</param>
-    public OptionDialog(Window? parent) : base("¼³Á¤", parent, DialogFlags.Modal)
+    /// <param name="parent">ë¶€ëª¨ ìœˆë„ìš°ì…ë‹ˆë‹¤.</param>
+    public OptionDialog(Window? parent) : base("ì„¤ì •", parent, DialogFlags.Modal)
     {
-        #region µğÀÚÀÎ
+        #region ë””ìì¸
         SetDefaultSize(640, 600);
         Resizable = false;
         BorderWidth = 8;
 
         var mainBox = new Box(Orientation.Vertical, 0);
 
-        // ÅÇ
+        // íƒ­
         var optionTab = new Notebook();
         mainBox.PackStart(optionTab, true, true, 4);
 
-        // --- ÀÏ¹İ ÅÇ ---
+        // --- ì¼ë°˜ íƒ­ ---
         var generalBox = new Box(Orientation.Vertical, 6);
-        _runOnceCheck = new CheckButton("ÇÁ·Î±×·¥ ÇÏ³ª¸¸ ½ÇÇà");
-        _escExitCheck = new CheckButton("ESC Å°·Î ÇÁ·Î±×·¥ Á¾·á");
-        _useMagneticCheck = new CheckButton("ÀÚ¼® À©µµ¿ì »ç¿ë");
-        _confirmDeleteCheck = new CheckButton("ÆÄÀÏÀ» Áö¿ï¶§ È®ÀÎ");
-        _alwaysTopCheck = new CheckButton("ÇÁ·Î±×·¥À» ¸Ç À§¿¡ º¸ÀÌ±â");
-        _updateNotifyCheck = new CheckButton("¾÷µ¥ÀÌÆ®°¡ ÀÖÀ¸¸é ¾Ë·ÁÁÖ±â");
-        _updateNotifyCheck.Sensitive = false; // ¾÷µ¥ÀÌÆ® ¾Ë¸²Àº ºñÈ°¼ºÈ­
+        _runOnceCheck = new CheckButton("í”„ë¡œê·¸ë¨ í•˜ë‚˜ë§Œ ì‹¤í–‰");
+        _escExitCheck = new CheckButton("ESC í‚¤ë¡œ í”„ë¡œê·¸ë¨ ì¢…ë£Œ");
+        _useMagneticCheck = new CheckButton("ìì„ ìœˆë„ìš° ì‚¬ìš©");
+        _confirmDeleteCheck = new CheckButton("íŒŒì¼ì„ ì§€ìš¸ë•Œ í™•ì¸");
+        _alwaysTopCheck = new CheckButton("í”„ë¡œê·¸ë¨ì„ ë§¨ ìœ„ì— ë³´ì´ê¸°");
+        _updateNotifyCheck = new CheckButton("ì—…ë°ì´íŠ¸ê°€ ìˆìœ¼ë©´ ì•Œë ¤ì£¼ê¸°");
+        _updateNotifyCheck.Sensitive = false; // ì—…ë°ì´íŠ¸ ì•Œë¦¼ì€ ë¹„í™œì„±í™”
 
-        // Ä³½Ã Å©±â
+        // ìºì‹œ í¬ê¸°
         var cacheBox = new Box(Orientation.Horizontal, 4);
         _cacheSizeValue = new SpinButton(0, 1024, 1) { Value = Configs.MaxPageCache };
         var cacheLabel = new Label("MB");
         cacheBox.PackStart(_cacheSizeValue, false, false, 0);
         cacheBox.PackStart(cacheLabel, false, false, 0);
 
-        // ¿ÜºÎ ½ÇÇà
+        // ì™¸ë¶€ ì‹¤í–‰
         var extRunBox = new Box(Orientation.Horizontal, 4);
         _externalRunText = new Entry { WidthChars = 30 };
-        _externalRunButton = new Button("Ã£¾Æº¸±â");
+        _externalRunButton = new Button("ì°¾ì•„ë³´ê¸°");
         extRunBox.PackStart(_externalRunText, true, true, 0);
         extRunBox.PackStart(_externalRunButton, false, false, 0);
-        _reloadExternalExitCheck = new CheckButton("¿ÜºÎ ½ÇÇà ³¡³ª¸é Ã¥ ´Ù½Ã ¿­±â");
+        _reloadExternalExitCheck = new CheckButton("ì™¸ë¶€ ì‹¤í–‰ ëë‚˜ë©´ ì±… ë‹¤ì‹œ ì—´ê¸°");
 
-        // ±×·ìÇÎ
+        // ê·¸ë£¹í•‘
         generalBox.PackStart(_runOnceCheck, false, false, 0);
         generalBox.PackStart(_escExitCheck, false, false, 0);
         generalBox.PackStart(_useMagneticCheck, false, false, 0);
         generalBox.PackStart(_confirmDeleteCheck, false, false, 0);
         generalBox.PackStart(_alwaysTopCheck, false, false, 0);
         generalBox.PackStart(_updateNotifyCheck, false, false, 0);
-        generalBox.PackStart(new Label("Ä³½Ã Å©±â"), false, false, 0);
+        generalBox.PackStart(new Label("ìºì‹œ í¬ê¸°"), false, false, 0);
         generalBox.PackStart(cacheBox, false, false, 0);
-        generalBox.PackStart(new Label("¿ÜºÎ ½ÇÇà"), false, false, 0);
+        generalBox.PackStart(new Label("ì™¸ë¶€ ì‹¤í–‰"), false, false, 0);
         generalBox.PackStart(extRunBox, false, false, 0);
         generalBox.PackStart(_reloadExternalExitCheck, false, false, 0);
-        optionTab.AppendPage(generalBox, new Label("ÀÏ¹İ"));
+        optionTab.AppendPage(generalBox, new Label("ì¼ë°˜"));
 
-        // --- º¸±â ÅÇ (ºñÈ°¼ºÈ­) ---
+        // --- ë³´ê¸° íƒ­ (ë¹„í™œì„±í™”) ---
         var viewBox = new Box(Orientation.Vertical, 6);
         viewBox.Sensitive = false;
-        viewBox.PackStart(new Label("Ç×¸ñÀÌ ¾ø¾î¿ä"), false, false, 0);
-        optionTab.AppendPage(viewBox, new Label("º¸±â"));
+        viewBox.PackStart(new Label("í•­ëª©ì´ ì—†ì–´ìš”"), false, false, 0);
+        optionTab.AppendPage(viewBox, new Label("ë³´ê¸°"));
 
-        // --- Å°º¸µå/¸¶¿ì½º ÅÇ ---
+        // --- í‚¤ë³´ë“œ/ë§ˆìš°ìŠ¤ íƒ­ ---
         var kmBox = new Box(Orientation.Vertical, 6);
-        _useDoubleClickStateCheck = new CheckButton("µÎ¹ø ´­·¯ ÃÖ´ëÈ­/ÃÖ¼ÒÈ­ ±â´É »ç¿ë");
-        _useClickToPageCheck = new CheckButton("¸¶¿ì½º ¹öÆ°À¸·Î ÀÌÀü/´ÙÀ½ ÆäÀÌÁö ÀÌµ¿");
+        _useDoubleClickStateCheck = new CheckButton("ë‘ë²ˆ ëˆŒëŸ¬ ìµœëŒ€í™”/ìµœì†Œí™” ê¸°ëŠ¥ ì‚¬ìš©");
+        _useClickToPageCheck = new CheckButton("ë§ˆìš°ìŠ¤ ë²„íŠ¼ìœ¼ë¡œ ì´ì „/ë‹¤ìŒ í˜ì´ì§€ ì´ë™");
         kmBox.PackStart(_useDoubleClickStateCheck, false, false, 0);
         kmBox.PackStart(_useClickToPageCheck, false, false, 0);
-        optionTab.AppendPage(kmBox, new Label("Å°º¸µå/¸¶¿ì½º"));
+        optionTab.AppendPage(kmBox, new Label("í‚¤ë³´ë“œ/ë§ˆìš°ìŠ¤"));
 
-        // --- Pad ÅÇ (ºñÈ°¼ºÈ­) ---
+        // --- Pad íƒ­ (ë¹„í™œì„±í™”) ---
         var padBox = new Box(Orientation.Vertical, 6);
         padBox.Sensitive = false;
-        padBox.PackStart(new Label("Ç×¸ñÀÌ ¾ø¾î¿ä"), false, false, 0);
-        optionTab.AppendPage(padBox, new Label("ÄÁÆ®·Ñ·¯"));
+        padBox.PackStart(new Label("í•­ëª©ì´ ì—†ì–´ìš”"), false, false, 0);
+        optionTab.AppendPage(padBox, new Label("ì»¨íŠ¸ë¡¤ëŸ¬"));
 
-        // --- º¸¾È ÅÇ ---
+        // --- ë³´ì•ˆ íƒ­ ---
         var secBox = new Box(Orientation.Vertical, 6);
-        _usePasswordCheck = new CheckButton("ºñ¹Ğ ¹øÈ£ »ç¿ë");
+        _usePasswordCheck = new CheckButton("ë¹„ë°€ ë²ˆí˜¸ ì‚¬ìš©");
         _passwordText = new Entry { Visibility = false, MaxLength = 12 };
 
         _passwordUsageList = new TreeView();
@@ -134,9 +134,9 @@ public class OptionDialog : Dialog
         secBox.PackStart(_usePasswordCheck, false, false, 0);
         secBox.PackStart(_passwordText, false, false, 0);
         secBox.PackStart(_passwordUsageList, true, true, 0);
-        optionTab.AppendPage(secBox, new Label("º¸¾È"));
+        optionTab.AppendPage(secBox, new Label("ë³´ì•ˆ"));
 
-        // ÀÌº¥Æ® ¿¬°á
+        // ì´ë²¤íŠ¸ ì—°ê²°
         _runOnceCheck.Toggled += (_, _) => Configs.GeneralRunOnce = _runOnceCheck.Active;
         _escExitCheck.Toggled += (_, _) => Configs.GeneralEscExit = _escExitCheck.Active;
         _useMagneticCheck.Toggled += (_, _) => Configs.GeneralUseMagnetic = _useMagneticCheck.Active;
@@ -154,7 +154,7 @@ public class OptionDialog : Dialog
         };
         _passwordText.Changed += (_, _) => Configs.PassCode = _passwordText.Text;
 
-        // ¿ÜºÎ ½ÇÇà/ºê¶ó¿ìÀú ¹öÆ°(ÆÄÀÏ ¼±ÅÃ)
+        // ì™¸ë¶€ ì‹¤í–‰/ë¸Œë¼ìš°ì € ë²„íŠ¼(íŒŒì¼ ì„ íƒ)
         _externalRunButton.Clicked += ExternalRunButton_Clicked;
         _reloadExternalExitCheck.Toggled += (_, _) => Configs.ReloadAfterExternal = _reloadExternalExitCheck.Active;
 
@@ -166,14 +166,14 @@ public class OptionDialog : Dialog
         AddButton(Stock.Close, ResponseType.Ok);
         #endregion
 
-        // ÃÊ±â°ª ¼¼ÆÃ
+        // ì´ˆê¸°ê°’ ì„¸íŒ…
         LoadSettings();
 
         ShowAll();
     }
 
     /// <summary>
-    /// ¼³Á¤°ªÀ» UI¿¡ ·ÎµåÇÕ´Ï´Ù.
+    /// ì„¤ì •ê°’ì„ UIì— ë¡œë“œí•©ë‹ˆë‹¤.
     /// </summary>
     private void LoadSettings()
     {
@@ -208,20 +208,20 @@ public class OptionDialog : Dialog
     }
 
     /// <summary>
-    /// ´ÙÀÌ¾ó·Î±×°¡ »èÁ¦µÉ ¶§ ¼³Á¤À» ÀúÀåÇÕ´Ï´Ù.
+    /// ë‹¤ì´ì–¼ë¡œê·¸ê°€ ì‚­ì œë  ë•Œ ì„¤ì •ì„ ì €ì¥í•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="o">ÀÌº¥Æ® ¼Ò½º °´Ã¼</param>
-    /// <param name="args">ÀÌº¥Æ® ÀÎÀÚ</param>
+    /// <param name="o">ì´ë²¤íŠ¸ ì†ŒìŠ¤ ê°ì²´</param>
+    /// <param name="args">ì´ë²¤íŠ¸ ì¸ì</param>
     private void OptionDialog_DeleteEvent(object o, DeleteEventArgs args)
     {
         SaveConfigs();
     }
 
     /// <summary>
-    /// ´ÙÀÌ¾ó·Î±×ÀÇ ÀÀ´ä ÀÌº¥Æ®¸¦ Ã³¸®ÇÕ´Ï´Ù.
+    /// ë‹¤ì´ì–¼ë¡œê·¸ì˜ ì‘ë‹µ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="o">ÀÌº¥Æ® ¼Ò½º °´Ã¼</param>
-    /// <param name="args">ÀÀ´ä ÀÎÀÚ</param>
+    /// <param name="o">ì´ë²¤íŠ¸ ì†ŒìŠ¤ ê°ì²´</param>
+    /// <param name="args">ì‘ë‹µ ì¸ì</param>
     private void OptionDialog_Response(object o, ResponseArgs args)
     {
         SaveConfigs();
@@ -231,13 +231,13 @@ public class OptionDialog : Dialog
     private bool _save_configs;
 
     /// <summary>
-    /// ÇöÀç UI »óÅÂ¸¦ Configs¿¡ ÀúÀåÇÏ°í, Áßº¹ ÀúÀåÀ» ¹æÁöÇÕ´Ï´Ù.
+    /// í˜„ì¬ UI ìƒíƒœë¥¼ Configsì— ì €ì¥í•˜ê³ , ì¤‘ë³µ ì €ì¥ì„ ë°©ì§€í•©ë‹ˆë‹¤.
     /// </summary>
     private void SaveConfigs()
     {
         if (_save_configs)
             return;
-        _save_configs = true; // Áßº¹ ÀúÀå ¹æÁö 
+        _save_configs = true; // ì¤‘ë³µ ì €ì¥ ë°©ì§€ 
 
         Configs.MaxPageCache = (int)_cacheSizeValue.Value;
         if (_externalRunText.Text.Length > 0)
@@ -253,18 +253,18 @@ public class OptionDialog : Dialog
     }
 
     /// <summary>
-    /// ¿ÜºÎ ½ÇÇà ÆÄÀÏÀ» ¼±ÅÃÇÏ´Â ÆÄÀÏ ¼±ÅÃ ´ÙÀÌ¾ó·Î±×¸¦ Ç¥½ÃÇÕ´Ï´Ù.
+    /// ì™¸ë¶€ ì‹¤í–‰ íŒŒì¼ì„ ì„ íƒí•˜ëŠ” íŒŒì¼ ì„ íƒ ë‹¤ì´ì–¼ë¡œê·¸ë¥¼ í‘œì‹œí•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="sender">ÀÌº¥Æ® ¼Ò½º °´Ã¼</param>
-    /// <param name="e">ÀÌº¥Æ® ÀÎÀÚ</param>
+    /// <param name="sender">ì´ë²¤íŠ¸ ì†ŒìŠ¤ ê°ì²´</param>
+    /// <param name="e">ì´ë²¤íŠ¸ ì¸ì</param>
     private void ExternalRunButton_Clicked(object? sender, EventArgs e)
     {
-        using var dialog = new FileChooserDialog("¿ÜºÎ ½ÇÇà ÆÄÀÏ ¼±ÅÃ", this, FileChooserAction.Open);
+        using var dialog = new FileChooserDialog("ì™¸ë¶€ ì‹¤í–‰ íŒŒì¼ ì„ íƒ", this, FileChooserAction.Open);
         dialog.AddButton(Stock.Cancel, ResponseType.Cancel);
         dialog.AddButton(Stock.Open, ResponseType.Accept);
 
         var flt = new FileFilter();
-        flt.Name = "½ÇÇà ÆÄÀÏ";
+        flt.Name = "ì‹¤í–‰ íŒŒì¼";
 #if WINDOWS
         flt.AddPattern("*.exe");
 #else
@@ -282,7 +282,7 @@ public class OptionDialog : Dialog
             var fi = new FileInfo(filename);
             if (!fi.Exists && (fi.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
             {
-                var md = new MessageDialog(this, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok, "½ÇÇà ±ÇÇÑÀÌ ¾ø´Â ÆÄÀÏÀÔ´Ï´Ù.");
+                var md = new MessageDialog(this, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok, "ì‹¤í–‰ ê¶Œí•œì´ ì—†ëŠ” íŒŒì¼ì…ë‹ˆë‹¤.");
                 md.Run();
                 md.Destroy();
                 return;
