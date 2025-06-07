@@ -535,7 +535,7 @@ internal class ReadWindow : Window
                     PageControl(BookControl.SeekPrevious10);
                     break;
 
-                case GdkKey.Page_Down:
+                case GdkKey.Page_Down or GdkKey.BackSpace:
                     PageControl(BookControl.SeekNext10);
                     break;
 
