@@ -3,13 +3,13 @@ using System.Text;
 namespace DgView.Forms;
 
 /// <summary>
-/// Ã¥ ÀÌµ¿À» À§ÇÑ ´ëÈ­»óÀÚ¸¦ Á¦°øÇÏ´Â Å¬·¡½ºÀÔ´Ï´Ù.
-/// »ç¿ëÀÚ´Â ¹Ì¸® µî·ÏµÈ À§Ä¡ ¸ñ·Ï¿¡¼­ ¼±ÅÃÇÏ°Å³ª, »õ À§Ä¡¸¦ Ãß°¡/¼öÁ¤/»èÁ¦ÇÒ ¼ö ÀÖ½À´Ï´Ù.
+/// ì±… ì´ë™ì„ ìœ„í•œ ëŒ€í™”ìƒìë¥¼ ì œê³µí•˜ëŠ” í´ë˜ìŠ¤ì…ë‹ˆë‹¤.
+/// ì‚¬ìš©ìëŠ” ë¯¸ë¦¬ ë“±ë¡ëœ ìœ„ì¹˜ ëª©ë¡ì—ì„œ ì„ íƒí•˜ê±°ë‚˜, ìƒˆ ìœ„ì¹˜ë¥¼ ì¶”ê°€/ìˆ˜ì •/ì‚­ì œí•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
 /// </summary>
 public class MoveDialog : Dialog
 {
     /// <summary>
-    /// ÀÌµ¿ÇÒ ÃÖÁ¾ ÆÄÀÏ ÀÌ¸§À» °¡Á®¿É´Ï´Ù.
+    /// ì´ë™í•  ìµœì¢… íŒŒì¼ ì´ë¦„ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
     /// </summary>
     public string Filename { get; private set; } = string.Empty;
 
@@ -32,13 +32,13 @@ public class MoveDialog : Dialog
     private TreePath? _dragSourcePath;
 
     /// <summary>
-    /// MoveDialog¸¦ »ı¼ºÇÕ´Ï´Ù.
+    /// MoveDialogë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="parent">ºÎ¸ğ À©µµ¿ì</param>
+    /// <param name="parent">ë¶€ëª¨ ìœˆë„ìš°</param>
     public MoveDialog(Window? parent)
-        : base("Ã¥ ÀÌµ¿ÇÏ±â", parent, DialogFlags.Modal)
+        : base("ì±… ì´ë™í•˜ê¸°", parent, DialogFlags.Modal)
     {
-        #region µğÀÚÀÎ
+        #region ë””ìì¸
         SetDefaultSize(500, 550);
         //Modal = true;
         //WindowPosition = parent != null ? WindowPosition.CenterOnParent : WindowPosition.Center;
@@ -49,7 +49,7 @@ public class MoveDialog : Dialog
 
         var mainVBox = new Box(Orientation.Vertical, 0);
 
-        var titleLabel = new Label("ÀÌµ¿ÇÒ °÷À» °í¸£¼¼¿ä")
+        var titleLabel = new Label("ì´ë™í•  ê³³ì„ ê³ ë¥´ì„¸ìš”")
         {
             Halign = Align.Start,
             MarginStart = 5,
@@ -73,7 +73,7 @@ public class MoveDialog : Dialog
         _moveList.EnableModelDragDest([dndTarget], Gdk.DragAction.Move);
 
         var numberTextRenderer = new CellRendererText();
-        var numberCol = new TreeViewColumn("¹øÈ£", numberTextRenderer, "text", 0)
+        var numberCol = new TreeViewColumn("ë²ˆí˜¸", numberTextRenderer, "text", 0)
         {
             Sizing = TreeViewColumnSizing.Fixed,
             FixedWidth = 80
@@ -82,7 +82,7 @@ public class MoveDialog : Dialog
 
         var aliasTextRenderer = new CellRendererText { Editable = true };
         aliasTextRenderer.Edited += AliasCell_Edited;
-        var aliasCol = new TreeViewColumn("º°¸í", aliasTextRenderer, "text", 1)
+        var aliasCol = new TreeViewColumn("ë³„ëª…", aliasTextRenderer, "text", 1)
         {
             Sizing = TreeViewColumnSizing.Fixed,
             FixedWidth = 150
@@ -90,7 +90,7 @@ public class MoveDialog : Dialog
         _moveList.AppendColumn(aliasCol);
 
         var pathTextRenderer = new CellRendererText();
-        var pathCol = new TreeViewColumn("°æ·Î", pathTextRenderer, "text", 2)
+        var pathCol = new TreeViewColumn("ê²½ë¡œ", pathTextRenderer, "text", 2)
         {
             Expand = true
         };
@@ -123,7 +123,7 @@ public class MoveDialog : Dialog
             MarginBottom = 5
         };
 
-        _browseButton = new Button("Ã£¾Æº¸±â");
+        _browseButton = new Button("ì°¾ì•„ë³´ê¸°");
         _browseButton.Clicked += BrowseButton_Click;
         bottomHBox.PackStart(_browseButton, false, false, 0);
 
@@ -132,22 +132,22 @@ public class MoveDialog : Dialog
         ContentArea.PackStart(mainVBox, true, true, 0);
 
         _moveMenu = new Menu();
-        _moveAddMenuItem = new MenuItem("À§Ä¡ Ãß°¡(_A)");
+        _moveAddMenuItem = new MenuItem("ìœ„ì¹˜ ì¶”ê°€(_A)");
         _moveAddMenuItem.Activated += MoveAddMenuItem_Click;
         _moveMenu.Append(_moveAddMenuItem);
 
-        _moveChangeMenuItem = new MenuItem("´Ù¸¥ À§Ä¡·Î(_C)");
+        _moveChangeMenuItem = new MenuItem("ë‹¤ë¥¸ ìœ„ì¹˜ë¡œ(_C)");
         _moveChangeMenuItem.Activated += MoveChangeMenuItem_Click;
         _moveMenu.Append(_moveChangeMenuItem);
 
-        _moveAliasMenuItem = new MenuItem("º°¸í ¹Ù²Ù±â(_S)");
+        _moveAliasMenuItem = new MenuItem("ë³„ëª… ë°”ê¾¸ê¸°(_S)");
         _moveAliasMenuItem.Activated += MoveAliasMenuItem_Click;
         _moveMenu.Append(_moveAliasMenuItem);
 
         var toolStripSeparator1 = new SeparatorMenuItem();
         _moveMenu.Append(toolStripSeparator1);
 
-        _moveDeleteMenuItem = new MenuItem("À§Ä¡ »èÁ¦(_D)");
+        _moveDeleteMenuItem = new MenuItem("ìœ„ì¹˜ ì‚­ì œ(_D)");
         _moveDeleteMenuItem.Activated += MoveDeleteMenuItem_Click;
         _moveMenu.Append(_moveDeleteMenuItem);
         _moveMenu.ShowAll();
@@ -172,7 +172,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ´ëÈ­»óÀÚ°¡ ´İÈú ¶§ È£ÃâµÇ¾î, ¼±ÅÃµÈ °æ·ÎÀÇ À¯È¿¼ºÀ» °Ë»çÇÏ°í ¼³Á¤À» ÀúÀåÇÕ´Ï´Ù.
+    /// ëŒ€í™”ìƒìê°€ ë‹«í ë•Œ í˜¸ì¶œë˜ì–´, ì„ íƒëœ ê²½ë¡œì˜ ìœ íš¨ì„±ì„ ê²€ì‚¬í•˜ê³  ì„¤ì •ì„ ì €ì¥í•©ë‹ˆë‹¤.
     /// </summary>
     [GLib.ConnectBefore]
     private void MoveDialog_DeleteEvent(object sender, DeleteEventArgs args)
@@ -186,7 +186,7 @@ public class MoveDialog : Dialog
                     DialogFlags.Modal | DialogFlags.DestroyWithParent,
                     MessageType.Error,
                     ButtonsType.Ok,
-                    "¼±ÅÃÇÑ µğ·ºÅä¸®°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+                    "ì„ íƒí•œ ë””ë ‰í† ë¦¬ê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
                 md.Run();
                 md.Destroy();
                 args.RetVal = true;
@@ -205,13 +205,13 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ´ëÈ­»óÀÚÀÇ ÀÀ´ä(OK/Cancel µî)À» Ã³¸®ÇÕ´Ï´Ù.
+    /// ëŒ€í™”ìƒìì˜ ì‘ë‹µ(OK/Cancel ë“±)ì„ ì²˜ë¦¬í•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveDialog_Response(object o, ResponseArgs args)
     {
         _response = args.ResponseId;
 
-        // OK³ª Cancel ¹öÆ° Å¬¸¯ ½Ã DeleteEvent¿Í µ¿ÀÏÇÑ Ã³¸® È£Ãâ
+        // OKë‚˜ Cancel ë²„íŠ¼ í´ë¦­ ì‹œ DeleteEventì™€ ë™ì¼í•œ ì²˜ë¦¬ í˜¸ì¶œ
         var deleteArgs = new DeleteEventArgs();
         MoveDialog_DeleteEvent(this, deleteArgs);
 
@@ -222,7 +222,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// Å° ÀÔ·Â ÀÌº¥Æ®¸¦ Ã³¸®ÇÕ´Ï´Ù. ESC·Î Ãë¼Ò, Enter·Î È®ÀÎ µ¿ÀÛÀ» Áö¿øÇÕ´Ï´Ù.
+    /// í‚¤ ì…ë ¥ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•©ë‹ˆë‹¤. ESCë¡œ ì·¨ì†Œ, Enterë¡œ í™•ì¸ ë™ì‘ì„ ì§€ì›í•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveDialog_KeyPressEvent(object o, KeyPressEventArgs args)
     {
@@ -245,7 +245,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// "Ã£¾Æº¸±â" ¹öÆ° Å¬¸¯ ½Ã Æú´õ ¼±ÅÃ ´ëÈ­»óÀÚ¸¦ ¿±´Ï´Ù.
+    /// "ì°¾ì•„ë³´ê¸°" ë²„íŠ¼ í´ë¦­ ì‹œ í´ë” ì„ íƒ ëŒ€í™”ìƒìë¥¼ ì—½ë‹ˆë‹¤.
     /// </summary>
     private void BrowseButton_Click(object? sender, EventArgs e)
     {
@@ -264,7 +264,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ¸ñ·Ï¿¡¼­ Ç×¸ñÀ» ¼±ÅÃÇÏ¸é °æ·Î¸¦ ÀÔ·Â¶õ¿¡ Ç¥½ÃÇÕ´Ï´Ù.
+    /// ëª©ë¡ì—ì„œ í•­ëª©ì„ ì„ íƒí•˜ë©´ ê²½ë¡œë¥¼ ì…ë ¥ë€ì— í‘œì‹œí•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveList_CursorChanged(object? sender, EventArgs e)
     {
@@ -276,7 +276,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ¸ñ·Ï¿¡¼­ ÇàÀ» ´õºíÅ¬¸¯ÇÏ¸é È®ÀÎ(OK) µ¿ÀÛÀ» ¼öÇàÇÕ´Ï´Ù.
+    /// ëª©ë¡ì—ì„œ í–‰ì„ ë”ë¸”í´ë¦­í•˜ë©´ í™•ì¸(OK) ë™ì‘ì„ ìˆ˜í–‰í•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveList_RowActivated(object o, RowActivatedArgs args)
     {
@@ -285,7 +285,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// º°¸í ¼¿ ÆíÁıÀÌ ³¡³ª¸é Configs¿¡ ¹İ¿µÇÕ´Ï´Ù.
+    /// ë³„ëª… ì…€ í¸ì§‘ì´ ëë‚˜ë©´ Configsì— ë°˜ì˜í•©ë‹ˆë‹¤.
     /// </summary>
     private void AliasCell_Edited(object o, EditedArgs args)
     {
@@ -305,12 +305,12 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ¸¶¿ì½º ¿À¸¥ÂÊ ¹öÆ° Å¬¸¯ ½Ã ÄÁÅØ½ºÆ® ¸Ş´º¸¦ Ç¥½ÃÇÕ´Ï´Ù.
+    /// ë§ˆìš°ìŠ¤ ì˜¤ë¥¸ìª½ ë²„íŠ¼ í´ë¦­ ì‹œ ì»¨í…ìŠ¤íŠ¸ ë©”ë‰´ë¥¼ í‘œì‹œí•©ë‹ˆë‹¤.
     /// </summary>
     [GLib.ConnectBefore]
     private void MoveList_ButtonPressEvent(object o, ButtonPressEventArgs args)
     {
-        System.Diagnostics.Debug.WriteLine($"{DateTime.Now}: ¹öÆ° ´­¸²: {args.Event.Button}");
+        System.Diagnostics.Debug.WriteLine($"{DateTime.Now}: ë²„íŠ¼ ëˆŒë¦¼: {args.Event.Button}");
 
         if (args.Event.Button != 3)
             return;
@@ -328,7 +328,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ²ø±â ½ÃÀÛ ½Ã ¼Ò½º ÀÎµ¦½º¸¦ ÀúÀåÇÕ´Ï´Ù.
+    /// ëŒê¸° ì‹œì‘ ì‹œ ì†ŒìŠ¤ ì¸ë±ìŠ¤ë¥¼ ì €ì¥í•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveList_DragDataGet(object o, DragDataGetArgs args)
     {
@@ -340,7 +340,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ²ø¾î ³õ±â·Î Ç×¸ñ ÀÌµ¿ ½Ã Configs¿¡ ¹İ¿µÇÏ°í ¸ñ·ÏÀ» °»½ÅÇÕ´Ï´Ù.
+    /// ëŒì–´ ë†“ê¸°ë¡œ í•­ëª© ì´ë™ ì‹œ Configsì— ë°˜ì˜í•˜ê³  ëª©ë¡ì„ ê°±ì‹ í•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveList_DragDataReceived(object o, DragDataReceivedArgs args)
     {
@@ -356,21 +356,21 @@ public class MoveDialog : Dialog
         if (pos == TreeViewDropPosition.After)
             afterIndex++;
 #if DEBUG
-        System.Diagnostics.Debug.WriteLine($"ÀÌµ¿ Àü ÀÎµ¦½º: {beforeIndex}, ÀÌµ¿ ÈÄ ÀÎµ¦½º: {afterIndex}");
+        System.Diagnostics.Debug.WriteLine($"ì´ë™ ì „ ì¸ë±ìŠ¤: {beforeIndex}, ì´ë™ í›„ ì¸ë±ìŠ¤: {afterIndex}");
 #endif
 
         if (_moveListStore.GetIter(out var srcIter, _dragSourcePath) &&
             _moveListStore.GetIter(out var destIter, destPath))
         {
-            // °ª º¹»ç
+            // ê°’ ë³µì‚¬
             var values = new object[3];
             for (var i = 0; i < 3; i++)
                 values[i] = _moveListStore.GetValue(srcIter, i);
 
-            // ¿ø·¡ À§Ä¡ »èÁ¦
+            // ì›ë˜ ìœ„ì¹˜ ì‚­ì œ
             _moveListStore.Remove(ref srcIter);
 
-            // »õ À§Ä¡¿¡ »ğÀÔ
+            // ìƒˆ ìœ„ì¹˜ì— ì‚½ì…
             var newIter = pos == TreeViewDropPosition.Before ? _moveListStore.InsertBefore(destIter) : _moveListStore.InsertAfter(destIter);
 
             for (var i = 0; i < 3; i++)
@@ -386,7 +386,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// À§Ä¡ Ãß°¡ ¸Ş´º Å¬¸¯ ½Ã Æú´õ ¼±ÅÃ ÈÄ À§Ä¡¸¦ Ãß°¡ÇÕ´Ï´Ù.
+    /// ìœ„ì¹˜ ì¶”ê°€ ë©”ë‰´ í´ë¦­ ì‹œ í´ë” ì„ íƒ í›„ ìœ„ì¹˜ë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveAddMenuItem_Click(object? sender, EventArgs e)
     {
@@ -406,7 +406,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// À§Ä¡ º¯°æ ¸Ş´º Å¬¸¯ ½Ã Æú´õ ¼±ÅÃ ÈÄ À§Ä¡¸¦ º¯°æÇÕ´Ï´Ù.
+    /// ìœ„ì¹˜ ë³€ê²½ ë©”ë‰´ í´ë¦­ ì‹œ í´ë” ì„ íƒ í›„ ìœ„ì¹˜ë¥¼ ë³€ê²½í•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveChangeMenuItem_Click(object? sender, EventArgs e)
     {
@@ -434,7 +434,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// º°¸í ¹Ù²Ù±â ¸Ş´º Å¬¸¯ ½Ã ¼¿ ÆíÁı ¸ğµå·Î ÀüÈ¯ÇÕ´Ï´Ù.
+    /// ë³„ëª… ë°”ê¾¸ê¸° ë©”ë‰´ í´ë¦­ ì‹œ ì…€ í¸ì§‘ ëª¨ë“œë¡œ ì „í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveAliasMenuItem_Click(object? sender, EventArgs e)
     {
@@ -449,7 +449,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// À§Ä¡ »èÁ¦ ¸Ş´º Å¬¸¯ ½Ã ÇØ´ç À§Ä¡¸¦ »èÁ¦ÇÕ´Ï´Ù.
+    /// ìœ„ì¹˜ ì‚­ì œ ë©”ë‰´ í´ë¦­ ì‹œ í•´ë‹¹ ìœ„ì¹˜ë¥¼ ì‚­ì œí•©ë‹ˆë‹¤.
     /// </summary>
     private void MoveDeleteMenuItem_Click(object? sender, EventArgs e)
     {
@@ -465,7 +465,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ÁöÁ¤ÇÑ °æ·Î°¡ ¸ñ·Ï¿¡ ÀÖÀ¸¸é ÇØ´ç Ç×¸ñÀ» ¼±ÅÃÇÕ´Ï´Ù.
+    /// ì§€ì •í•œ ê²½ë¡œê°€ ëª©ë¡ì— ìˆìœ¼ë©´ í•´ë‹¹ í•­ëª©ì„ ì„ íƒí•©ë‹ˆë‹¤.
     /// </summary>
     private bool EnsureMoveItem(string loc)
     {
@@ -488,7 +488,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ÁöÁ¤ÇÑ TreeIterÀÇ Ç×¸ñÀ» ¼±ÅÃÇÏ°í ½ºÅ©·ÑÇÕ´Ï´Ù.
+    /// ì§€ì •í•œ TreeIterì˜ í•­ëª©ì„ ì„ íƒí•˜ê³  ìŠ¤í¬ë¡¤í•©ë‹ˆë‹¤.
     /// </summary>
     private void EnsureMoveItem(TreeIter iter)
     {
@@ -500,7 +500,7 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ÁöÁ¤ÇÑ ÀÎµ¦½ºÀÇ Ç×¸ñÀ» ¼±ÅÃÇÏ°í ½ºÅ©·ÑÇÕ´Ï´Ù.
+    /// ì§€ì •í•œ ì¸ë±ìŠ¤ì˜ í•­ëª©ì„ ì„ íƒí•˜ê³  ìŠ¤í¬ë¡¤í•©ë‹ˆë‹¤.
     /// </summary>
     private void EnsureMoveItem(int index)
     {
@@ -509,9 +509,9 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// À§Ä¡ ¸ñ·ÏÀ» »õ·Î°íÄ§ÇÕ´Ï´Ù.
+    /// ìœ„ì¹˜ ëª©ë¡ì„ ìƒˆë¡œê³ ì¹¨í•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="ensure">¼±ÅÃ Ç×¸ñÀ» º¸ÀåÇÒÁö ¿©ºÎ</param>
+    /// <param name="ensure">ì„ íƒ í•­ëª©ì„ ë³´ì¥í• ì§€ ì—¬ë¶€</param>
     private void RefreshList(bool ensure = true)
     {
         _moveListStore.Clear();
@@ -531,16 +531,16 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// Æú´õ ¼±ÅÃ ´ëÈ­»óÀÚ¸¦ ¿­°í, ¼±ÅÃµÈ °æ·Î¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
+    /// í´ë” ì„ íƒ ëŒ€í™”ìƒìë¥¼ ì—´ê³ , ì„ íƒëœ ê²½ë¡œë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="path">ÃÊ±â Æú´õ °æ·Î</param>
-    /// <param name="ret">¼±ÅÃµÈ Æú´õ °æ·Î</param>
-    /// <returns>¼±ÅÃ ¼º°ø ¿©ºÎ</returns>
+    /// <param name="path">ì´ˆê¸° í´ë” ê²½ë¡œ</param>
+    /// <param name="ret">ì„ íƒëœ í´ë” ê²½ë¡œ</param>
+    /// <returns>ì„ íƒ ì„±ê³µ ì—¬ë¶€</returns>
     private bool OpenDirectoryChooserDialog(string path, out string ret)
     {
         ret = path;
         var dlg = new FileChooserDialog(
-            "µğ·ºÅä¸® ¼±ÅÃ",
+            "ë””ë ‰í† ë¦¬ ì„ íƒ",
             this,
             FileChooserAction.SelectFolder,
             Stock.Cancel, ResponseType.Cancel,
@@ -560,10 +560,10 @@ public class MoveDialog : Dialog
     }
 
     /// <summary>
-    /// ÆÄÀÏ ÀÌ¸§À» ÁöÁ¤ÇÏ¿© ´ëÈ­»óÀÚ¸¦ ½ÇÇàÇÕ´Ï´Ù.
+    /// íŒŒì¼ ì´ë¦„ì„ ì§€ì •í•˜ì—¬ ëŒ€í™”ìƒìë¥¼ ì‹¤í–‰í•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="filename">ÀÌµ¿ÇÒ ÆÄÀÏ ÀÌ¸§</param>
-    /// <returns>ÀÌµ¿ÀÌ ¼º°øÇÏ¸é true</returns>
+    /// <param name="filename">ì´ë™í•  íŒŒì¼ ì´ë¦„</param>
+    /// <returns>ì´ë™ì´ ì„±ê³µí•˜ë©´ true</returns>
     public bool Run(string? filename)
     {
         if (!string.IsNullOrEmpty(filename))
