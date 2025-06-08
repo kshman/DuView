@@ -1,61 +1,61 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>13</LangVersion>
-        <Nullable>enable</Nullable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <ApplicationIcon>Resources\DuView.ico</ApplicationIcon>
-    </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>Resources\DuView.ico</ApplicationIcon>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <!-- Windows 대상일 때 WINDOWS 상수 정의 -->
-        <DefineConstants Condition="'$(OS)' == 'Windows_NT'">$(DefineConstants);WINDOWS</DefineConstants>
-        <!-- Linux/macOS 구분을 원할 경우 -->
-        <DefineConstants Condition="'$(OS)' != 'Windows_NT'">$(DefineConstants);UNIX</DefineConstants>
-    </PropertyGroup>
-    
-    <ItemGroup>
-        <None Remove="**\*.glade" />
-        <EmbeddedResource Include="**\*.glade">
-            <LogicalName>%(Filename)%(Extension)</LogicalName>
-        </EmbeddedResource>
-        <None Remove="Resources\DuView.ico" />
-        <None Remove="Resources\icon_move.png" />
-        <None Remove="Resources\icon_purutu.png" />
-        <None Remove="Resources\ouch_noimg.png" />
-        <None Remove="Resources\style.css" />
-        <None Remove="Resources\folder-blue.png" />
-        <None Remove="Resources\housebari_head_128.jpg" />
-        <None Remove="Resources\viewmode_l2r.png" />
-        <None Remove="Resources\viewmode_none.png" />
-        <None Remove="Resources\viewmode_pitwidth.png" />
-        <None Remove="Resources\viewmode_r2l.png" />
-        <None Remove="Resources\icon_rename.png" />
-        <Content Include="Resources\DuView.ico" />
-        <EmbeddedResource Include="Resources\DuView.ico" />
-        <EmbeddedResource Include="Resources\icon_move.png" />
-        <EmbeddedResource Include="Resources\icon_purutu.png" />
-        <EmbeddedResource Include="Resources\ouch_noimg.png" />
-        <EmbeddedResource Include="Resources\folder-blue.png" />
-        <EmbeddedResource Include="Resources\housebari_head_128.jpg" />
-        <EmbeddedResource Include="Resources\style.css" />
-        <EmbeddedResource Include="Resources\viewmode_l2r.png" />
-        <EmbeddedResource Include="Resources\viewmode_none.png" />
-        <EmbeddedResource Include="Resources\viewmode_pitwidth.png" />
-        <EmbeddedResource Include="Resources\viewmode_r2l.png" />
-        <EmbeddedResource Include="Resources\icon_rename.png" />
-    </ItemGroup>
+	<PropertyGroup>
+		<!-- Windows 대상일 때 WINDOWS 상수 정의 -->
+		<DefineConstants Condition="'$(OS)' == 'Windows_NT'">$(DefineConstants);WINDOWS</DefineConstants>
+		<!-- Linux/macOS 구분을 원할 경우 -->
+		<DefineConstants Condition="'$(OS)' != 'Windows_NT'">$(DefineConstants);UNIX</DefineConstants>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="GtkSharp" Version="3.24.24.*" />
-    </ItemGroup>
+	<ItemGroup>
+		<None Remove="**\*.glade" />
+		<EmbeddedResource Include="**\*.glade">
+			<LogicalName>%(Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+		<None Remove="Resources\DuView.ico" />
+		<None Remove="Resources\icon_move.png" />
+		<None Remove="Resources\icon_purutu.png" />
+		<None Remove="Resources\ouch_noimg.png" />
+		<None Remove="Resources\style.css" />
+		<None Remove="Resources\folder-blue.png" />
+		<None Remove="Resources\housebari_head_128.jpg" />
+		<None Remove="Resources\viewmode_l2r.png" />
+		<None Remove="Resources\viewmode_none.png" />
+		<None Remove="Resources\viewmode_pitwidth.png" />
+		<None Remove="Resources\viewmode_r2l.png" />
+		<None Remove="Resources\icon_rename.png" />
+		<Content Include="Resources\DuView.ico" />
+		<EmbeddedResource Include="Resources\DuView.ico" />
+		<EmbeddedResource Include="Resources\icon_move.png" />
+		<EmbeddedResource Include="Resources\icon_purutu.png" />
+		<EmbeddedResource Include="Resources\ouch_noimg.png" />
+		<EmbeddedResource Include="Resources\folder-blue.png" />
+		<EmbeddedResource Include="Resources\housebari_head_128.jpg" />
+		<EmbeddedResource Include="Resources\style.css" />
+		<EmbeddedResource Include="Resources\viewmode_l2r.png" />
+		<EmbeddedResource Include="Resources\viewmode_none.png" />
+		<EmbeddedResource Include="Resources\viewmode_pitwidth.png" />
+		<EmbeddedResource Include="Resources\viewmode_r2l.png" />
+		<EmbeddedResource Include="Resources\icon_rename.png" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <!-- Windows 전용 소스 파일 -->
-        <Compile Remove="WebPWrapper\WebPWrapper.cs" Condition="'$(OS)' != 'Windows_NT'" />
-        <None Include="WebPWrapper\WebPWrapper.cs" Condition="'$(OS)' != 'Windows_NT'" />
-    </ItemGroup>
+	<ItemGroup>
+		<!-- Windows 전용 소스 파일 -->
+		<Compile Remove="WebPWrapper\WebPWrapper.cs" Condition="'$(OS)' != 'Windows_NT'" />
+		<None Include="WebPWrapper\WebPWrapper.cs" Condition="'$(OS)' != 'Windows_NT'" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="GtkSharp" Version="3.24.24.999" />
+	  <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.5" />
+	</ItemGroup>
 
 </Project>
