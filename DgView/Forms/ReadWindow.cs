@@ -61,7 +61,16 @@ internal class ReadWindow : Window
 	{
 		#region 디자인
 		// 윈도우
-		//SetPosition(WindowPosition.Center);
+#if WINDOWS
+		if (Configs.WindowX <=0 || Configs.WindowY <= 0)
+			SetPosition(WindowPosition.Center);
+		else
+		{
+			// 지정된 위치로 이동
+			SetPosition(WindowPosition.None);
+			Move(Configs.WindowX, Configs.WindowY);
+		}
+#endif
 		SetDefaultSize(Configs.WindowWidth, Configs.WindowHeight);
 		SetSizeRequest(600, 400);
 		CanFocus = true;
@@ -263,6 +272,12 @@ internal class ReadWindow : Window
 			Unfullscreen();
 		}
 
+#if WINDOWS
+		//GetPosition(out var x, out var y);
+		Window.GetRootOrigin(out var x, out var y);
+		Configs.WindowX = x;
+		Configs.WindowY = y;
+#endif
 		GetSize(out var width, out var height);
 		Configs.WindowWidth = width;
 		Configs.WindowHeight = height;

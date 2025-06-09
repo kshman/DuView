@@ -20,6 +20,10 @@ internal static class Configs
 	private static long s_run_count;
 	private static long s_run_duration;
 
+#if WINDOWS
+	private static int s_window_x = -1;
+	private static int s_window_y = -1;
+#endif
 	private static int s_window_width = 600;
 	private static int s_window_height = 400;
 
@@ -103,6 +107,10 @@ internal static class Configs
 		using var conn = new SqliteConnection(s_config_data_source);
 		conn.Open();
 		using var transaction = conn.BeginTransaction();
+#if WINDOWS
+		conn.IntoConfigs("WindowX", s_window_x);
+		conn.IntoConfigs("WindowY", s_window_y);
+#endif
 		conn.IntoConfigs("WindowWidth", s_window_width);
 		conn.IntoConfigs("WindowHeight", s_window_height);
 		conn.IntoConfigs("RunCount", s_run_count);
@@ -119,6 +127,10 @@ internal static class Configs
 		conn.Open();
 
 		// 설정
+#if WINDOWS
+		s_window_x = conn.SelectConfigsAsInt("WindowX", s_window_x);
+		s_window_y = conn.SelectConfigsAsInt("WindowY", s_window_y);
+#endif
 		s_window_width = conn.SelectConfigsAsInt("WindowWidth", s_window_width);
 		s_window_height = conn.SelectConfigsAsInt("WindowHeight", s_window_height);
 
@@ -235,6 +247,20 @@ internal static class Configs
 	#endregion
 
 	#region 속성: 윈도우
+#if WINDOWS
+	public static int WindowX
+	{
+		get => s_window_x;
+		set => s_window_x = value;
+	}
+
+	public static int WindowY
+	{
+		get => s_window_y;
+		set => s_window_y = value;
+	}
+#endif
+
 	// 윈도우의 너비. 프로그램 종료 전에 저장하므로 캐시 입출력
 	public static int WindowWidth
 	{
