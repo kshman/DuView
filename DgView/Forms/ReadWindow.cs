@@ -62,7 +62,7 @@ internal class ReadWindow : Window
 		#region 디자인
 		// 윈도우
 #if WINDOWS
-		if (Configs.WindowX <=0 || Configs.WindowY <= 0)
+		if (Configs.WindowX <= 0 || Configs.WindowY <= 0)
 			SetPosition(WindowPosition.Center);
 		else
 		{
@@ -627,12 +627,16 @@ internal class ReadWindow : Window
 			}
 
 			// 창 이동 시작
-			BeginMoveDrag(
-				button: (int)args.Event.Button,
-				root_x: (int)args.Event.XRoot,
-				root_y: (int)args.Event.YRoot,
-				timestamp: args.Event.Time
-			);
+			if (!Configs.MouseDoubleClickFullScreen && (_window_state & WindowState.Fullscreen) == 0)
+			{
+				// 두번 눌러 전체화면이 아닐 때만 이동 시작
+				BeginMoveDrag(
+					button: (int)args.Event.Button,
+					root_x: (int)args.Event.XRoot,
+					root_y: (int)args.Event.YRoot,
+					timestamp: args.Event.Time
+				);
+			}
 		}
 		else if (args.Event.Button == 3) // 오른쪽 버튼
 		{
