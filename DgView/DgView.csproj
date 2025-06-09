@@ -21,30 +21,19 @@
 			<LogicalName>%(Filename)%(Extension)</LogicalName>
 		</EmbeddedResource>
 		<None Remove="Resources\DuView.ico" />
-		<None Remove="Resources\icon_move.png" />
-		<None Remove="Resources\icon_purutu.png" />
-		<None Remove="Resources\ouch_noimg.png" />
 		<None Remove="Resources\style.css" />
-		<None Remove="Resources\folder-blue.png" />
-		<None Remove="Resources\housebari_head_128.jpg" />
-		<None Remove="Resources\viewmode_l2r.png" />
-		<None Remove="Resources\viewmode_none.png" />
-		<None Remove="Resources\viewmode_pitwidth.png" />
-		<None Remove="Resources\viewmode_r2l.png" />
-		<None Remove="Resources\icon_rename.png" />
-		<Content Include="Resources\DuView.ico" />
 		<EmbeddedResource Include="Resources\DuView.ico" />
-		<EmbeddedResource Include="Resources\icon_move.png" />
-		<EmbeddedResource Include="Resources\icon_purutu.png" />
-		<EmbeddedResource Include="Resources\ouch_noimg.png" />
-		<EmbeddedResource Include="Resources\folder-blue.png" />
-		<EmbeddedResource Include="Resources\housebari_head_128.jpg" />
+		<EmbeddedResource Include="Resources\icon-move.png" />
+		<EmbeddedResource Include="Resources\icon-purutu.png" />
+		<EmbeddedResource Include="Resources\pix-no-img.png" />
+		<EmbeddedResource Include="Resources\icon-directory.png" />
+		<EmbeddedResource Include="Resources\pix-housebari.jpg" />
 		<EmbeddedResource Include="Resources\style.css" />
-		<EmbeddedResource Include="Resources\viewmode_l2r.png" />
-		<EmbeddedResource Include="Resources\viewmode_none.png" />
-		<EmbeddedResource Include="Resources\viewmode_pitwidth.png" />
-		<EmbeddedResource Include="Resources\viewmode_r2l.png" />
-		<EmbeddedResource Include="Resources\icon_rename.png" />
+		<EmbeddedResource Include="Resources\icon-view-mode-l2r.png" />
+		<EmbeddedResource Include="Resources\icon-book.png" />
+		<EmbeddedResource Include="Resources\icon-view-mode-fit.png" />
+		<EmbeddedResource Include="Resources\icon-view-mode-r2l.png" />
+		<EmbeddedResource Include="Resources\icon-rename.png" />
 	</ItemGroup>
 
 	<ItemGroup>

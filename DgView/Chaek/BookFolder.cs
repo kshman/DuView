@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace DgView.Chaek;
 
@@ -189,13 +189,14 @@ internal class BookFolder : BookBase
 		if (di == null)
 			return null;
 
-		var drs = di.GetDirectories();
-		Array.Sort(drs, new Doumi.DirectoryInfoComparer());
+		if (!Configs.NearIsPathSame(di.FullName))
+		{
+			var drs = di.GetDirectories();
+			Array.Sort(drs, new Doumi.DirectoryInfoComparer());
+			Configs.NearSetFiles(di.FullName, drs.Select(x => x.FullName));
+		}
 
-		var at = Array.FindIndex(drs, x => x.FullName == FileName);
-		var want = direction == BookDirection.Previous ? at - 1 : at + 1;
-
-		return want < 0 ? null : want >= drs.Length ? null : drs[want].FullName;
+		return Configs.NearGetFile(FileName, direction);
 	}
 
 	/// <inheritdoc />

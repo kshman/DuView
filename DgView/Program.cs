@@ -6,11 +6,13 @@ global using System.IO;
 global using System.Linq;
 global using PixBitmap = Gdk.Pixbuf;
 global using GdkKey = Gdk.Key;
+using DgView;
+
+if (!Configs.Initialize())
+	return 1;
 
 var filename = args.Length > 1 ? args[1] : string.Empty;
-DgView.Configs.OnMainBefore();
-
-if (!DgView.Configs.GeneralRunOnce)
+if (!Configs.GeneralRunOnce)
     Work(filename);
 else
 {
@@ -20,17 +22,15 @@ else
     Work(filename);
 }
 
+Configs.Dispose();
 return 0;
 
 static void Work(string filename)
 {
-    DgView.Configs.OnMainAfter();
+    Configs.LoadCaches();
 
     Application.Init();
-
-    var css = new CssProvider();
-    css.LoadFromResource("DgView.Resources.style.css");
-    StyleContext.AddProviderForScreen(Gdk.Screen.Default, css, StyleProviderPriority.Application);
+	ResL.LoadResources();
 
     var app = new Application("ksh.DgView", GLib.ApplicationFlags.None);
     app.Register(GLib.Cancellable.Current);
@@ -39,4 +39,5 @@ static void Work(string filename)
     app.AddWindow(win);
 
     Application.Run();
+	ResL.Dispose();
 }
