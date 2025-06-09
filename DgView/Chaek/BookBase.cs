@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Cairo;
 #if WINDOWS
 using DgView.WebPWrapper;
@@ -12,10 +12,15 @@ namespace DgView.Chaek;
 /// </summary>
 public abstract class BookBase : IDisposable
 {
-    /// <summary>
-    /// 전체 경로를 포함한 파일 이름입니다.
-    /// </summary>
-    public string FileName { get; private set; } = string.Empty;
+	private readonly Dictionary<int, MemoryStream> _cache = new();
+
+	/// <summary>엔트리 저장소</summary>
+	protected readonly List<object> Entries = [];
+
+	/// <summary>
+	/// 전체 경로를 포함한 파일 이름입니다.
+	/// </summary>
+	public string FileName { get; private set; } = string.Empty;
 
     /// <summary>
     /// 경로를 제외한 파일 이름입니다.
@@ -52,13 +57,10 @@ public abstract class BookBase : IDisposable
     /// </summary>
     public ViewMode ViewMode { get; set; } = ViewMode.Follow;
 
-    private ViewMode ActualViewMode => ViewMode == ViewMode.Follow ? Configs.ViewMode : ViewMode;
-
-    /// <summary>엔트리 저장소</summary>
-    protected readonly List<object> Entries = [];
-
-    // 캐시
-    private readonly Dictionary<int, MemoryStream> _cache = new();
+	/// <summary>
+	/// 실제 보기 모드입니다.
+	/// </summary>
+	private ViewMode ActualViewMode => ViewMode == ViewMode.Follow ? Configs.ViewMode : ViewMode;
 
     /// <summary>
     /// 엔트리에서 스트림을 읽어오는 추상 메서드입니다.
@@ -168,7 +170,7 @@ public abstract class BookBase : IDisposable
 
         var size = ms.Length;
 
-        if ((CacheSize + size) > Configs.MaxActualPageCache && _cache.Count > 0)
+        if ((CacheSize + size) > Configs.GeneralMaxActualPageCache && _cache.Count > 0)
         {
             var (key, value) = _cache.ElementAt(0);
 
@@ -183,16 +185,14 @@ public abstract class BookBase : IDisposable
     }
 
     //
-    private bool TryCache(int page, out MemoryStream? st)
-    {
-        return _cache.TryGetValue(page, out st);
-    }
+    private bool TryCache(int page, out MemoryStream? st) =>
+        _cache.TryGetValue(page, out st);
 
     //
     private PageImage ReadPage(int pageNo)
     {
         if (pageNo < 0 || pageNo >= TotalPage)
-            return new PageImage(Configs.OopsNoImage());
+            return new PageImage(ResL.NoImageSurface);
 
         var en = Entries[pageNo];
         var storeCache = false;
@@ -205,7 +205,7 @@ public abstract class BookBase : IDisposable
         }
 
         if (ms == null)
-            return new PageImage(Configs.OopsNoImage());
+            return new PageImage(ResL.NoImageSurface);
 
         ImageSurface? img = null;
         List<AnimatedFrame>? frames = null;
@@ -246,6 +246,7 @@ public abstract class BookBase : IDisposable
             }
 #else
             // 윈도우 외에는 부디 WebP가 지원되기를...
+			// 일단 리눅스와 FreeBSD는 된다!
 #endif
         }
 
@@ -253,7 +254,7 @@ public abstract class BookBase : IDisposable
             CacheStream(pageNo, ms);
 
         return frames != null ? new PageImage(frames) :
-            img != null ? new PageImage(img) : new PageImage(Configs.OopsNoImage());
+            img != null ? new PageImage(img) : new PageImage(ResL.NoImageSurface);
     }
 
     /// <summary>
@@ -425,12 +426,12 @@ public abstract class BookBase : IDisposable
         return null;
     }
 
-    /// <summary>
-    /// 다음 또는 이전 파일을 찾습니다. 우선순위 방향을 먼저 시도합니다.
-    /// </summary>
-    /// <param name="firstDirection">우선적으로 시도할 방향</param>
-    /// <returns>찾은 파일 경로 또는 null</returns>
-    public string? FindAnyNextFile(BookDirection firstDirection) => firstDirection switch
+	/// <summary>
+	/// 다음 또는 이전 파일을 찾습니다. 우선순위 방향을 먼저 시도합니다.
+	/// </summary>
+	/// <param name="direction">우선적으로 시도할 방향</param>
+	/// <returns>찾은 파일 경로 또는 null</returns>
+	public string? FindAnyNextFile(BookDirection direction = BookDirection.Next) => direction switch
     {
         BookDirection.Next => FindNextFile(BookDirection.Next) ??
                               FindNextFile(BookDirection.Previous) ?? null,
@@ -445,10 +446,8 @@ public abstract class BookBase : IDisposable
     protected class BookEntryInfoComparer : IComparer<BookEntryInfo>
     {
         /// <inheritdoc />
-        public int Compare(BookEntryInfo? x, BookEntryInfo? y)
-        {
-            return Doumi.StringAsNumericCompare(x?.Name, y?.Name);
-        }
+        public int Compare(BookEntryInfo? x, BookEntryInfo? y) =>
+            Doumi.StringAsNumericCompare(x?.Name, y?.Name);
     }
 
     /// <summary>

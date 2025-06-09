@@ -1,4 +1,4 @@
-﻿namespace DgView.Chaek;
+namespace DgView.Chaek;
 
 /// <summary>
 /// 수평 정렬 방식을 지정합니다.
@@ -38,9 +38,6 @@ public enum ViewMode
 /// </summary>
 public enum ViewQuality
 {
-    /// <summary>잘못된 품질</summary>
-    Invalid,
-
     /// <summary>낮음</summary>
     Fast,
 

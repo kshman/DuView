@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Cairo;
 
 namespace DgView.Chaek;
@@ -52,11 +52,22 @@ public class PageImage : IDisposable
         Frames = null;
     }
 
+	/// <summary>
+	/// Pixbuf 객체를 사용하여 PageImage 인스턴스를 생성합니다.
+	/// </summary>
+	/// <param name="bitmap">Pixbuf 이미지 객체입니다.</param>
+	public PageImage(PixBitmap bitmap)
+    {
+	    Image = new ImageSurface(Format.ARGB32, bitmap.Width, bitmap.Height);
+	    using var cr = new Context(Image);
+	    Gdk.CairoHelper.SetSourcePixbuf(cr, bitmap, 0, 0);
+    }
+
     /// <summary>
-    /// 애니메이션 프레임 목록을 사용하여 PageImage 인스턴스를 생성합니다.
-    /// </summary>
-    /// <param name="frames">애니메이션 프레임 목록입니다.</param>
-    public PageImage(List<AnimatedFrame> frames)
+	/// 애니메이션 프레임 목록을 사용하여 PageImage 인스턴스를 생성합니다.
+	/// </summary>
+	/// <param name="frames">애니메이션 프레임 목록입니다.</param>
+	public PageImage(List<AnimatedFrame> frames)
     {
         Image = frames[0].Bitmap;
         Frames = frames;
@@ -101,15 +112,15 @@ public class PageImage : IDisposable
     /// <param name="disposing">Dispose 여부</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                Image.Dispose();
-                // Frames 내 Bitmap도 Dispose 해야 하능가? 만들고 생각하자
-            }
-            _disposed = true;
-        }
+	    if (_disposed)
+		    return;
+
+	    if (disposing)
+	    {
+		    Image.Dispose();
+		    // Frames 내 Bitmap도 Dispose 해야 하능가? 만들고 생각하자
+	    }
+	    _disposed = true;
     }
 
     /// <inheritdoc/>
